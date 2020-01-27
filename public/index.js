@@ -4,6 +4,8 @@ window.mobileAndTabletCheck = function() {
     return check;
 };
 
+
+
 var app = new Vue ({
     el: '#app',
 
@@ -11,6 +13,7 @@ var app = new Vue ({
         isAdmin: true,
         items: [],
         arcs: [],
+        minEraWidth: 100,
         dateMin: null,
         dateMax: null,
         startYear: null,
@@ -119,6 +122,10 @@ var app = new Vue ({
                 this.items.push(this.newItem)
             }
             else this.arcs = this.arcs.filter(p => !p.isNewPlaceholder)
+        },
+
+        yearUnit: function() {
+            this.checkEraDuration()
         }
     },
 
@@ -260,24 +267,6 @@ var app = new Vue ({
             return this.arcs.filter(a => a._id === id)[0]
         },
 
-        setZoom() {
-            let years = this.eventEls.events.map(e => e.year)
-            this.dateMax = Math.max.apply(null, years)
-            this.dateMin = Math.min.apply(null, years)
-
-            let range = this.dateMax - this.dateMin
-            if (range < 10) this.eraDuration = 1;
-            else if (range < 100) this.eraDuration = 10;
-            else if (range < 1000) this.eraDuration = 100;
-            else this.eraDuration = 1000;
-
-            this.startYear = Math.floor(this.dateMin / this.eraDuration) * this.eraDuration - this.eraDuration;
-            this.numEras = Math.ceil(range / this.eraDuration) + 2;
-
-            this.minYearUnit = (window.innerWidth - 1) / (this.eraDuration * this.numEras) * 1.25
-            this.yearUnit = this.minYearUnit;
-        },
-
         setTheaterImage(shortId) {
             this.theaterMode = 'img'
             let obj = this.findInListById(this.eventEls.events, shortId)
@@ -323,6 +312,24 @@ var app = new Vue ({
             this.subsOn = !this.subsOn;
         },
 
+        
+        setZoom() {
+            let viewWidth = document.getElementById('timeline-box').offsetWidth;
+
+            let years = this.eventEls.events.map(e => e.year)
+            this.dateMax = Math.max.apply(null, years)
+            this.dateMin = Math.min.apply(null, years)
+            let range = this.dateMax - this.dateMin;
+
+            this.minYearUnit = ((viewWidth) / (range))
+            this.yearUnit = this.minYearUnit;
+
+            this.checkEraDuration()
+
+            this.startYear = Math.floor(this.dateMin / this.eraDuration) * this.eraDuration - this.eraDuration;
+        },
+
+
         handleTimelineScroll(e) {
             var y = -e.deltaY;
             let ival = 50;
@@ -332,7 +339,7 @@ var app = new Vue ({
                     let oldUnit = this.yearUnit;
 
                     let delta = y / 500;
-                    this.changeEraZoom(delta)
+                    this.changeYearUnit(delta)
 
                     // modify scroll position relative to mouse
                     let scrollBox = document.querySelector('#timeline-box');
@@ -359,7 +366,7 @@ var app = new Vue ({
         },
         handleButtonZoom(delta){
             let oldUnit = this.yearUnit;
-            this.changeEraZoom(delta)
+            this.changeYearUnit(delta)
 
             // modify scroll position to maintain center
             let scrollBox = document.querySelector('#timeline-box');
@@ -368,9 +375,26 @@ var app = new Vue ({
             scrollBox.scrollLeft = newMPos - vp.width/2;
         },
 
-        changeEraZoom(delta) {
+        changeYearUnit(delta) {
             this.yearUnit = Math.max(this.minYearUnit, this.yearUnit * (1 + delta));
             // console.log(this.minYearUnit, this.yearUnit);
+        },
+
+        checkEraDuration() {
+            let range = this.dateMax - this.startYear;
+
+            this.eraDuration = 1;
+
+            console.log(this.yearUnit * this.eraDuration, this.eraDuration)
+
+            while(this.yearUnit * this.eraDuration < this.minEraWidth){
+                if (this.eraDuration%2 == 0 || this.eraDuration == 1) this.eraDuration *=5
+                else this.eraDuration *= 2;
+                console.log(this.yearUnit * this.eraDuration, this.eraDuration)
+            }
+
+            this.numEras = Math.ceil(range / this.eraDuration) + 2;
+
         },
 
         toggleHandwriting() {
@@ -417,7 +441,10 @@ var app = new Vue ({
                 let yearPos = (event.year - this.startYear) * this.yearUnit;
                 let monthPos = event.month * this.yearUnit / 12;
                 let dayPos = event.day * this.yearUnit / (12 * 31) 
-                event.netPos = yearPos + monthPos + dayPos;
+                event.relX = yearPos + monthPos + dayPos;
+                
+                event.relY = (event.pos/100) * document.getElementById('timeline-box').offsetHeight;
+
                 event.idString = `event_${events.length}`
                 event.yearStr = event.year < 0 ?
                     -event.year+' BC' : event.year+' AD';
@@ -432,11 +459,18 @@ var app = new Vue ({
 
                 if (this.getArcById(event.arcId)) {
                     event.arc = this.getArcById(event.arcId)
-                    event.arc.points.push({"pos": event.pos, "netPos": event.netPos})
-                    console.log(event.arc)
+                    event.arc.points.push({"relY": event.relY, "relX": event.relX})
                 }
 
                 events.push(event)
+            })
+
+            this.arcs.forEach(arc => {
+                arc.points.sort((a, b) => a.relX - b.relX);
+                arc.left = arc.points.reduce( (min,p) => Math.min(p.relX, min), Infinity ) - 5;
+                arc.base = arc.points.reduce( (min,p) => Math.min(p.relY, min), Infinity ) - 5;
+                arc.right = arc.points.reduce( (max,p) => Math.max(p.relX, max), 0 ) + 5;
+                arc.top = arc.points.reduce( (max,p) => Math.max(p.relY, max), 0 ) + 5;
             })
             
             return {events, "arcs": this.arcs};

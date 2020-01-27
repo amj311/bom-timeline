@@ -22,10 +22,16 @@
                 </div>
 
                 <div id="gallery">
-                    <div v-for="arc in eventEls.arcs">{{arc.name}}
-                        <div v-for="point in arc.points">{{point.pos}}</div>
+
+
+                    <div v-for="arc in eventEls.arcs" class="arc-group">
+                        <svg :style="{position: 'absolute', left: arc.left, bottom: arc.base}" :height="arc.top-arc.base" :width="arc.right-arc.left">
+                            <line v-for="i in arc.points.length" v-if="arc.points[i]" :x1="arc.points[i-1].relX - arc.left" :y1="arc.points[i-1].relY - arc.base" :x2="arc.points[i].relX - arc.left" :y2="arc.points[i].relY - arc.base" :style="{stroke: arc.color, strokeWidth: 3}" />
+                        </svg>
                     </div>
-                    <div v-for="event in eventEls.events" :id="event.idString" :class="{eventPos: true, hasImg: event.img, ext: event.group === 'ext', hardFocus: event.isNewPlaceholder || event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.netPos}px`, bottom: `calc( (100% - ${dividerHeight}rem) * ${event.pos/100} + ${dividerHeight}rem)`}">
+                    
+                    
+                    <div v-for="event in eventEls.events" :id="event.idString" :class="{eventPos: true, hasImg: event.img, ext: event.group === 'ext', hardFocus: event.isNewPlaceholder || event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
                         <div class="content">
                             <div class="card">
                                 <div v-if="event.img" class="image">
@@ -91,7 +97,7 @@
                                 <label for="loc">Location</label><br>
                                 <input id="loc" list="locList" v-model="newItem.loc">
                                 <datalist id="locList">
-                                    <option v-for="option in getOptionsFor(eventEls, 'loc')" :value="option"></option>
+                                    <option v-for="option in getOptionsFor(eventEls.events, 'loc')" :value="option"></option>
                                 </datalist>
                             </p>
                             <div v-if="addingType == 'event'">
@@ -181,7 +187,7 @@
                                 <label for="loc">Location</label><br>
                                 <input id="loc" list="locList" v-model="editEvent.loc">
                                 <datalist id="locList">
-                                    <option v-for="option in getOptionsFor(eventEls, 'loc')" :value="option"></option>
+                                    <option v-for="option in getOptionsFor(eventEls.events, 'loc')" :value="option"></option>
                                 </datalist>
                             </p>
                             <p>
