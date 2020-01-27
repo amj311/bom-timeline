@@ -385,12 +385,9 @@ var app = new Vue ({
 
             this.eraDuration = 1;
 
-            console.log(this.yearUnit * this.eraDuration, this.eraDuration)
-
             while(this.yearUnit * this.eraDuration < this.minEraWidth){
                 if (this.eraDuration%2 == 0 || this.eraDuration == 1) this.eraDuration *=5
                 else this.eraDuration *= 2;
-                console.log(this.yearUnit * this.eraDuration, this.eraDuration)
             }
 
             this.numEras = Math.ceil(range / this.eraDuration) + 2;
