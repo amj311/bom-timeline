@@ -185,5 +185,5 @@ app.put('/api/items/:id', async(req, res) => {
   }
 });
 
-let port = 4201;
+let port = 4200;
 app.listen(port, () => console.log('Server listening on port '+port));
