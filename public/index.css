@@ -1,0 +1,886 @@
+@import url('https://fonts.googleapis.com/css?family=Homemade+Apple|La+Belle+Aurore&display=swap');
+:root {
+    --blue: skyblue;
+    --primary: skyblue;
+    --secondary: #aaa;
+    --danger: rgb(255, 0, 0);
+}
+
+::-webkit-scrollbar {
+    width: 1em;
+    height: 1em;
+}
+::-webkit-scrollbar-thumb {
+    background: #fff;
+    border: 2px solid #efefef;
+    padding: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #fafafa;
+}
+::-webkit-scrollbar-track {
+    background: #efefef;
+    border: 1px solid #efefef;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    background: #fff;
+    width: 100%;
+    height: 100%;
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    font-size: 13px;
+}
+
+/* ALL Buttons */
+.btn {
+    border: .1em solid !important;
+    padding: .3em .4em;
+    border-radius: 0.3em;
+    user-select: none;
+    cursor: pointer;
+}
+
+.btn:hover, .btn:active {
+    box-shadow: 0 0 .2em #00000055;
+}
+
+.btn.btn-primary {
+    color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    background-color: var(--primary) !important;
+}
+
+.btn.btn-secondary {
+    color: var(--secondary) !important;
+    border-color: var(--secondary) !important;
+    background: var(--secondary) !important;
+}
+
+.btn.btn-danger {
+    color: var(--danger) !important;
+    border-color: var(--danger) !important;
+    background: var(--danger) !important;
+}
+
+.btn:not(.btn-outline) {
+    color: #fff !important;
+}
+
+.btn.btn-outline {
+    background: transparent !important;
+}
+
+
+
+
+#main-view {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height:100vh;
+    overflow: hidden;
+}
+.mobile div#main-view {
+    max-height: calc(100vh - 50px);
+}
+
+
+
+
+.profile-img {
+    width: 4rem;
+    height: 4rem;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 100vw;
+}
+
+div#person-summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+div#person-summary > * {
+    margin: 1em;
+}
+
+
+
+
+#timeline-wrapper {
+    position: relative;
+    width:  100%;
+    top: 0;
+    left: 0;
+    flex-grow: 1;
+    border: 1px solid #eee;
+    display: flex;
+    overflow: hidden;
+}
+
+.fs-inner-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+}
+
+#timeline-box {
+    overflow-x: auto;
+}
+
+#markers {
+    position: absolute;
+    top:0;
+    left:0;
+    display: flex;
+    height: 100%;
+ }
+
+.century-block {
+    position: relative;
+    align-items: flex-end;;
+    display: flex;
+    height: 100%;
+    background-image: linear-gradient(90deg, transparent, transparent, #00000008);
+}
+
+.era-label {
+    border-top: 1px solid #00000033;
+    width: 100%;
+    line-height: 2em;
+    font-size: 1.2em;
+    background: #0000000a;
+}
+div#flatLine {
+    position: absolute;
+    width: 100%;
+    border-top: 1px solid #ddd;
+}
+
+#gallery {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+}
+
+.eventPos {
+    color: #00000033;
+    position: absolute;
+    bottom: 0%;
+    border: 0.25em solid;
+    border-radius: 50%;
+    background: #fff;
+    width: 1em;
+    height: 1em;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+}
+.eventPos.hasImg {
+    z-index: 2;
+}
+.eventPos.ext {
+    bottom: 1rem !important;
+}
+
+.eventPos:hover, .eventPos.hardFocus, .eventPos.focus, .eventPos:target {
+    color: var(--blue);
+    z-index: 10;
+}
+.eventPos.hardFocus {
+    z-index: 11;
+}
+
+.focusOne .eventPos:not(.hardFocus) {
+    opacity: .5;
+    pointer-events: none;
+}
+
+.eventPos .content {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateY(-.5em);
+    display: none;  
+}
+
+.eventPos:hover .content, .eventPos.hardFocus .content, .eventPos.focus .content, .eventPos:target .content {
+    display: block;
+}
+
+
+.pointer-wrapper {
+    overflow-y: hidden;
+    height: 15px;
+    width: 2em;
+    position: absolute;
+    left: 50%;
+    bottom: -12px;
+    transform: translateX(-50%);
+}
+
+.pointer {
+    padding: .5em;
+    border-right: 2px solid;
+    border-bottom: 2px solid;
+    background: #fff;
+    transform: rotate(45deg) translateX(-50%);
+    transform-origin: left;
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+}
+
+
+
+.card {
+    border: 2px solid;
+    background: #fff;
+    position: absolute;
+    display: flex;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-50%);
+}
+
+.card > * {
+    margin: .5em;
+}
+
+.image {
+    position: relative;
+    color: #fff;
+}
+
+.hasImg .image {
+    background-image: url(/images/loading.gif);
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.image img {
+    color: transparent;
+    height: 7em;
+    max-height: 13vh;
+    width: auto;
+}
+
+.image .openTheater {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 1em;
+    height: 100%;
+    width: 100%;
+    padding: .3em;
+    text-align: right;
+    background: #0003;
+    cursor: pointer;
+}
+.image .openTheater::after {
+    content: '🔍';
+}
+.eventPos:hover .openTheater {
+    display: block;
+}
+.mobile .openTheater {
+    top: .2em;
+    right: .2em;
+    font-size: 1em;
+    line-height: 1.8em;
+    width: 1.8em;
+    height: auto;
+    text-align: center;
+    border-radius: .3em;
+    background: #00000055;
+}
+
+
+.eventPos .info {
+    color: #111;
+    width: max-content;
+    max-width: 20em;
+}
+
+.eventPos.hasImg .info {
+    display: none;
+}
+
+.eventPos:hover .info, .eventPos.hardFocus .info, .eventPos.focus .info, .eventPos:target .info {
+    display: block;
+}
+
+
+.eventPos.hasImg:hover .info {
+    display: block;
+}
+
+.card .info .title {
+    font-weight: bold;
+}
+
+.card .note {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-top: 1em;
+}
+.card .note::before {
+    content: 'Notes:';
+    font-style: italic;
+    margin-right: .5em;
+}
+.card .note > * {
+    display: inline-block;
+}
+
+.card .openRecord {
+    color: #000;
+    background: #fff;
+    width: 2em;
+    height: 2em;
+    line-height: 2em;
+    font-size: 1.2em;
+    text-align: center;
+    border: 1px solid #00000033;
+    cursor: pointer;
+    display: none;
+}
+.openRecord:hover {
+    background: #f3f3f3;
+}
+.eventPos:hover .openRecord {
+    display: block;
+}
+.openRecord::before {
+    content: '📜';
+}
+
+
+
+.card .editButton {
+    color: #000;
+    background: #fff;
+    width: 2em;
+    height: 2em;
+    line-height: 2em;
+    font-size: 1.2em;
+    text-align: center;
+    border: 1px solid #00000033;
+    cursor: pointer;
+    display: none;
+}
+.editButton:hover {
+    background: #f3f3f3;
+}
+.eventPos:hover .editButton {
+    display: block;
+}
+.editButton::before {
+    content: '📝';
+}
+
+
+
+
+div#timeline-wrapper #controls > div {
+    position: absolute;
+    padding: .5em;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+#addEventBox {
+    right: 0;
+    left: initial !important;
+}
+
+div#controls .btn {
+    color: initial !important;
+    background: #fff;
+    box-shadow: 0 0 3px;
+    margin: .5em;
+    text-align: center;
+    line-height: 1.5em;
+    z-index: 15;
+    border: none !important;
+}
+
+div#controls .btn.zoom {
+    width: 1.5em;
+    padding: 0;
+}
+
+div#zoomIn::before {
+    content: '+';
+}
+
+div#resetZoom::before {
+    content: '\00D7';
+}
+
+div#zoomOut::before {
+    content: '\2212';
+}
+
+
+/* Right Panel and Form */
+div#right_panel {
+    z-index: 15;
+    background: #fff;
+    box-shadow: 0 0 1em -0.5em;
+    width: 0;
+    overflow: hidden;
+    padding: 0;
+    transition: 200ms;
+    position: relative;
+}
+div#right_panel.open {
+    width: 100%;
+    max-width: 24em;
+}
+
+#right_panel .content-wrapper {
+    position: absolute;
+    width: 900px;
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 1.5em;
+    left: 0;
+    padding: 1em;
+    transition: 200ms;
+}
+#right_panel.open .content-wrapper {
+    width: 100%;
+}
+
+textarea#note {
+    min-width: 100%;
+    min-height: 7em;
+}
+
+
+/* Theater Styles */
+
+#theater *::-webkit-scrollbar {
+    width: .7em;
+}
+#theater *::-webkit-scrollbar-thumb {
+    background: #fff2;
+    border: none;
+}
+#theater *:hover::-webkit-scrollbar-thumb {
+    background: #fff5;
+}
+#theater *::-webkit-scrollbar-track {
+    background: transparent;
+    border: none;
+}
+
+
+
+
+#theater {
+    color: #fff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #00000088;
+    z-index: 50;
+    overflow: hidden;
+}
+#screen {
+    position: relative;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    padding: 2em;
+    filter: drop-shadow(0 0 5px #000000aa);
+}
+#theater.img #screen {
+    padding: 2em 2em 10em;
+}
+
+#imageBox {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: help;
+}
+#subs {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    transform: translateY(calc(100% - 7em));
+    background: #000000aa;
+    padding: 1.5em;
+    font-size: 1.1em;
+    line-height: 1.6;
+    transition: 200ms;
+}
+#subs.on, #subs:hover {
+    transform: translateY(0);
+}
+div#subs > div {
+    max-width: 55em;
+    margin: 0 auto;
+}
+#subs p.notes {
+    max-height: 30vh;
+    overflow-y: auto;
+    padding-right: 1em;
+}
+
+#subs .title {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+#exitTheater {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    font-size: 3em;
+    width: 100%;
+    height: 100%;
+    text-align: right;
+    padding-right: .2em;
+}
+
+/* Record Viewer */
+#recordBox {
+    width: 100%;
+    max-width: 45rem;
+    height: 100%;
+    overflow: auto;
+    padding: 0 1.5em;
+    position: relative;
+    margin: 0 auto;
+}
+
+.hand {
+    font-family: 'La Belle Aurore', cursive;
+    font-family: 'Homemade Apple', cursive;
+}
+
+div#records {
+    display: flex;
+    flex-direction: column;
+}
+
+#recordBox .record {
+    margin: 3em auto 0;
+    padding: 1.6rem;
+    line-height: 1.7;
+    border-radius: .2rem;
+    transition: 400ms;
+    background: #fff;
+    color: #222;
+    background-position: center;
+}
+
+#recordBox.hand .record {
+    font-style: italic;
+    word-spacing: .1em;
+    line-height: 1.7;
+    font-size: 1.1em;
+    text-align: justify;
+    color: #655640;
+    box-shadow: inset 0 0em 1em #a05900aa, 0 0 0 #000;
+    background: beige;
+    background-image: url('images/parch_bg.jpg');
+    background-size: cover;
+    background-position: center;
+    transform: scale(1) rotate(-.5deg);
+}
+
+#recordBox.hand .record:nth-child(2n) {
+    background-image: url('images/parch_bg_flip.jpg');
+}
+#recordBox .record.focus, #recordBox.hand .record:hover {
+    transform: scale(1.03) rotate(0);
+}
+#recordBox.hand .record.focus {
+    box-shadow: inset 0 0em 1em #a05900aa, 0 0 .5em #fff;
+}
+#recordBox:not(.hand) .title {
+    font-weight: bold;
+}
+
+
+div#toggleFont {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: .5rem;
+}
+
+div#toggleFont input {
+    display: none;
+}
+
+div#toggleFont label {
+    line-height: 2rem;
+    font-size: 1.4rem;
+    border: 1px solid;
+    border-radius: .3rem;
+    padding: .2rem .5em 0;
+    display: block;
+    cursor: pointer;
+    background: #00000033;
+    user-select: none;
+}
+.hand div#toggleFont label {
+    font-size: 1.3em;
+}
+
+
+
+
+/* Modal and Tooltips */
+.modal-wrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    overflow: hidden;
+    background: #00000033;
+    z-index: 60;
+}
+.modal-wrapper.on {
+    height: 100%;
+}
+
+.modal-wrapper > a {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+div.modal {
+    position: absolute;
+    bottom: 0;
+    transform: translateY(100%);
+    width: 100%;
+    background: #fff;
+    transition: 300ms;
+}
+
+.modal-wrapper.on div.modal {
+    transform: translateY(0)
+}
+
+.modal .title-bar {
+    border-bottom: 1px solid #eee;
+    display:flex;
+    align-items: center;
+    padding: 1rem;
+}
+.modal .title-bar a {
+    font-size: 2em;
+    line-height: .5em;
+    cursor: pointer;
+    text-decoration: none;
+}
+.modal .title-bar :first-child {
+    flex-grow: 1;
+    margin: 0;
+}
+
+.modal .modal-body {
+    max-height: 50vh;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.modal section {
+    padding: 1rem 1rem;
+    transition: 500ms;
+    background-color: transparent;
+    width: 100%;
+    line-height: 1.5;
+}
+
+.modal section.focus, .modal li.focus {
+    background-color: #dbf0ff;
+}
+.modal section > * {
+    max-width: 55rem;
+    margin: 0 auto;
+}
+.modal #sources ol {
+    list-style: lower-roman;
+}
+.modal #sources li {
+    transition: 500ms;
+    margin: .7em 0;
+}
+
+.modal #sources .title {
+    font-style: italic;
+}
+.modal #sources a {
+    word-break: break-all;
+}
+
+
+/* inline anchors */
+note[ft] {
+    color: inherit;
+    text-decoration: underline dotted;
+    text-decoration-skip-ink: none;
+    padding-right: .4em;
+}
+
+[ft] {
+    cursor: pointer;
+    display: inline;
+    position: relative;
+}
+
+[ft]:hover {
+    text-decoration-style: solid;
+}
+
+/* --- Footnote Flag --- */
+note[ft]:not(:hover)::after {
+    content: 'i';
+    vertical-align: super;
+    font-size: 1em;
+    line-height: initial;
+    font-weight: initial;
+    border-radius: 50%;
+    font-style: italic;
+    font-family: serif;
+    color: #149dff;
+    position: absolute;
+    right: 0;
+}
+.hand [ft]:not(:hover)::after {
+    top: -.2em;
+}
+[ft]:not(:hover)::before {
+    top: -.7em;
+    right: 0em;
+    font-size: 0em;
+    border: none;
+}
+
+/* --- Tooltip on hover --- */
+[ft]::before, [ft]:hover::after {
+    font-size: .8rem;
+    top: calc(100% + .8em);
+    right: 50%;
+    transform: translateX(50%);
+    z-index: 5;
+    position: absolute;
+    opacity: 0;
+}
+.hand [ft]::before, .hand [ft]:hover::after {
+    top: calc(100% + 0em);
+}
+
+[ft]::before {
+    content: "Click for more information.";    
+}
+
+[ft]::before {
+    opacity: 1;
+    position: absolute;
+    background-color: #fff;
+    border-radius: 0.5em;
+    border: 1px solid #00000022;
+    box-shadow: 0 0 0.3em #00000022;
+    color: initial;
+    padding: .5em .8em;
+    text-align: center;
+    font-family: 'Roboto',sans-serif;
+    font-style: initial;
+    font-weight: initial;
+    line-height: 1.3;
+    min-width: 8em;
+}
+
+[ft]:hover::after {
+    opacity: 1;
+    border: solid transparent;
+    filter: drop-shadow(0 -.1em 0em #00000011);
+    content: "";
+    height: 0;
+    width: 0;
+    pointer-events: none;
+    border-bottom-color: #fff;
+    border-width: .7em;
+    margin-top: -1.2em;
+}
+
+
+
+
+
+
+/* Notes */
+add, que {
+    color: #bbb;
+}
+#recordBox.hand add, #recordBox.hand que, #recordBox.hand stop {
+    display: none;
+}
+add[ft]::before {
+    content: "Added by the editor to increase readability."
+}
+que[ft]::before {
+    content: "Added by the editor to mark places of questionable transcription."
+}
+aft[ft]::before {
+    content: "Written in the margins of the original document."
+}
+
+s[ft]::before {
+    content: "A correction made on the original document."
+}
+
+
+/* Removals */
+#recordBox:not(.hand) s, .modal-body s {
+    color: red;
+}
+
+/* Afterthoughts */
+#recordBox:not(.hand) aft {
+    color: inherit;
+}
+
+
+
+/* 
+@media only screen and (max-width: 600px) {
+    :root, body {
+        font-size: .95em;
+    }
+} */

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Immerse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css" type="text/css" />
+</head>
+<body>
+    <div id="app"  :class="{ mobile: isMobile, focusOne: addingNew || editingEvent }">
+
+        <div id="main-view">
+
+            <div id="person-summary">
+                <h1>Boom of Mormon Events</h1>
+            </div>
+
+            <div id="timeline-wrapper">
+                <div id="timeline-box" class="fs-inner-wrapper" onwheel="app.handleTimelineScroll(event)">
+                <div id="markers">
+                    <div id="flatLine" :style="{bottom: `${dividerHeight}rem`}"></div>
+                    <div v-for="era in eras" class="century-block" :id="era" :style="{width: `${eraWidth}px`}"><div class="era-label">{{era}}</div></div>
+                </div>
+
+                <div id="gallery">
+                    <div v-for="arc in eventEls.arcs">{{arc.name}}
+                        <div v-for="point in arc.points">{{point.pos}}</div>
+                    </div>
+                    <div v-for="event in eventEls.events" :id="event.idString" :class="{eventPos: true, hasImg: event.img, ext: event.group === 'ext', hardFocus: event.isNewPlaceholder || event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.netPos}px`, bottom: `calc( (100% - ${dividerHeight}rem) * ${event.pos/100} + ${dividerHeight}rem)`}">
+                        <div class="content">
+                            <div class="card">
+                                <div v-if="event.img" class="image">
+                                    <img :src="event.img" :alt="event.name">
+                                    <div class="openTheater" @click="setTheaterImage(event.elId)"></div>
+                                </div>
+                                
+                                <div class="info">
+                                    <div class="title">{{event.name}}</div>
+                                    <div class="date" v-if="!event.img">{{event.dateStr}}</div>
+                                    <div class="details">    
+                                            <div class="place">{{event.loc}}</div>
+                                            <div class="note" v-if="event.note" v-html="event.note"></div>
+                                    </div>
+                                </div>
+                                
+                                <div v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"></div>
+                                <div v-if="isAdmin" class="editButton" @click="openEditForm(event)"></div>
+                            </div>
+    
+                            <div class="pointer-wrapper"><div class="pointer"></div></div>
+    
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        
+            <div id="controls">
+                <div id="zoomBox">
+                    <div id="zoomIn" @click="handleButtonZoomIn()" class="btn zoom"></div>
+                    <div id="resetZoom" v-if="yearUnit > minYearUnit" @click="resetZoom()" class="btn zoom"></div>
+                    <div id="zoomOut" @click="handleButtonZoomOut()" class="btn zoom"></div>        
+                </div>
+                <div id="addEventBox">
+                    <div v-if="isAdmin" id="addEvent" @click="openAddForm" class="btn">+ Add Event</div>
+                </div>
+            </div>
+
+
+            <div id="right_panel" :class="{open: addingNew || editingEvent}">
+                <div class="content-wrapper">
+    
+                    <div v-if="addingNew" id="new_event">
+
+                        <div>
+                            Adding type:
+                            <select v-model="addingType">
+                                <option value="event">Event</option>
+                                <option value="arc">Arc</option>
+                            </select>
+                        </div>
+
+                        <form @submit.prevent="addItem(newItem)">
+                            
+                            <h2 v-if="addingType == 'event'">New Event</h2>
+                            <h2 v-if="addingType == 'arc'">New Arc</h2>
+                            <p>
+                                <label for="name">Name</label><br>
+                                <input id="name" v-model="newItem.name">
+                            </p>
+                            <p v-if="addingType == 'event'">
+                                <label for="loc">Location</label><br>
+                                <input id="loc" list="locList" v-model="newItem.loc">
+                                <datalist id="locList">
+                                    <option v-for="option in getOptionsFor(eventEls, 'loc')" :value="option"></option>
+                                </datalist>
+                            </p>
+                            <div v-if="addingType == 'event'">
+                                <p>
+                                    <label for="img">Image URL</label><br>
+                                    <input id="img" v-model="newItem.img">
+                                </p>
+                                <p v-if="newItem.img">
+                                    <label for="tag">Image Tag</label><br>
+                                    <input id="tag" v-model="newItem.elId">
+                                </p>
+                                <p>
+                                    <label for="recId">Link to Record</label><br>
+                                    <input id="recId" list="recIdList" v-model="newItem.recId">
+                                    <datalist id="recIdList">
+                                        <option v-for="option in getOptionsFor(records, 'elId')" :value="option"></option>
+                                    </datalist>
+                                </p>
+                                <p>
+                                    <label for="year">Year</label><br>
+                                    <input id="year" v-model="newItem.year" @change="handleChangeAddYear" type="number">        
+                                </p>
+                                <div style="display:flex">
+                                    <p>
+                                        <label for="month">Month</label><br>
+                                        <select id="month" v-model="newItem.month">
+                                            <option v-for="i in MONTH.length" :value="i-1">{{MONTH[i-1]}}</option>
+                                        </select>
+                                    </p>
+                                    <p>
+                                        <label for="day">Day</label><br>
+                                        <input id="day" v-model="newItem.day" type="number" min="1" max="31">
+                                    </p>
+                                </div>
+                                <p>
+                                    <label for="group">List</label><br>
+                                    <select id="group" v-model="newItem.group">
+                                        <option value="int">Main Events</option>
+                                        <option value="ext">Exterior Events</option>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label for="arcId">Arc</label><br>
+                                    <select id="arcId" v-model="newItem.arcId">
+                                        <option :value="null">No arc</option>
+                                        <option v-for="arc in arcs" :value="arc._id" :style="{backgroundColor: arc.color, color: '#fff'}">{{arc.name}}</option>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label for="pos">Position</label><br>
+                                    <input id="pos" v-model="newItem.pos" type="range" min="6" max="90">
+                                </p>
+    
+                            </div>
+
+                            <div v-if="addingType == 'arc'">
+                                <p>
+                                    <label for="color">Color</label><br>
+                                    <input type="color" id="color" v-model="newItem.color" />
+                                </p>
+                            </div>
+                            
+                            <p>
+                                <label for="note">Notes</label><br>
+                                <textarea id="note" v-model="newItem.note"></textarea>
+                            </p>
+
+                            <p>
+                                <input type="submit" class="btn btn-primary">
+                                <input type="reset" @click="cancelAddForm" class="btn btn-secondary btn-outline" value="Cancel">
+                            </p>
+                        </form>
+                    </div>
+
+
+
+
+    
+                    <div v-if="editingEvent" id="edit_event">
+                        <h2>Edit Event</h2>
+                        <form @submit.prevent="submitEdit">
+                            <p>
+                                <label for="name">Name</label><br>
+                                <input id="name" v-model="editEvent.name">
+                            </p>
+                            <p>
+                                <label for="loc">Location</label><br>
+                                <input id="loc" list="locList" v-model="editEvent.loc">
+                                <datalist id="locList">
+                                    <option v-for="option in getOptionsFor(eventEls, 'loc')" :value="option"></option>
+                                </datalist>
+                            </p>
+                            <p>
+                                <label for="img">Image URL</label><br>
+                                <input id="img" v-model="editEvent.img">
+                            </p>
+                            <p v-if="editEvent.img">
+                                <label for="tag">Image Tag</label><br>
+                                <input id="tag" v-model="editEvent.elId">
+                            </p>
+                            <p>
+                                <label for="recId">Link to Record</label><br>
+                                <input id="recId" list="recIdList" v-model="editEvent.recId">
+                                <datalist id="recIdList">
+                                    <option v-for="option in getOptionsFor(records, 'elId')" :value="option"></option>
+                                </datalist>
+                            </p>
+                            <p>
+                                <label for="year">Year</label><br>
+                                <input id="year" v-model="editEvent.year" @change="setZoom" type="number">        
+                            </p>
+                            <div style="display:flex">
+                                <p>
+                                    <label for="month">Month</label><br>
+                                    <select id="month" v-model="editEvent.month">
+                                        <option v-for="i in MONTH.length" :value="i-1">{{MONTH[i-1]}}</option>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label for="day">Day</label><br>
+                                    <input id="day" v-model="editEvent.day" type="number" min="1" max="31">
+                                </p>
+                            </div>
+                            <p>
+                                <label for="group">List</label><br>
+                                <select id="group" v-model="editEvent.group">
+                                    <option value="int">Main Events</option>
+                                    <option value="ext">Exterior Events</option>
+                                </select>
+                            </p>
+                            <p>
+                                <label for="arcId">Arc</label><br>
+                                <select id="arcId" v-model="editEvent.arcId">
+                                    <option :value="null">No arc</option>
+                                    <option v-for="arc in arcs" :value="arc._id" :style="{backgroundColor: arc.color, color: '#fff'}">{{arc.name}}</option>
+                                </select>
+                            </p>
+                            <p>
+                                <label for="note">Notes</label><br>
+                                <textarea id="note" v-model="editEvent.note"></textarea>
+                            </p>
+                            <p>
+                                <label for="pos">Position</label><br>
+                                <input id="pos" v-model="editEvent.pos" type="range" min="6" max="90">
+                            </p>
+                            <p>
+                                <input type="submit" class="btn btn-primary">
+                                <input type="button" @click="cancelEditForm" class="btn btn-secondary btn-outline" value="Cancel">
+                                <input type="button" @click="deleteEvent(editEvent)" class="btn btn-danger btn-outline" value="Delete">
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+    
+        </div>
+
+        </div>
+
+        <div v-show="theaterOn" id="theater" :class="`${theaterMode}`">
+            <div id="screen">
+                
+                <div id="exitTheater" @click="closeTheater">&times;</div>
+
+                <div id="imageBox" v-if="theaterMode == 'img'" :style="{backgroundImage: `url(${theaterData.img})`}"  @click="toggleSubs"></div>
+                
+                <div id="recordBox" v-show="theaterMode == 'rec'" :class="{hand: handFont}">
+                    <div id="records">
+
+                        <div v-for="rec in records" class="record" :style="{order: rec.order}" :id="`rec_${rec.elId}`">
+                            <div class="title" v-html="rec.title"></div>
+                            <div class="body" v-html="rec.body"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="toggleFont"  v-show="theaterMode == 'rec'" :class="{hand: handFont}"><label for="handFont">Aa</label><input type="checkbox" v-model="handFont" id="handFont"></div>
+
+            </div>
+            <div id="subs" v-if="theaterData.hasSubs" :class="{on: subsOn}">
+                <div v-if="theaterMode == 'img'">
+                    <div class="title">{{theaterData.name}}</div>
+                    <div class="date" v-if="!theaterData.img">{{theaterData.dateStr}}</div>
+                    <div class="place">{{theaterData.loc}}</div>
+                    <p class="notes" v-show="theaterData.note" v-html="theaterData.note"></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-wrapper" :class="{on: showModal}">
+            <a @click="closeNote"></a>
+            <div class="modal">
+                <div class="title-bar">
+                    <h2>Project Notes</h2>
+                    <a @click="closeNote">&times;</a>
+                </div>
+                <div class="modal-body">
+                    <section v-for="note in notes" :id="`note_${note.elId}`" :style="{order: note.order}" >
+                        <h3>{{note.title || 'Footnote'}}</h3>
+                        <div v-html="note.body"></div>
+                    </section>
+                    <section id="sources">
+                        <h3>References and Further Reading</h3>
+                        <ol>
+                            <li v-for="src in sources" :id="`note_${src.elId}`" class="source-info">
+                                <span v-if="src.who" class="who">{{src.who}}.</span>
+                                <span v-if="src.date" class="date">({{src.date}})</span>
+                                <span v-if="src.title" class="title"><a :href="src.href">{{src.title}}</a></span>
+                                <span v-if="src.pub" class="pub">{{src.pub}}:</span>
+                                <span v-if="src.cont" class="cont">{{src.cont}},</span>
+                                <span v-if="src.cont_date" class="cont_date">{{src.cont_date}}.</span>
+                            </li>
+                        </ol>
+                    </section>
+                </div>
+            </div>
+                
+        </div>
+
+    </div>
+
+    <script src="notesData.js"></script>
+    <script src="recordsData.js"></script>
+    <script src="sourcesData.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="gallery.js"></script> 
+    <script src="index.js"></script>
+
+</body>
+</html>
