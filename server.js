@@ -108,6 +108,7 @@ const timelineObjectSchema = new mongoose.Schema({
   period: String,
   note: String,
   type: String,
+  eventType: String,
   recId: String,
   elId: String,
   group: String,

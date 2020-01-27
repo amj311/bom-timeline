@@ -34,8 +34,11 @@
                     </div>
                     
                     
-                    <div v-for="event in eventEls.events" :id="event.idString" :class="{eventPos: true, hasImg: event.img, ext: event.group === 'ext', hardFocus: event.isNewPlaceholder || event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
+                    <div v-for="event in eventEls.events" :id="event.idString" :class="{anchor: event.eventType == 'anchor', eventPos: true, hasImg: event.img, ext: event.group === 'ext', hardFocus: event.isNewPlaceholder || event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
                         <div class="content">
+
+                            <div class="line" :style="{height: event.relY+'px'}"><div class="date-tag">{{event.dateStr}}</div></div>
+
                             <div class="card">
                                 <div v-if="event.img" class="image">
                                     <img :src="event.img" :alt="event.name">
@@ -92,18 +95,28 @@
                             
                             <h2 v-if="addingType == 'event'">New Event</h2>
                             <h2 v-if="addingType == 'arc'">New Arc</h2>
+
                             <p>
                                 <label for="name">Name</label><br>
                                 <input id="name" v-model="newItem.name">
                             </p>
-                            <p v-if="addingType == 'event'">
-                                <label for="loc">Location</label><br>
-                                <input id="loc" list="locList" v-model="newItem.loc">
-                                <datalist id="locList">
-                                    <option v-for="option in getOptionsFor(eventEls.events, 'loc')" :value="option"></option>
-                                </datalist>
-                            </p>
                             <div v-if="addingType == 'event'">
+                                <div>
+                                    Type of Event:
+                                    <select v-model="newItem.eventType">
+                                        <option value="normal">Normal</option>
+                                        <option value="anchor">Anchor</option>
+                                    </select>
+                                </div>
+
+                                <p>
+                                    <label for="loc">Location</label><br>
+                                    <input id="loc" list="locList" v-model="newItem.loc">
+                                    <datalist id="locList">
+                                        <option v-for="option in getOptionsFor(eventEls.events, 'loc')" :value="option"></option>
+                                    </datalist>
+                                </p>
+    
                                 <p>
                                     <label for="img">Image URL</label><br>
                                     <input id="img" v-model="newItem.img">

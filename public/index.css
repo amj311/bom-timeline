@@ -151,7 +151,8 @@ div#person-summary > * {
     align-items: flex-end;;
     display: flex;
     height: 100%;
-    background-image: linear-gradient(90deg, transparent,#00000003);
+    background-image: linear-gradient(90deg, transparent,#00000004);
+    border-right: 1px solid #0001;
 }
 
 .era-label {
@@ -241,6 +242,22 @@ div#flatLine {
     left: 50%;
 }
 
+
+.date-tag {
+    position: absolute;
+    bottom: 0em;
+    left: 0;
+    width: max-content;
+    background: #f3f3f3;
+    padding: .2em;
+    padding-bottom: 0;
+}
+
+.line {
+    position: absolute;
+    border-left: 1px solid;
+    box-sizing: content-box;
+}
 
 
 .card {

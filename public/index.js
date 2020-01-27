@@ -88,9 +88,11 @@ var app = new Vue ({
             this.setZoom()
         },
         addingType: function() {
+            // adding an event
             if (this.addingType === "event") {
                 this.newItem = {
                     "type":"event",
+                    eventType: 'normal',
                     "name": "New Event",
                     "artist": null,
                     "day": null,
@@ -113,7 +115,6 @@ var app = new Vue ({
             
             if (this.addingType === "arc") {
                 this.newItem = {
-                    "type":"arc",
                     "name": "New Arc",
                     "color": "#bbb",
                     "note": "",
@@ -321,7 +322,7 @@ var app = new Vue ({
             this.dateMin = Math.min.apply(null, years)
             let range = this.dateMax - this.dateMin;
 
-            this.minYearUnit = ((viewWidth) / (range))
+            this.minYearUnit = ((viewWidth - 50) / (range))
             this.yearUnit = this.minYearUnit;
 
             this.checkEraDuration()
