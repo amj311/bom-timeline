@@ -270,12 +270,26 @@ div#flatLine {
     display: flex;
     left: 0;
     bottom: 0;
+    width: max-content;
+}
+.eventPos .card {
     transform: translateX(-50%);
+}
+.arc-group .card {
+    visibility: hidden;
+    z-index: 15;
+    transform: translateY(calc(100% + .5em));
+}
+.arc-group svg:hover + .card {
+    visibility: visible;
 }
 
 .card > * {
     margin: .5em;
 }
+
+
+
 
 .image {
     position: relative;
@@ -327,10 +341,12 @@ div#flatLine {
 }
 
 
+.card .info {
+    max-width: 18em;
+}
+
 .eventPos .info {
     color: #111;
-    width: max-content;
-    max-width: 20em;
 }
 
 .eventPos.hasImg .info {
@@ -410,7 +426,7 @@ div#flatLine {
 .editButton:hover {
     background: #f3f3f3;
 }
-.eventPos:hover .editButton {
+.card:hover .editButton {
     display: block;
 }
 .editButton::before {

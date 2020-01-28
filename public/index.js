@@ -41,7 +41,7 @@ var app = new Vue ({
         tempItem: {},
 
         addingType: "",
-        modifyingTemp: false,
+        addingItem: false,
         newEventDefault: {
             "type":"event",
             "name": "New Artwork",
@@ -58,8 +58,8 @@ var app = new Vue ({
             "recId":null,
             isNewPlaceholder: true,
         },
-        editingEvent: false,
-        editEventIdx: null,
+        editingItem: false,
+        tempItemIdx: null,
         editOriginal: {},
         
         addingArc: false,
@@ -90,44 +90,6 @@ var app = new Vue ({
         items: function() {
             this.setZoom()
         },
-        addingType: function() {
-            // adding an event
-            if (this.addingType === "event") {
-                this.tempItem = {
-                    "type":"event",
-                    eventType: 'normal',
-                    "name": "New Event",
-                    "artist": null,
-                    "day": null,
-                    "month": null,
-                    "year": Math.floor((document.querySelector('#timeline-box').scrollLeft + 50) / this.yearUnit + this.startYear),
-                    "displayYear": false,
-                    "pos": 50,
-                    "img": null,
-                    "period": null,
-                    "id": 2,
-                    "group":"int",
-                    "recId":null,
-                    "note": "",
-                    "arcId": null,
-                    isNewPlaceholder: true,
-                };
-                this.items.push(this.tempItem)
-            }
-            else this.items = this.items.filter(p => !p.isNewPlaceholder)
-            
-            if (this.addingType === "arc") {
-                this.tempItem = {
-                    "name": "New Arc",
-                    "color": "#bbb",
-                    "note": "",
-                    isNewPlaceholder: true,
-                };
-                this.items.push(this.tempItem)
-            }
-            else this.arcs = this.arcs.filter(p => !p.isNewPlaceholder)
-        },
-
         yearUnit: function() {
             this.checkEraDuration()
         }
@@ -147,7 +109,10 @@ var app = new Vue ({
             else alert('Sorry, wrong password.')
         },
         logoutAdmin() {
-            if(confirm('Are you sure you want to log out?')) localStorage.removeItem('adminKey')
+            if(confirm('Are you sure you want to log out?')) {
+                localStorage.removeItem('adminKey')
+                this.isAdmin = false;
+            }
         },
 
 
@@ -186,14 +151,18 @@ var app = new Vue ({
         },
 
 
-        async deleteEvent(event) {
-            if (confirm(`Are you sure you want to delete '${event.name}?'`))
+        async deleteItem(item) {
+            if (confirm(`Are you sure you want to delete ${item.type} '${item.name}?'`))
             {
                 try {
                     // console.log("Made it into deleteItem");
-                    let response = axios.delete("/api/items/" + event._id);
-                    this.findItem = null;
-                    this.getEvents();
+                    let url;
+                    if (item.type === 'event') url = "/api/items/";
+                    if (item.type === 'arc') url = "/api/arcs/";
+                    let response = axios.delete(url + item._id);
+                    
+                    if (item.type === 'event') this.getEvents();
+                    if (item.type === 'arc') this.getArcs();
                     this.closeEditForm();
                     return true;
                 }
@@ -202,14 +171,50 @@ var app = new Vue ({
                 }
             }
         },
-        
-        openAddForm() {
-            if (!this.editingEvent && !this.modifyingTemp) {
-                this.addingType = 'event';
-                
-                this.modifyingTemp = true;
-            }
-        },
+
+        openAddForm(type) {
+            if (!this.editingItem && !this.addingItem) {
+
+                // default new event
+                if (type === "event") {
+                    this.tempItem = {
+                        "type": "event",
+                        eventType: 'normal',
+                        "name": "New Event",
+                        "artist": null,
+                        "day": null,
+                        "month": null,
+                        "year": Math.floor((document.querySelector('#timeline-box').scrollLeft + 50) / this.yearUnit + this.startYear),
+                        "displayYear": false,
+                        "pos": 50,
+                        "img": null,
+                        "period": null,
+                        "id": 2,
+                        "group": "int",
+                        "recId": null,
+                        "note": "",
+                        "arcId": null,
+                        isNewPlaceholder: true,
+                    };
+                    this.items.push(this.tempItem)
+                }
+
+                // default new arc
+                if (type === "arc") {
+                    this.tempItem = {
+                        "type": "arc",
+                        "name": "New Arc",
+                        "color": "#bbb",
+                        "note": "",
+                        isNewPlaceholder: true,
+                    };
+                    this.items.push(this.tempItem)
+                }
+
+
+            this.addingItem = true;
+        }
+    },
 
         handleChangeAddYear(){
             this.setZoom()
@@ -218,19 +223,25 @@ var app = new Vue ({
 
 
         handleSubmitForm(){
-            if (this.modifyingTemp) this.addItem(this.tempItem)
-            if (this.editingEvent) this.submitEdit()
+            if (this.addingItem) this.addItem(this.tempItem)
+            if (this.editingItem) this.submitEdit(this.tempItem)
+        },
+
+        handleCancelForm(){
+            if (this.addingItem) this.cancelAddForm()
+            if (this.editingItem) this.cancelEditForm()
         },
 
         async addItem(item) {
+            console.log(item, this.tempItem)
             let urlBase;
-            if (this.addingType === 'event') urlBase = '/api/items';
-            if (this.addingType === 'arc') urlBase = '/api/arcs';
+            if (item.type === 'event') urlBase = '/api/items';
+            if (item.type === 'arc') urlBase = '/api/arcs';
             try {
                 let res = await axios.post(urlBase, item)
                 console.log(res)
-                if (this.addingType === 'event') this.getEvents()
-                if (this.addingType === 'arc') this.getArcs()
+                if (item.type === 'event') this.getEvents()
+                if (item.type === 'arc') this.getArcs()
                 this.closeAddForm();
             }
             catch (error) {
@@ -239,46 +250,63 @@ var app = new Vue ({
         },
 
         cancelAddForm() {
-            this.addingType = "";
+            this.items = this.items.filter(p => !p.isNewPlaceholder)
+            this.arcs = this.arcs.filter(a => !a.isNewPlaceholder)
+
             this.closeAddForm();
         },
         
         closeAddForm() {
-            if (this.modifyingTemp) {
-                this.modifyingTemp = false;
+            if (this.addingItem) {
+                this.addingItem = false;
             }
         },
 
-        openEditForm(event) {
-            if (!this.editingEvent && !this.modifyingTemp) {
-                this.editEventIdx = this.items.lastIndexOf(event)
-                Object.assign(this.editOriginal, event)
-                this.editEvent.hasFocus = true;
-                this.scrollToEl(document.getElementById(event.idString))
-                this.editingEvent = true;
+        openEditForm(item) {
+            if (!this.editingItem && !this.addingItem) {
+                this.tempItem = item;
+
+                this.tempItemIdx = this.items.lastIndexOf(item) 
+                Object.assign(this.editOriginal, item)
+
+                item.hasFocus = true;
+
+                this.editingItem = true;
             }
         },
-        async submitEdit() {
+
+        async submitEdit(item) {
+            let url;
+            if (item.type === 'event') url = "/api/items/";
+            if (item.type === 'arc') url = "/api/arcs/";
+
             try {
-                let res = await axios.put('/api/items/' + this.editEvent._id, this.editEvent)
+                let res = await axios.put(url + item._id, item)
                 console.log(res.data)
-                this.getEvents()
+
+                if (item.type === 'event') this.getEvents();
+                if (item.type === 'arc') this.getArcs();
+
                 this.closeEditForm();
             }
             catch (error) {
                 console.log(error)
             }
         },
+
         cancelEditForm() {
-            if (this.editingEvent) {
-                Object.assign(this.editEvent, this.editOriginal)
+            if (this.editingItem) {
+                Object.assign(this.tempItem, this.editOriginal)
                 this.closeEditForm()
             }
         },
+
         closeEditForm() {
-            if (this.editingEvent) {
-                this.editEvent.hasFocus = false;
-                this.editingEvent = false;
+            if (this.editingItem) {
+                this.tempItem.hasFocus = false;
+                this.tempItem = false;
+
+                this.editingItem = false;
             }
         },
 
@@ -296,7 +324,7 @@ var app = new Vue ({
 
         setTheaterImage(shortId) {
             this.theaterMode = 'img'
-            let obj = this.findInListById(this.eventEls.events, shortId)
+            let obj = this.findInListById(this.timelineEls.events, shortId)
             this.theaterData = obj;
 
             this.theaterData.hasSubs = true;
@@ -321,7 +349,7 @@ var app = new Vue ({
         },
         scrollToEl(el){
             el.classList.add('focus')
-            el.scrollIntoView({behavior: "smooth", block: "start", inline: "start"})
+            el.scrollIntoView({behavior: "smooth", block: "center", inline: "center"})
             setTimeout( function(){ el.classList.remove('focus') }, 2000)
         },
 
@@ -343,7 +371,7 @@ var app = new Vue ({
         setZoom() {
             let viewWidth = document.getElementById('timeline-box').offsetWidth;
 
-            let years = this.eventEls.events.map(e => e.year)
+            let years = this.timelineEls.events.map(e => e.year)
             this.dateMax = Math.max.apply(null, years)
             this.dateMin = Math.min.apply(null, years)
             let range = this.dateMax - this.dateMin;
@@ -456,12 +484,16 @@ var app = new Vue ({
             return this.yearUnit*this.eraDuration;
         },
 
-        eventEls() {
+        timelineEls() {
             this.arcs.forEach(a => a.points = [])
 
             let events = []
 
             this.items.filter( i => i.type === 'event' ).forEach ( event => {
+                // if (event.eventType != 'anchor') event.eventType = "normal";
+                // this.tempItem.type = "event";
+                // this.addItem(event)
+
                 let yearPos = (event.year - this.startYear) * this.yearUnit;
                 let monthPos = event.month * this.yearUnit / 12;
                 let dayPos = event.day * this.yearUnit / (12 * 31) 
@@ -490,6 +522,7 @@ var app = new Vue ({
             })
 
             this.arcs.forEach(arc => {
+                arc.type = 'arc';
                 arc.points.sort((a, b) => a.relX - b.relX);
                 arc.left = arc.points.reduce( (min,p) => Math.min(p.relX, min), Infinity ) - 5;
                 arc.base = arc.points.reduce( (min,p) => Math.min(p.relY, min), Infinity ) - 5;
@@ -507,9 +540,6 @@ var app = new Vue ({
         //     return this.items.filter( i => i.type === 'record' )
         // },
 
-        editEvent() {
-            return this.items[this.editEventIdx]
-        }
     }
 })
 

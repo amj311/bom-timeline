@@ -77,9 +77,23 @@ app.post('/api/arcs', async(req, res) => {
 app.put('/api/arcs/:id', async(req, res) => {
   try {
     console.log("Edit Arc");
-    var item = await TimeObject.findByIdAndUpdate({ _id: req.params.id }, req.body);
+    var item = await Arc.findByIdAndUpdate({ _id: req.body._id }, req.body);
     console.log(item);
     res.send(item)
+  }
+  catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
+
+
+// Delete an arc
+app.delete('/api/arcs/:id', async(req, res) => {
+  try {
+    // console.log("Made it into delete");
+    let result = await Arc.deleteOne({ _id: req.params.id });
+    res.send(result);
   }
   catch (error) {
     console.log(error);
@@ -108,7 +122,10 @@ const timelineObjectSchema = new mongoose.Schema({
   period: String,
   note: String,
   type: String,
-  eventType: String,
+  eventType: {
+    type: String,
+    default: 'noraml',
+  },
   recId: String,
   elId: String,
   group: String,
