@@ -10,10 +10,11 @@ var app = new Vue ({
     el: '#app',
 
     data: {
-        isAdmin: true,
+        isAdmin: false,
+        adminKey: 'immerseBOM',
         items: [],
         arcs: [],
-        minEraWidth: 100,
+        minEraWidth: 80,
         dateMin: null,
         dateMax: null,
         startYear: null,
@@ -37,10 +38,10 @@ var app = new Vue ({
         modalData: {},
 
 
-        newItem: {},
+        tempItem: {},
 
         addingType: "",
-        addingNew: false,
+        modifyingTemp: false,
         newEventDefault: {
             "type":"event",
             "name": "New Artwork",
@@ -74,6 +75,8 @@ var app = new Vue ({
     },
 
     async created() {
+        this.checkAdmin()
+
         this.getEvents()
         this.getArcs()
         this.getNotes()
@@ -90,7 +93,7 @@ var app = new Vue ({
         addingType: function() {
             // adding an event
             if (this.addingType === "event") {
-                this.newItem = {
+                this.tempItem = {
                     "type":"event",
                     eventType: 'normal',
                     "name": "New Event",
@@ -109,18 +112,18 @@ var app = new Vue ({
                     "arcId": null,
                     isNewPlaceholder: true,
                 };
-                this.items.push(this.newItem)
+                this.items.push(this.tempItem)
             }
             else this.items = this.items.filter(p => !p.isNewPlaceholder)
             
             if (this.addingType === "arc") {
-                this.newItem = {
+                this.tempItem = {
                     "name": "New Arc",
                     "color": "#bbb",
                     "note": "",
                     isNewPlaceholder: true,
                 };
-                this.items.push(this.newItem)
+                this.items.push(this.tempItem)
             }
             else this.arcs = this.arcs.filter(p => !p.isNewPlaceholder)
         },
@@ -131,6 +134,23 @@ var app = new Vue ({
     },
 
     methods: {
+        checkAdmin() {
+            if (localStorage.getItem('adminKey') === this.adminKey) {
+                this.isAdmin = true;
+            }
+        },
+        loginAdmin(){
+            if (prompt('What is the password?') === this.adminKey) {
+                localStorage.setItem('adminKey', this.adminKey)
+                this.isAdmin = true;
+            }
+            else alert('Sorry, wrong password.')
+        },
+        logoutAdmin() {
+            if(confirm('Are you sure you want to log out?')) localStorage.removeItem('adminKey')
+        },
+
+
         async getEvents() {
             try {
                 let response = await axios.get("/api/items");
@@ -184,16 +204,22 @@ var app = new Vue ({
         },
         
         openAddForm() {
-            if (!this.editingEvent && !this.addingNew) {
+            if (!this.editingEvent && !this.modifyingTemp) {
                 this.addingType = 'event';
                 
-                this.addingNew = true;
+                this.modifyingTemp = true;
             }
         },
 
         handleChangeAddYear(){
             this.setZoom()
             // this.scrollToEl(document.querySelector('.eventPos.hardFocus')) 
+        },
+
+
+        handleSubmitForm(){
+            if (this.modifyingTemp) this.addItem(this.tempItem)
+            if (this.editingEvent) this.submitEdit()
         },
 
         async addItem(item) {
@@ -218,13 +244,13 @@ var app = new Vue ({
         },
         
         closeAddForm() {
-            if (this.addingNew) {
-                this.addingNew = false;
+            if (this.modifyingTemp) {
+                this.modifyingTemp = false;
             }
         },
 
         openEditForm(event) {
-            if (!this.editingEvent && !this.addingNew && !this.addingArc) {
+            if (!this.editingEvent && !this.modifyingTemp) {
                 this.editEventIdx = this.items.lastIndexOf(event)
                 Object.assign(this.editOriginal, event)
                 this.editEvent.hasFocus = true;

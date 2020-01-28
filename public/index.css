@@ -182,10 +182,13 @@ div#flatLine {
     border: 0.25em solid;
     border-radius: 50%;
     background: #fff;
-    width: 1em;
-    height: 1em;
-    z-index: 1;
+    padding:.25em;
+    z-index: 2;
     transform: translate(-50%, 50%);
+}
+.eventPos.anchor {
+    z-index: 1;
+    padding: 0;
 }
 .eventPos.hasImg {
     z-index: 2;
@@ -343,6 +346,11 @@ div#flatLine {
     display: block;
 }
 
+.eventPos.anchor .details {
+    display: none;
+}
+
+
 .card .info .title {
     font-weight: bold;
 }
@@ -366,10 +374,10 @@ div#flatLine {
 .card .openRecord {
     color: #000;
     background: #fff;
-    width: 2em;
-    height: 2em;
-    line-height: 2em;
-    font-size: 1.2em;
+    width: 1.8em;
+    height: 1.8em;
+    line-height: 1.8em;
+    font-size: .9em;
     text-align: center;
     border: 1px solid #00000033;
     cursor: pointer;
@@ -390,10 +398,10 @@ div#flatLine {
 .card .editButton {
     color: #000;
     background: #fff;
-    width: 2em;
-    height: 2em;
-    line-height: 2em;
-    font-size: 1.2em;
+    width: 1.8em;
+    height: 1.8em;
+    line-height: 1.8em;
+    font-size: .9em;
     text-align: center;
     border: 1px solid #00000033;
     cursor: pointer;

@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="index.css" type="text/css" />
 </head>
 <body>
-    <div id="app"  :class="{ mobile: isMobile, focusOne: addingNew || editingEvent }">
+    <div id="app"  :class="{ mobile: isMobile, focusOne: modifyingTemp || editingEvent }">
 
         <div id="main-view">
 
@@ -21,11 +21,11 @@
                     <div v-for="era in eras" class="century-block" :id="era" :style="{width: `${eraWidth}px`}"><div class="era-label">
                         <span v-if="era < 0">{{-era}} BC</span>
                         <span v-else>{{era}} AD</span>
-               </div></div>
+                    </div></div>
                 </div>
 
-                <div id="gallery">
 
+                <div id="gallery">
 
                     <div v-for="arc in eventEls.arcs" class="arc-group">
                         <svg :style="{position: 'absolute', left: arc.left, bottom: arc.base}" :height="arc.top-arc.base" :width="arc.right-arc.left">
@@ -34,7 +34,11 @@
                     </div>
                     
                     
-                    <div v-for="event in eventEls.events" :id="event.idString" :class="{anchor: event.eventType == 'anchor', eventPos: true, hasImg: event.img, ext: event.group === 'ext', hardFocus: event.isNewPlaceholder || event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
+                    <div v-for="event in eventEls.events"
+                        :id="event.idString"
+                        :class="{anchor: event.eventType == 'anchor', eventPos: true, hasImg: event.img, ext: event.group === 'ext', hardFocus: event.isNewPlaceholder || event.hasFocus}"
+                        :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}"
+                    >
                         <div class="content">
 
                             <div class="line" :style="{height: event.relY+'px'}"><div class="date-tag">{{event.dateStr}}</div></div>
@@ -47,10 +51,10 @@
                                 
                                 <div class="info">
                                     <div class="title">{{event.name}}</div>
-                                    <div class="date" v-if="!event.img">{{event.dateStr}}</div>
                                     <div class="details">    
-                                            <div class="place">{{event.loc}}</div>
-                                            <div class="note" v-if="event.note" v-html="event.note"></div>
+                                        <div class="date" v-if="!event.img">{{event.dateStr}}</div>
+                                        <div class="place">{{event.loc}}</div>
+                                        <div class="note" v-if="event.note" v-html="event.note"></div>
                                     </div>
                                 </div>
                                 
@@ -63,7 +67,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         
             <div id="controls">
@@ -74,14 +77,15 @@
                 </div>
                 <div id="addEventBox">
                     <div v-if="isAdmin" id="addEvent" @click="openAddForm" class="btn">+ Add Event</div>
+                    <div v-else id="login" @click="loginAdmin" class="btn">Login</div>
                 </div>
             </div>
 
 
-            <div id="right_panel" :class="{open: addingNew || editingEvent}">
+            <div id="right_panel" :class="{open: modifyingTemp || editingEvent}">
                 <div class="content-wrapper">
     
-                    <div v-if="addingNew" id="new_event">
+                    <div v-if="modifyingTemp" id="new_event">
 
                         <div>
                             Adding type:
@@ -91,80 +95,82 @@
                             </select>
                         </div>
 
-                        <form @submit.prevent="addItem(newItem)">
+                        <form @submit.prevent="handleSubmitForm()">
                             
                             <h2 v-if="addingType == 'event'">New Event</h2>
                             <h2 v-if="addingType == 'arc'">New Arc</h2>
 
                             <p>
                                 <label for="name">Name</label><br>
-                                <input id="name" v-model="newItem.name">
+                                <input id="name" v-model="tempItem.name">
                             </p>
+
+
                             <div v-if="addingType == 'event'">
                                 <div>
                                     Type of Event:
-                                    <select v-model="newItem.eventType">
+                                    <select v-model="tempItem.eventType">
                                         <option value="normal">Normal</option>
                                         <option value="anchor">Anchor</option>
                                     </select>
                                 </div>
 
-                                <p>
+                                <p v-if="tempItem.eventType == 'normal'">
                                     <label for="loc">Location</label><br>
-                                    <input id="loc" list="locList" v-model="newItem.loc">
+                                    <input id="loc" list="locList" v-model="tempItem.loc">
                                     <datalist id="locList">
                                         <option v-for="option in getOptionsFor(eventEls.events, 'loc')" :value="option"></option>
                                     </datalist>
                                 </p>
     
-                                <p>
+                                <p v-if="tempItem.eventType == 'normal'">
                                     <label for="img">Image URL</label><br>
-                                    <input id="img" v-model="newItem.img">
+                                    <input id="img" v-model="tempItem.img">
                                 </p>
-                                <p v-if="newItem.img">
+                                <p v-if="tempItem.img">
                                     <label for="tag">Image Tag</label><br>
-                                    <input id="tag" v-model="newItem.elId">
+                                    <input id="tag" v-model="tempItem.elId">
                                 </p>
-                                <p>
+                                <p v-if="tempItem.eventType == 'normal'">
                                     <label for="recId">Link to Record</label><br>
-                                    <input id="recId" list="recIdList" v-model="newItem.recId">
+                                    <input id="recId" list="recIdList" v-model="tempItem.recId">
                                     <datalist id="recIdList">
                                         <option v-for="option in getOptionsFor(records, 'elId')" :value="option"></option>
                                     </datalist>
                                 </p>
                                 <p>
                                     <label for="year">Year</label><br>
-                                    <input id="year" v-model="newItem.year" @change="handleChangeAddYear" type="number">        
+                                    <input id="year" v-model="tempItem.year" @change="handleChangeAddYear" type="number">        
+                                        <div style="display:flex">
+                                            <div>
+                                                <label for="month">Month</label><br>
+                                                <select id="month" v-model="tempItem.month">
+                                                    <option v-for="i in MONTH.length" :value="i-1">{{MONTH[i-1]}}</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label for="day">Day</label><br>
+                                                <input id="day" v-model="tempItem.day" type="number" min="1" max="31">
+                                            </div>
+                                        </div>
                                 </p>
-                                <div style="display:flex">
-                                    <p>
-                                        <label for="month">Month</label><br>
-                                        <select id="month" v-model="newItem.month">
-                                            <option v-for="i in MONTH.length" :value="i-1">{{MONTH[i-1]}}</option>
-                                        </select>
-                                    </p>
-                                    <p>
-                                        <label for="day">Day</label><br>
-                                        <input id="day" v-model="newItem.day" type="number" min="1" max="31">
-                                    </p>
-                                </div>
-                                <p>
+                                <p v-if="tempItem.eventType == 'normal'">
                                     <label for="group">List</label><br>
-                                    <select id="group" v-model="newItem.group">
+                                    <select id="group" v-model="tempItem.group">
                                         <option value="int">Main Events</option>
                                         <option value="ext">Exterior Events</option>
                                     </select>
                                 </p>
                                 <p>
                                     <label for="arcId">Arc</label><br>
-                                    <select id="arcId" v-model="newItem.arcId">
+                                    <select id="arcId" v-model="tempItem.arcId">
                                         <option :value="null">No arc</option>
                                         <option v-for="arc in arcs" :value="arc._id" :style="{backgroundColor: arc.color, color: '#fff'}">{{arc.name}}</option>
                                     </select>
                                 </p>
                                 <p>
                                     <label for="pos">Position</label><br>
-                                    <input id="pos" v-model="newItem.pos" type="range" min="6" max="90">
+                                    <input id="pos" v-model="tempItem.pos" type="range" min="6" max="90">
                                 </p>
     
                             </div>
@@ -172,13 +178,13 @@
                             <div v-if="addingType == 'arc'">
                                 <p>
                                     <label for="color">Color</label><br>
-                                    <input type="color" id="color" v-model="newItem.color" />
+                                    <input type="color" id="color" v-model="tempItem.color" />
                                 </p>
                             </div>
                             
                             <p>
                                 <label for="note">Notes</label><br>
-                                <textarea id="note" v-model="newItem.note"></textarea>
+                                <textarea id="note" v-model="tempItem.note"></textarea>
                             </p>
 
                             <p>
