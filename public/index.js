@@ -31,12 +31,11 @@ var app = new Vue ({
         records: [],
         MONTH: ["No Month", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "Novemeber", "December"],
         isMobile: false,
-        dividerHeight: 8,
+        dividerHeight: 0,
         handFont: true,
         showModal: false,
         notes: [],
         modalData: {},
-
 
         tempItem: {},
 
@@ -152,17 +151,24 @@ var app = new Vue ({
 
 
         async deleteItem(item) {
-            if (confirm(`Are you sure you want to delete ${item.type} '${item.name}?'`))
-            {
+            if (confirm(`Are you sure you want to delete ${item.type} '${item.name}?'`)) {
                 try {
-                    // console.log("Made it into deleteItem");
+
+                    if (item.type === 'arc') {
+                        this.items.forEach( i => {
+                            if (i.arcId === item._id) {
+                                i.arcId = null;
+                            }
+                        })
+                    }
+
                     let url;
                     if (item.type === 'event') url = "/api/items/";
                     if (item.type === 'arc') url = "/api/arcs/";
-                    let response = axios.delete(url + item._id);
+                    await axios.delete(url + item._id);
                     
-                    if (item.type === 'event') this.getEvents();
-                    if (item.type === 'arc') this.getArcs();
+                    this.getEvents();
+                    this.getArcs();
                     this.closeEditForm();
                     return true;
                 }
@@ -211,7 +217,7 @@ var app = new Vue ({
                     this.items.push(this.tempItem)
                 }
 
-
+            this.tempItem.hasFocus = true;
             this.addingItem = true;
         }
     },
@@ -233,15 +239,14 @@ var app = new Vue ({
         },
 
         async addItem(item) {
-            console.log(item, this.tempItem)
             let urlBase;
             if (item.type === 'event') urlBase = '/api/items';
             if (item.type === 'arc') urlBase = '/api/arcs';
             try {
                 let res = await axios.post(urlBase, item)
                 console.log(res)
-                if (item.type === 'event') this.getEvents()
-                if (item.type === 'arc') this.getArcs()
+                item.hasFocus = false;
+                item._id = res.data._id;
                 this.closeAddForm();
             }
             catch (error) {
@@ -284,8 +289,8 @@ var app = new Vue ({
                 let res = await axios.put(url + item._id, item)
                 console.log(res.data)
 
-                if (item.type === 'event') this.getEvents();
-                if (item.type === 'arc') this.getArcs();
+                item.hasFocus = false;
+                item._id = res.data._id;
 
                 this.closeEditForm();
             }

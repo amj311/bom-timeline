@@ -170,10 +170,32 @@ div#flatLine {
 
 #gallery {
     position: absolute;
-    top: 0;
+    height: calc(100% - 7em);
+    width: 2em;
+    bottom: 0;
     left: 0;
-    height: 100%;
 }
+
+
+.item-wrapper .content {
+    display: none;
+}
+
+
+.item-wrapper:hover, .item-wrapper.hardFocus, .item-wrapper.focus, .item-wrapper:target {
+    color: var(--blue);
+    z-index: 10;
+}
+
+.item-wrapper:hover .content, .item-wrapper.hardFocus .content, .item-wrapper.focus .content, .item-wrapper:target .content {
+    display: block;
+}
+
+.focusOne .item-wrapper:not(.hardFocus) {
+    opacity: .5;
+    pointer-events: none;
+}
+
 
 .eventPos {
     color: #00000033;
@@ -197,29 +219,11 @@ div#flatLine {
     bottom: 1rem !important;
 }
 
-.eventPos:hover, .eventPos.hardFocus, .eventPos.focus, .eventPos:target {
-    color: var(--blue);
-    z-index: 10;
-}
-.eventPos.hardFocus {
-    z-index: 11;
-}
-
-.focusOne .eventPos:not(.hardFocus) {
-    opacity: .5;
-    pointer-events: none;
-}
-
 .eventPos .content {
     position: absolute;
     left: 50%;
     top: 0;
     transform: translateY(-.5em);
-    display: none;  
-}
-
-.eventPos:hover .content, .eventPos.hardFocus .content, .eventPos.focus .content, .eventPos:target .content {
-    display: block;
 }
 
 
@@ -276,12 +280,8 @@ div#flatLine {
     transform: translateX(-50%);
 }
 .arc-group .card {
-    visibility: hidden;
     z-index: 15;
-    transform: translateY(calc(100% + .5em));
-}
-.arc-group svg:hover + .card {
-    visibility: visible;
+    transform: translateY(calc(100%));
 }
 
 .card > * {
