@@ -223,7 +223,11 @@ div#flatLine {
     position: absolute;
     left: 50%;
     top: 0;
-    transform: translateY(-.5em);
+}
+
+
+.eventPos .card-wrapper {
+    transform: translateY(-.75em);
 }
 
 
@@ -250,20 +254,19 @@ div#flatLine {
 }
 
 
+.line {
+    position: absolute;
+    border-left: 1px solid;
+    box-sizing: content-box;
+}
+
 .date-tag {
     position: absolute;
     bottom: 0em;
     left: 0;
     width: max-content;
     background: #f3f3f3;
-    padding: .2em;
-    padding-bottom: 0;
-}
-
-.line {
-    position: absolute;
-    border-left: 1px solid;
-    box-sizing: content-box;
+    padding: .3em;
 }
 
 
@@ -287,8 +290,6 @@ div#flatLine {
 .card > * {
     margin: .5em;
 }
-
-
 
 
 .image {

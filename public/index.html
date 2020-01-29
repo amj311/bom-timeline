@@ -63,26 +63,28 @@
 
                             <div class="line" :style="{height: event.relY+'px'}"><div class="date-tag">{{event.dateStr}}</div></div>
 
-                            <div class="card">
-                                <div v-if="event.img" class="image">
-                                    <img :src="event.img" :alt="event.name">
-                                    <div class="openTheater" @click="setTheaterImage(event.elId)"></div>
-                                </div>
-                                
-                                <div class="info">
-                                    <div class="title">{{event.name}}</div>
-                                    <div class="details">    
-                                        <div class="date" v-if="!event.img">{{event.dateStr}}</div>
-                                        <div class="place">{{event.loc}}</div>
-                                        <div class="note" v-if="event.note" v-html="event.note"></div>
+                            <div class="card-wrapper">
+                                <div class="card">
+                                    <div v-if="event.img" class="image">
+                                        <img :src="event.img" :alt="event.name">
+                                        <div class="openTheater" @click="setTheaterImage(event.elId)"></div>
                                     </div>
+                                    
+                                    <div class="info">
+                                        <div class="title">{{event.name}}</div>
+                                        <div class="details">    
+                                            <div class="date" v-if="!event.img">{{event.dateStr}}</div>
+                                            <div class="place">{{event.loc}}</div>
+                                            <div class="note" v-if="event.note" v-html="event.note"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"></div>
+                                    <div v-if="isAdmin" class="editButton" @click="openEditForm(event)"></div>
                                 </div>
-                                
-                                <div v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"></div>
-                                <div v-if="isAdmin" class="editButton" @click="openEditForm(event)"></div>
+        
+                                <div class="pointer-wrapper"><div class="pointer"></div></div>    
                             </div>
-    
-                            <div class="pointer-wrapper"><div class="pointer"></div></div>
     
                         </div>
                     </div>
