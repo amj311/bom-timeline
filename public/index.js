@@ -81,6 +81,14 @@ var app = new Vue ({
         editArcIdx: null,
         editArcOriginal: {},
         sources: [],
+        
+        
+        
+        // Qwizard
+        activeIdx: 0,
+        displayIdx: 0,
+        toggleReverse: false,
+        show_back: false,
     },
 
     async created() {
@@ -95,6 +103,11 @@ var app = new Vue ({
         this.isMobile = window.mobileAndTabletCheck();
 
         this.setZoom();
+        
+        
+        // Qwizard
+        this.displayIdx = this.activeIdx + 1;
+
         this.isLoading = false;
     },
 
@@ -104,7 +117,18 @@ var app = new Vue ({
         // },
         yearUnit: function() {
             this.checkEraDuration()
+        },
+        
+        
+        // Qwizard
+        activeIdx: () => {
+            app.show_back = app.deck.slides[app.activeIdx].reversed;
+            app.displayIdx = app.activeIdx + 1;
+        },
+        displayIdx: () => {
+            app.activeIdx = app.displayIdx - 1;
         }
+        
     },
 
     methods: {
@@ -466,6 +490,8 @@ var app = new Vue ({
 
         },
 
+
+        
         toggleHandwriting() {
             this.handFont = !this.handFont;
         },
@@ -485,6 +511,17 @@ var app = new Vue ({
         },
         closeNote(){
             this.showModal = false;
+        },
+        
+        
+        
+        
+        // Qwizard
+        reverseCard(card) {
+            card.reversed = !card.reversed;
+            console.log(card.reversed)
+            this.show_back = card.reversed;
+            this.toggleReverse = !this.toggleReverse;
         }
     },
 

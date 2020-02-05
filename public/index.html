@@ -19,8 +19,8 @@
 
             <div id="timeline-wrapper">
                 <div id="timeline-box" class="fs-inner-wrapper">
-                 
-                    <div id="markers"  onwheel="app.handleTimelineScroll(event)">
+
+                    <div id="markers" onwheel="app.handleTimelineScroll(event)">
                         <div id="flatLine" :style="{bottom: `${dividerHeight}rem`}"></div>
                         <div v-for="era in eras" class="century-block" :id="era" :style="{width: `${eraWidth}px`}">
                             <div class="era-label">
@@ -33,11 +33,9 @@
 
                     <div id="gallery">
 
-                        <div v-for="arc in timelineEls.arcs" class="arc-group item-wrapper"
-                            :class="{hardFocus: arc.hasFocus}" :style="{color: arc.color}">
+                        <div v-for="arc in timelineEls.arcs" class="arc-group item-wrapper" :class="{hardFocus: arc.hasFocus}" :style="{color: arc.color}">
 
-                            <svg :style="{position: 'absolute', left: arc.left, bottom: arc.base}"
-                                :height="arc.top-arc.base" :width="arc.right-arc.left">
+                            <svg :style="{position: 'absolute', left: arc.left, bottom: arc.base}" :height="arc.top-arc.base" :width="arc.right-arc.left">
                                 <line v-for="i in arc.points.length" v-if="arc.points[i]"
                                     :x1="arc.points[i-1].relX - arc.left" :y1="arc.points[i-1].relY - arc.base"
                                     :x2="arc.points[i].relX - arc.left" :y2="arc.points[i].relY - arc.base"
@@ -50,7 +48,7 @@
                                     <div class="info">
                                         <div class="title">{{arc.name}}</div>
                                         <div class="details">
-                                            <div class="date" v-if="!arc.img">{{arc.dateStr}}</div>
+                                            <div class="date">{{arc.dateStr}}</div>
                                             <div class="place">{{arc.loc}}</div>
                                             <div class="note" v-if="arc.note" v-html="arc.note"></div>
                                         </div>
@@ -64,9 +62,7 @@
                         </div>
 
 
-                        <div v-for="event in timelineEls.events" :id="event.idString" class="item-wrapper eventPos"
-                            :class="{anchor: event.eventType == 'anchor', hasImg: event.img, ext: event.group === 'ext', hardFocus: event.hasFocus}"
-                            :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
+                        <div v-for="event in timelineEls.events" :id="event.idString" class="item-wrapper eventPos" :class="{anchor: event.eventType == 'anchor', hasImg: event.img, ext: event.group === 'ext', hardFocus: event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
                             <div class="content">
 
                                 <div class="line" :style="{height: event.relY+'px'}">
@@ -83,14 +79,13 @@
                                         <div class="info">
                                             <div class="title">{{event.name}}</div>
                                             <div class="details">
-                                                <div class="date" v-if="!event.img">{{event.dateStr}}</div>
+                                                <div class="date">{{event.dateStr}}</div>
                                                 <div class="place">{{event.loc}}</div>
                                                 <div class="note" v-if="event.note" v-html="event.note"></div>
                                             </div>
                                         </div>
 
-                                        <div v-if="event.recId" class="openRecord"
-                                            @click="setTheaterRecord(event.recId)"></div>
+                                        <div v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"></div>
                                         <div v-if="isAdmin" class="editButton" @click="openEditForm(event)"></div>
                                     </div>
 
@@ -121,6 +116,49 @@
                             <div id="login" @click="loginAdmin" class="btn">Login</div>
                         </div>
                     </div>
+                </div>
+
+
+                <div id="quizOverlay">
+
+
+                    <div id="slides_area">
+                        <h2>{{deck.title}}</h2>
+                        <div class="deck_slider">
+
+                            <div v-for="card in readyCards" @click="reverseCard(card)" class="card" :class="{reversed: show_back, active: card.id === activeIdx, left: card.id < activeIdx, right: card.id > activeIdx,}" vshow="card.id >= activeIdx - 2 && card.id <= activeIdx + 1">
+                                <div class="card-height">
+                                    <div v-if="!loading">
+                                        <div class="content">
+
+                                            <div v-if="!show_back">
+                                                <h3>{{card.front.title}}</h3>
+                                                <p v-html="card.front.body"></p>
+                                            </div>
+                                            <div v-if="show_back">
+                                                <h3>{{card.back.title}}</h3>
+                                                <p v-html="card.back.body"></p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+                        <div id="controls">
+                            <button @click="activeIdx = Math.max(0, activeIdx - 1)">👈</button>
+                            <input v-model="displayIdx" type="number" min="1" :max="readyCards.length" step="1" style="text-align: center;">
+                            <button @click="activeIdx = Math.min(deck.slides.length - 1, activeIdx + 1)">👉</button>
+                        </div>
+
+                    </div>
+
+
+
                 </div>
 
 
@@ -174,8 +212,7 @@
                                 </p>
                                 <p>
                                     <label for="year">Year</label><br>
-                                    <input id="year" v-model="tempItem.year" @change="handleChangeAddYear"
-                                        type="number">
+                                    <input id="year" v-model="tempItem.year" @change="handleChangeAddYear" type="number">
                                     <div style="display:flex">
                                         <div>
                                             <label for="month">Month</label><br>
@@ -225,10 +262,8 @@
 
                             <p>
                                 <input type="submit" class="btn btn-primary">
-                                <input type="reset" @click="handleCancelForm" class="btn btn-secondary btn-outline"
-                                    value="Cancel">
-                                <input type="reset" @click="deleteItem(tempItem)" class="btn btn-danger btn-outline"
-                                    value="Delete">
+                                <input type="reset" @click="handleCancelForm" class="btn btn-secondary btn-outline" value="Cancel">
+                                <input type="reset" @click="deleteItem(tempItem)" class="btn btn-danger btn-outline" value="Delete">
                             </p>
                         </form>
 
@@ -248,8 +283,7 @@
 
                 <div id="exitTheater" @click="closeTheater">&times;</div>
 
-                <div id="imageBox" v-if="theaterMode == 'img'" :style="{backgroundImage: `url(${theaterData.img})`}"
-                    @click="toggleSubs"></div>
+                <div id="imageBox" v-if="theaterMode == 'img'" :style="{backgroundImage: `url(${theaterData.img})`}" @click="toggleSubs"></div>
 
                 <div id="recordBox" v-show="theaterMode == 'rec'" :class="{hand: handFont}">
                     <div id="records">
@@ -262,8 +296,7 @@
                     </div>
                 </div>
 
-                <div id="toggleFont" v-show="theaterMode == 'rec'" :class="{hand: handFont}"><label
-                        for="handFont">Aa</label><input type="checkbox" v-model="handFont" id="handFont"></div>
+                <div id="toggleFont" v-show="theaterMode == 'rec'" :class="{hand: handFont}"><label for="handFont">Aa</label><input type="checkbox" v-model="handFont" id="handFont"></div>
 
             </div>
             <div id="subs" v-if="theaterData.hasSubs" :class="{on: subsOn}">

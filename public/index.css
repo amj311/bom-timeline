@@ -198,7 +198,7 @@ div#flatLine {
 
 .item-wrapper:hover, .item-wrapper.hardFocus, .item-wrapper.focus, .item-wrapper:target {
     color: var(--blue);
-    z-index: 10;
+    z-index: 10 !important;
 }
 
 .item-wrapper:hover .content, .item-wrapper.hardFocus .content, .item-wrapper.focus .content, .item-wrapper:target .content {
@@ -323,11 +323,13 @@ div#flatLine {
     background-image: url(/images/loading.gif);
     background-position: center;
     background-repeat: no-repeat;
+    height: 7em;
+    position: relative;
 }
 
 .image img {
     color: transparent;
-    height: 7em;
+    height: 100%;
     max-height: 13vh;
     width: auto;
 }
