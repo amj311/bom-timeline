@@ -10,8 +10,18 @@ var app = new Vue ({
     el: '#app',
 
     data: {
+        timeBoxEl: document.querySelector('#timeline-box'),
+
+        isLoading: true,
         isAdmin: false,
         adminKey: 'immerseBOM',
+
+        mouseTimePos: {
+            x: null,
+            y: null,
+        },
+        arcCardYPos: 0,
+
         items: [],
         arcs: [],
         minEraWidth: 80,
@@ -76,19 +86,22 @@ var app = new Vue ({
     async created() {
         this.checkAdmin()
 
-        this.getEvents()
-        this.getArcs()
-        this.getNotes()
-        this.getRecords()
-        this.getSources()
+        await this.getEvents()
+        await this.getArcs()
+        await this.getNotes()
+        await this.getRecords()
+        await this.getSources()
 
         this.isMobile = window.mobileAndTabletCheck();
+
+        this.setZoom();
+        this.isLoading = false;
     },
 
     watch: {
-        items: function() {
-            this.setZoom()
-        },
+        // items: function() {
+        //     this.setZoom()
+        // },
         yearUnit: function() {
             this.checkEraDuration()
         }
@@ -223,7 +236,7 @@ var app = new Vue ({
     },
 
         handleChangeAddYear(){
-            this.setZoom()
+            if(this.tempItem.year > this.dateMax || this.tempItem.year < this.dateMin) this.setZoom()
             // this.scrollToEl(document.querySelector('.eventPos.hardFocus')) 
         },
 
@@ -372,7 +385,6 @@ var app = new Vue ({
             this.subsOn = !this.subsOn;
         },
 
-        
         setZoom() {
             let viewWidth = document.getElementById('timeline-box').offsetWidth;
 
