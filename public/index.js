@@ -14,7 +14,7 @@ var app = new Vue ({
 
         isLoading: true,
         isAdmin: false,
-        adminKey: 'immerseBOM',
+        adminKey: 'arthc201',
 
         mouseTimePos: {
             x: null,
