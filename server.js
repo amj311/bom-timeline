@@ -21,7 +21,7 @@ const upload = multer({
 const mongoose = require('mongoose');
 
 // connect to the database
-mongoose.connect('mongodb+srv://amj311:be13strong51@cluster0-u6luc.mongodb.net/immerse', {
+mongoose.connect('mongodb+srv://amj311:be13strong51@cluster0-u6luc.mongodb.net/arthc-201', {
   useNewUrlParser: true
 });
 
@@ -36,7 +36,8 @@ const arcSchema = new mongoose.Schema({
   color: {
     type: String,
     default: '#bbb',
-  }
+  },
+  note: String,
 });
 
 // Create a model for arcs in the timeline.
@@ -203,5 +204,5 @@ app.put('/api/items/:id', async(req, res) => {
   }
 });
 
-let port = 4200;
+let port = 4202;
 app.listen(port, () => console.log('Server listening on port '+port));
