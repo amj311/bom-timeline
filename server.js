@@ -21,7 +21,7 @@ const upload = multer({
 const mongoose = require('mongoose');
 
 // connect to the database
-mongoose.connect('mongodb+srv://amj311:be13strong51@cluster0-u6luc.mongodb.net/arthc-201', {
+mongoose.connect('mongodb+srv://amj311:be13strong51@cluster0-u6luc.mongodb.net/immerse', {
   useNewUrlParser: true
 });
 

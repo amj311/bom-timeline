@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Homemade+Apple|La+Belle+Aurore&display=swap');
 :root {
-    --blue: skyblue;
-    --primary: skyblue;
+    --blue: #30a1e2;
+    --primary: #30a1e2;
     --secondary: #aaa;
     --danger: rgb(255, 0, 0);
 }
@@ -192,7 +192,7 @@ div#flatLine {
 
 
 .item-wrapper .content {
-    /*display: none;*/
+    display: none;
 }
 
 
@@ -273,15 +273,10 @@ div#flatLine {
 
 
 .line {
-    display: none;
     position: absolute;
     border-left: 1px solid;
     box-sizing: content-box;
 }
-.item-wrapper:hover .line, .item-wrapper.hardFocus .line, .item-wrapper.focus .line, .item-wrapper:target .line {
-    display: block;
-}
-
 .date-tag {
     position: absolute;
     bottom: 0em;
@@ -305,7 +300,7 @@ div#flatLine {
     transform: translateX(-50%);
 }
 .arc-group .card {
-    z-index: 15;
+    z-index: 1=5;
     /*transform: translateY(calc(100%));*/
 }
 
@@ -467,7 +462,9 @@ div#flatLine {
 
 
 
-
+.arc-group .content {
+    display: block;;
+}
 
 .arc-group svg {
     transform: scaleY(-1);
