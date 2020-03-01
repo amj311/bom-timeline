@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>ARTHC 201</title>
+    <title>Immerse</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css" type="text/css" />
 </head>
@@ -14,13 +14,14 @@
 
             <div id="person-summary">
                 <div class="profile-img" style="background-image: url(./images/nephi.png)"></div>
+
                 <h1>Book of Mormon Events</h1>
             </div>
 
             <div id="timeline-wrapper">
-                <div id="timeline-box" class="fs-inner-wrapper">
+                <div id="timeline-box" class="fs-inner-wrapper" onwheel="app.handleTimelineScroll(event)">
                  
-                    <div id="markers"  onwheel="app.handleTimelineScroll(event)">
+                    <div id="markers">
                         <div id="flatLine" :style="{bottom: `${dividerHeight}rem`}"></div>
                         <div v-for="era in eras" class="century-block" :id="era" :style="{width: `${eraWidth}px`}">
                             <div class="era-label">
@@ -46,7 +47,7 @@
 
 
                             <div class="content">
-                                <div class="card" :style="{left: `${arc.left}px`, bottom: `calc(${Math.max(arc.base, 0)}px - 3em)`}">
+                                <div class="card" :style="{left: `${arc.left}px`, bottom: `${arc.base}px`}">
                                     <div class="info">
                                         <div class="title">{{arc.name}}</div>
                                         <div class="details">

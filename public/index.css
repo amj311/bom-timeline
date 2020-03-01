@@ -225,7 +225,6 @@ div#flatLine {
     z-index: 2;
     transform: translate(-50%, 50%);
 }
-
 .eventPos.anchor {
     z-index: 1;
     padding: 0;
@@ -277,6 +276,8 @@ div#flatLine {
     border-left: 1px solid;
     box-sizing: content-box;
 }
+
+
 .date-tag {
     position: absolute;
     bottom: 0em;
@@ -300,8 +301,8 @@ div#flatLine {
     transform: translateX(-50%);
 }
 .arc-group .card {
-    z-index: 1=5;
-    /*transform: translateY(calc(100%));*/
+    z-index: 15;
+    transform: translateY(calc(100%));
 }
 
 .card > * {
@@ -363,7 +364,7 @@ div#flatLine {
     max-width: 18em;
 }
 
-.item-wrapper .info {
+.eventPos .info {
     color: #111;
 }
 
@@ -375,18 +376,13 @@ div#flatLine {
     display: block;
 }
 
+
+.eventPos.hasImg:hover .info {
+    display: block;
+}
+
 .eventPos.anchor .details {
     display: none;
-}
-
-
-
-.item-wrapper .content .details {
-    display: none;
-}
-
-.item-wrapper .content:hover .details, .item-wrapper.hardFocus .details, .item-wrapper.focus .details, .item-wrapper:target .details {
-    display: block;
 }
 
 
@@ -395,13 +391,11 @@ div#flatLine {
 }
 
 .card .note {
-    max-height: 5em;
-    /* display: -webkit-box; */
-    /* -webkit-line-clamp: 2; */
-    /* -webkit-box-orient: vertical; */
-    overflow-y: auto;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     margin-top: 1em;
-    white-space: pre-wrap;
 }
 .card .note::before {
     content: 'Notes:';
