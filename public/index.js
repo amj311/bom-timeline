@@ -14,7 +14,7 @@ var app = new Vue ({
 
         isLoading: true,
         isAdmin: false,
-        adminKey: 'arthc201',
+        adminKey: 'immerseBOM',
 
         mouseTimePos: {
             x: null,
@@ -101,9 +101,9 @@ var app = new Vue ({
     watch: {
         // items: function() {
         //     this.setZoom()
-        // },
+          // },
         yearUnit: function() {
-            this.checkEraDuration()
+            // this.checkEraDuration()
         }
     },
 
@@ -413,13 +413,13 @@ var app = new Vue ({
                     let delta = y / 500;
                     this.changeYearUnit(delta)
 
-                    // modify scroll position relative to mouse
-                    let scrollBox = document.querySelector('#timeline-box');
-                    let vp = scrollBox.getBoundingClientRect();
-                    let mouseX = e.clientX - vp.x;
+                    // // modify scroll position relative to mouse
+                    // let scrollBox = document.querySelector('#timeline-box');
+                    // let vp = scrollBox.getBoundingClientRect();
+                    // let mouseX = e.clientX - vp.x;
 
-                    let newMPos = (scrollBox.scrollLeft + mouseX) * this.yearUnit / oldUnit;
-                    scrollBox.scrollLeft = newMPos - mouseX;
+                    // let newMPos = (scrollBox.scrollLeft + mouseX) * this.yearUnit / oldUnit;
+                    // scrollBox.scrollLeft = newMPos - mouseX;
 
                     this.zoomTimeout = true;
                     setTimeout(function() { app.zoomTimeout = false }, ival)
