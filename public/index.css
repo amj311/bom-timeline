@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Homemade+Apple|La+Belle+Aurore&display=swap');
 :root {
-    --blue: skyblue;
-    --primary: skyblue;
+    --blue: #30a1e2;
+    --primary: #30a1e2;
     --secondary: #aaa;
     --danger: rgb(255, 0, 0);
 }
@@ -127,11 +127,19 @@ div#person-summary > * {
     overflow: hidden;
 }
 
+
+
+div#mainPanel {
+    position: relative;
+    flex-grow: 1;
+}
+
+
 .fs-inner-wrapper {
     position: relative;
     width: 100%;
     height: 100%;
-    flex-grow: 1;
+    /*flex-grow: 1;*/
 }
 
 
@@ -305,8 +313,8 @@ div#flatLine {
     transform: translateX(-50%);
 }
 .arc-group .card {
-    z-index: 15;
-    /*transform: translateY(calc(100%));*/
+    z-index: 5;
+    transform: translateX(-50%);
 }
 
 .card > * {
@@ -323,14 +331,19 @@ div#flatLine {
     background-image: url(/images/loading.gif);
     background-position: center;
     background-repeat: no-repeat;
-    height: 7em;
+    height: 6vh;
+    max-height: 8em;
+    min-height: 4em;
     position: relative;
+}
+
+.hasImg:hover .image {
+    height: 10vh;
 }
 
 .image img {
     color: transparent;
     height: 100%;
-    max-height: 13vh;
     width: auto;
 }
 
@@ -469,8 +482,6 @@ div#flatLine {
 
 
 
-
-
 .arc-group svg {
     transform: scaleY(-1);
 }
@@ -536,8 +547,9 @@ div#right_panel {
     position: relative;
 }
 div#right_panel.open {
-    width: 100%;
+    width: 55%;
     max-width: 24em;
+    min-width: 12rem;
 }
 
 #right_panel .content-wrapper {
@@ -558,6 +570,138 @@ textarea#note {
     min-width: 100%;
     min-height: 7em;
 }
+
+
+
+
+
+
+
+
+
+
+/* QWIZARD! */
+
+div#quizOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    background: #eee;
+    display: flex;
+    align-items: center;
+}
+
+
+#slides_area {
+    width: 85vw;
+    max-width: 50rem;
+    margin: 0 auto;
+}
+
+.deck_slider {
+    height: 60vh;
+    width: 100%;
+    position: relative;
+    filter: drop-shadow(0 0 .25em #0004);
+}
+
+.qcard.right {
+    transform: translate(43vw, -50%) scale(.95);
+}
+
+.qcard.left {
+    transform: translate(-59%, -50%) scale(.9);
+}
+.qcard.active {
+    box-shadow: 0 0 0.5em #00000044;
+}
+
+.qcard {
+    background: #fff;
+    cursor: pointer;
+    width: 100%;
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: 300ms;
+}
+
+div.qcard-content {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1rem 2rem;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    font-size: 1.5em;
+    transition: opacity 0ms 0ms;
+}
+.qcard.active .qcard-content {
+    opacity: 1;
+    transition-delay: 0ms;
+}
+
+.qcard-height {
+    padding-top: 60%;
+}
+
+div.qcard.reversed #front {
+    opacity: 0;
+}
+
+div.qcard #back {
+    opacity: 0;
+}
+
+div.qcard.reversed #back {
+    opacity: 1;
+}
+
+
+.card-image-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 3%;
+    text-align: center;
+}
+
+.card-image-wrapper img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+
+#quizOverlay div#controls {
+    margin: .8em 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+#leaveQuizBox {
+    position: absolute;
+    padding: .5em;
+    top: 0;
+    right: 0;
+}
+
+
+
+
+
+
+
+
 
 
 /* Theater Styles */

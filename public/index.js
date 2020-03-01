@@ -85,10 +85,11 @@ var app = new Vue ({
         
         
         // Qwizard
-        activeIdx: 0,
-        displayIdx: 0,
-        toggleReverse: false,
-        show_back: false,
+        showQuiz: false,
+        activeQIdx: 0,
+        displayQIdx: 0,
+        toggleQReverse: false,
+        show_Qback: false,
     },
 
     async created() {
@@ -106,7 +107,7 @@ var app = new Vue ({
         
         
         // Qwizard
-        this.displayIdx = this.activeIdx + 1;
+        this.displayQIdx = this.activeQIdx + 1;
 
         this.isLoading = false;
     },
@@ -121,12 +122,12 @@ var app = new Vue ({
         
         
         // Qwizard
-        activeIdx: () => {
-            app.show_back = app.deck.slides[app.activeIdx].reversed;
-            app.displayIdx = app.activeIdx + 1;
+        activeQIdx: () => {
+            app.show_Qback = app.quizCards[app.activeQIdx].reversed;
+            app.displayQIdx = app.activeQIdx + 1;
         },
-        displayIdx: () => {
-            app.activeIdx = app.displayIdx - 1;
+        displayQIdx: () => {
+            app.activeQIdx = app.displayQIdx - 1;
         }
         
     },
@@ -227,7 +228,7 @@ var app = new Vue ({
                         "artist": null,
                         "day": null,
                         "month": null,
-                        "year": Math.floor((document.querySelector('#timeline-box').scrollLeft + 50) / this.yearUnit + this.startYear),
+                        "year": Math.floor((document.querySelector('#timeline-box').scrollLeft + document.querySelector('#timeline-box').offsetWidth/4) / this.yearUnit + this.startYear),
                         "displayYear": false,
                         "pos": 50,
                         "img": null,
@@ -364,9 +365,19 @@ var app = new Vue ({
             return this.arcs.filter(a => a._id === id)[0]
         },
 
-        setTheaterImage(shortId) {
+        setTheaterImageByTag(shortId) {
             this.theaterMode = 'img'
             let obj = this.findInListById(this.timelineEls.events, shortId)
+            this.theaterData = obj;
+
+            this.theaterData.hasSubs = true;
+
+            this.openTheater();
+        },
+        
+        
+        setTheaterImageByObj(obj) {
+            this.theaterMode = 'img'
             this.theaterData = obj;
 
             this.theaterData.hasSubs = true;
@@ -520,7 +531,7 @@ var app = new Vue ({
         reverseCard(card) {
             card.reversed = !card.reversed;
             console.log(card.reversed)
-            this.show_back = card.reversed;
+            this.show_Qback = card.reversed;
             this.toggleReverse = !this.toggleReverse;
         }
     },
@@ -593,6 +604,21 @@ var app = new Vue ({
         // recordEls(){
         //     return this.items.filter( i => i.type === 'record' )
         // },
+        
+        
+        
+        quizCards: function() {
+            let id = 0;
+            return this.items.reduce( (acc,c) => {
+                if(c.eventType === 'anchor') return acc;
+                
+                c.reversed = false;
+                c.id = id;
+                id++;
+                acc.push(c)
+                return acc;
+            }, []);
+        },
 
     }
 })
