@@ -230,7 +230,8 @@
                                 </p>
                                 <p>
                                     <label for="year">Year</label><br>
-                                    <input id="year" v-model="tempItem.year" @change="handleChangeAddYear" type="number">
+                                    <input id="year" v-model="tempItem.year" @change="handleChangeAddYear"
+                                        type="number">
                                     <div style="display:flex">
                                         <div>
                                             <label for="month">Month</label><br>
@@ -280,8 +281,10 @@
 
                             <p>
                                 <input type="submit" class="btn btn-primary">
-                                <input type="reset" @click="handleCancelForm" class="btn btn-secondary btn-outline" value="Cancel">
-                                <input type="reset" @click="deleteItem(tempItem)" class="btn btn-danger btn-outline" value="Delete">
+                                <input type="reset" @click="handleCancelForm" class="btn btn-secondary btn-outline"
+                                    value="Cancel">
+                                <input type="reset" @click="deleteItem(tempItem)" class="btn btn-danger btn-outline"
+                                    value="Delete">
                             </p>
                         </form>
 
@@ -301,7 +304,8 @@
 
                 <div id="exitTheater" @click="closeTheater">&times;</div>
 
-                <div id="imageBox" v-if="theaterMode == 'img'" :style="{backgroundImage: `url(${theaterData.img})`}" @click="toggleSubs"></div>
+                <div id="imageBox" v-if="theaterMode == 'img'" :style="{backgroundImage: `url(${theaterData.img})`}"
+                    @click="toggleSubs"></div>
 
                 <div id="recordBox" v-show="theaterMode == 'rec'" :class="{hand: handFont}">
                     <div id="records">
@@ -314,7 +318,8 @@
                     </div>
                 </div>
 
-                <div id="toggleFont" v-show="theaterMode == 'rec'" :class="{hand: handFont}"><label for="handFont">Aa</label><input type="checkbox" v-model="handFont" id="handFont"></div>
+                <div id="toggleFont" v-show="theaterMode == 'rec'" :class="{hand: handFont}"><label
+                        for="handFont">Aa</label><input type="checkbox" v-model="handFont" id="handFont"></div>
 
             </div>
             <div id="subs" v-if="theaterData.hasSubs" :class="{on: subsOn}">

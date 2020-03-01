@@ -129,7 +129,6 @@ var app = new Vue ({
         displayQIdx: () => {
             app.activeQIdx = app.displayQIdx - 1;
         }
-        
     },
 
     methods: {
@@ -501,8 +500,6 @@ var app = new Vue ({
 
         },
 
-
-        
         toggleHandwriting() {
             this.handFont = !this.handFont;
         },

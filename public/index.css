@@ -206,7 +206,7 @@ div#flatLine {
 
 .item-wrapper:hover, .item-wrapper.hardFocus, .item-wrapper.focus, .item-wrapper:target {
     color: var(--blue);
-    z-index: 10 !important;
+    z-index: 10;
 }
 
 .item-wrapper:hover .content, .item-wrapper.hardFocus .content, .item-wrapper.focus .content, .item-wrapper:target .content {
