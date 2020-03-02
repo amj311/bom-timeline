@@ -440,11 +440,9 @@ var app = new Vue ({
         },
 
         pauseZoom() {
-            console.log('no zooming!')
             this.canZoom = false;
         },
         allowZoom() {
-            console.log('okay zoom')
             this.canZoom = true;
         },
 
