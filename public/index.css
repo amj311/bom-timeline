@@ -309,7 +309,7 @@ div#flatLine {
 }
 .arc-group .card {
     z-index: 5;
-    transform: translateX(-50%);
+    transform: translate(-50%, 100%);
 }
 
 .card > * {
@@ -382,28 +382,6 @@ div#flatLine {
     color: #111;
 }
 
-.eventPos.hasImg .info {
-    display: none;
-}
-
-.eventPos:hover .info, .eventPos.hardFocus .info, .eventPos.focus .info, .eventPos:target .info {
-    display: block;
-}
-
-.eventPos.anchor .details {
-    display: none;
-}
-
-
-
-.item-wrapper .content .details {
-    display: none;
-}
-
-.item-wrapper .content:hover .details, .item-wrapper.hardFocus .details, .item-wrapper.focus .details, .item-wrapper:target .details {
-    display: block;
-}
-
 
 .card .info .title {
     font-weight: bold;
@@ -461,13 +439,9 @@ div#flatLine {
     text-align: center;
     border: 1px solid #00000033;
     cursor: pointer;
-    display: none;
 }
 .editButton:hover {
     background: #f3f3f3;
-}
-.card:hover .editButton {
-    display: block;
 }
 .editButton::before {
     content: '📝';
@@ -480,10 +454,6 @@ div#flatLine {
 .arc-group svg {
     transform: scaleY(-1);
 }
-
-
-
-
 
 
 
