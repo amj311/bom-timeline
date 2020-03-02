@@ -22,10 +22,10 @@
                 
                 <div id="mainPanel">
                         
-                    <div id="timeline-box" class="fs-inner-wrapper">
+                    <div id="timeline-box" class="fs-inner-wrapper" onwheel="app.handleTimelineScroll(event)">
     
 
-                        <div id="markers" onwheel="app.handleTimelineScroll(event)" :style="{overflow: 'hidden', width: `${numEras * eraDuration * yearUnit}px`}">
+                        <div id="markers" :style="{overflow: 'hidden', width: `${numEras * eraDuration * yearUnit}px`}">
                             <div id="scrollmarker" :style="{left: `${zoomTargetPos}px`}"></div>
 
                             <div id="flatLine" :style="{bottom: `${dividerHeight}rem`}"></div>
@@ -76,7 +76,7 @@
                                         <div class="date-tag">{{event.dateStr}}</div>
                                     </div>
     
-                                    <div class="card-wrapper">
+                                    <div class="card-wrapper" @mouseenter="pauseZoom()" @mouseleave="allowZoom()">
                                         <div class="card">
                                             <div v-if="event.img" class="image">
                                                 <img :src="event.img" :alt="event.name">

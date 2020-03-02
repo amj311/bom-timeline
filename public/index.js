@@ -33,7 +33,7 @@ var app = new Vue ({
         yearUnit: 20,
         dayUnit: this.yearUnit / 365,
         minYearUnit: null,
-        zoomTimeout: false,
+        canZoom: true,
         zoomTargetPos: 0,
 
         coverImg: true,
@@ -439,12 +439,20 @@ var app = new Vue ({
             this.startYear = Math.floor(this.dateMin / this.eraDuration) * this.eraDuration - this.eraDuration;
         },
 
+        pauseZoom() {
+            console.log('no zooming!')
+            this.canZoom = false;
+        },
+        allowZoom() {
+            console.log('okay zoom')
+            this.canZoom = true;
+        },
 
         handleTimelineScroll(e) {
             var y = -e.deltaY;
             let ival = 100;
 
-            if (y != 0 && !this.zoomTimeout) {
+            if (y != 0 && this.canZoom) {
                 if (Math.abs(y) > 1) {
                     let oldUnit = this.yearUnit;
 
@@ -465,8 +473,8 @@ var app = new Vue ({
                     console.log(newScrollPos - oldScrollPos)
 
 
-                    this.zoomTimeout = true;
-                    setTimeout(function() { app.zoomTimeout = false }, ival)
+                    this.canZoom = false;
+                    setTimeout(function() { app.canZoom = true }, ival)
                 }
             }
         },
@@ -569,7 +577,7 @@ var app = new Vue ({
             this.items.filter( i => i.type === 'event' ).forEach ( event => {
 
                 let yearPos = (event.year - this.startYear) * 365 * this.dayUnit;
-                let monthPos = event.month * 30 * this.dayUnit;
+                let monthPos = (event.month-1) * 30 * this.dayUnit;
                 let dayPos = event.day * this.dayUnit; 
                 event.relX = yearPos + monthPos + dayPos;
                 
