@@ -2,7 +2,11 @@
 <html>
 
 <head>
+<<<<<<< HEAD
     <title>Immerse</title>
+=======
+    <title>Immerse Study</title>
+>>>>>>> 951d6f05c0a81836992aee63677e4de525b81c30
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css" type="text/css" />
 </head>
@@ -14,96 +18,153 @@
 
             <div id="person-summary">
                 <div class="profile-img" style="background-image: url(./images/nephi.png)"></div>
-
-                <h1>Book of Mormon Events</h1>
+                <h3>Book of Mormon Timeline</h3>
             </div>
 
             <div id="timeline-wrapper">
-                <div id="timeline-box" class="fs-inner-wrapper" onwheel="app.handleTimelineScroll(event)">
-                 
-                    <div id="markers">
-                        <div id="flatLine" :style="{bottom: `${dividerHeight}rem`}"></div>
-                        <div v-for="era in eras" class="century-block" :id="era" :style="{width: `${eraWidth}px`}">
-                            <div class="era-label">
-                                <span v-if="era < 0">{{-era}} BC</span>
-                                <span v-else>{{era}} AD</span>
+                
+                
+                <div id="mainPanel">
+                        
+                    <div id="timeline-box" class="fs-inner-wrapper">
+    
+
+                        <div id="markers" onwheel="app.handleTimelineScroll(event)" :style="{overflow: 'hidden', width: `${numEras * eraDuration * yearUnit}px`}">
+                            <div id="scrollmarker" :style="{left: `${zoomTargetPos}px`}"></div>
+
+                            <div id="flatLine" :style="{bottom: `${dividerHeight}rem`}"></div>
+                            <div v-for="era in eras" class="century-block" :id="era" :style="{width: `${yearUnit * eraDuration}px`}">
+                                <div class="era-label">
+                                    <span v-if="era < 0">{{-era}} BC</span>
+                                    <span v-else>{{era}} AD</span>
+                                </div>
+                            </div>
+                        </div>
+    
+    
+                        <div id="gallery">
+    
+                            <div v-for="arc in timelineEls.arcs" class="arc-group item-wrapper" :class="{hardFocus: arc.hasFocus}" :style="{color: arc.color}">
+    
+                                <svg :style="{position: 'absolute', left: arc.left, bottom: arc.base}" :height="arc.top-arc.base" :width="arc.right-arc.left">
+                                    <line v-for="i in arc.points.length" v-if="arc.points[i]"
+                                        :x1="arc.points[i-1].relX - arc.left" :y1="arc.points[i-1].relY - arc.base"
+                                        :x2="arc.points[i].relX - arc.left" :y2="arc.points[i].relY - arc.base"
+                                        :style="{stroke: arc.color, strokeWidth: 3}" />
+                                </svg>
+    
+    
+                                <div class="content">
+                                    <div class="card" :style="{left: `${arc.left}px`, bottom: `calc(${Math.max(arc.base, 0)}px - 0em)`}">
+                                        <div class="info">
+                                            <div class="title">{{arc.name}}</div>
+                                            <div class="details">
+                                                <div class="date">{{arc.dateStr}}</div>
+                                                <div class="place">{{arc.loc}}</div>
+                                                <div class="note" v-if="arc.note" v-html="arc.note"></div>
+                                            </div>
+                                        </div>
+    
+                                        <div v-if="arc.recId" class="openRecord" @click="setTheaterRecord(arc.recId)"></div>
+                                        <div v-if="isAdmin" class="editButton" @click="openEditForm(arc)"></div>
+                                    </div>
+                                </div>
+    
+                            </div>
+    
+    
+                            <div v-for="event in timelineEls.events" :id="event.idString" class="item-wrapper eventPos" :class="{anchor: event.eventType == 'anchor', hasImg: event.img, ext: event.group === 'ext', hardFocus: event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
+                                <div class="content">
+    
+                                    <div class="line" :style="{height: event.relY+'px'}">
+                                        <div class="date-tag">{{event.dateStr}}</div>
+                                    </div>
+    
+                                    <div class="card-wrapper">
+                                        <div class="card">
+                                            <div v-if="event.img" class="image">
+                                                <img :src="event.img" :alt="event.name">
+                                                <div class="openTheater" @click="setTheaterImageByObj(event)"></div>
+                                            </div>
+    
+                                            <div class="info">
+                                                <div class="title">{{event.name}}</div>
+                                                <div class="details">
+                                                    <div class="date">{{event.dateStr}}</div>
+                                                    <div class="place">{{event.loc}}</div>
+                                                    <div class="note" v-if="event.note" v-html="event.note"></div>
+                                                </div>
+                                            </div>
+    
+                                            <div v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"></div>
+                                            <div v-if="isAdmin" class="editButton" @click="openEditForm(event)"></div>
+                                        </div>
+    
+                                        <div class="pointer-wrapper">
+                                            <div class="pointer"></div>
+                                        </div>
+                                    </div>
+    
+                                </div>
                             </div>
                         </div>
                     </div>
 
 
-                    <div id="gallery">
+                </div>
 
-                        <div v-for="arc in timelineEls.arcs" class="arc-group item-wrapper"
-                            :class="{hardFocus: arc.hasFocus}" :style="{color: arc.color}">
-
-                            <svg :style="{position: 'absolute', left: arc.left, bottom: arc.base}"
-                                :height="arc.top-arc.base" :width="arc.right-arc.left">
-                                <line v-for="i in arc.points.length" v-if="arc.points[i]"
-                                    :x1="arc.points[i-1].relX - arc.left" :y1="arc.points[i-1].relY - arc.base"
-                                    :x2="arc.points[i].relX - arc.left" :y2="arc.points[i].relY - arc.base"
-                                    :style="{stroke: arc.color, strokeWidth: 3}" />
-                            </svg>
+                <div id="quizOverlay" v-show="showQuiz">
 
 
-                            <div class="content">
-                                <div class="card" :style="{left: `${arc.left}px`, bottom: `${arc.base}px`}">
-                                    <div class="info">
-                                        <div class="title">{{arc.name}}</div>
-                                        <div class="details">
-                                            <div class="date" v-if="!arc.img">{{arc.dateStr}}</div>
-                                            <div class="place">{{arc.loc}}</div>
-                                            <div class="note" v-if="arc.note" v-html="arc.note"></div>
+                    <div id="slides_area">
+                        <div class="deck_slider">
+
+                            <div v-for="card in quizCards" @click="reverseCard(card)" class="qcard" :class="{reversed: show_Qback, active: card.id === activeQIdx, left: card.id < activeQIdx, right: card.id > activeQIdx}">
+                                <div class="qcard-height">
+                                    <div class="qcard-content">
+
+                                        <div v-if="!show_Qback">
+                                            <div v-if="card.img" class="card-image-wrapper">
+                                                <img :src="card.img" />
+                                            </div>
+                                            <div v-else>
+                                                <h3>{{card.name}}</h3>
+                                            </div>
                                         </div>
-                                    </div>
-
-                                    <div v-if="arc.recId" class="openRecord" @click="setTheaterRecord(arc.recId)"></div>
-                                    <div v-if="isAdmin" class="editButton" @click="openEditForm(arc)"></div>
-                                </div>
-                            </div>
-
-                        </div>
-
-
-                        <div v-for="event in timelineEls.events" :id="event.idString" class="item-wrapper eventPos"
-                            :class="{anchor: event.eventType == 'anchor', hasImg: event.img, ext: event.group === 'ext', hardFocus: event.hasFocus}"
-                            :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
-                            <div class="content">
-
-                                <div class="line" :style="{height: event.relY+'px'}">
-                                    <div class="date-tag">{{event.dateStr}}</div>
-                                </div>
-
-                                <div class="card-wrapper">
-                                    <div class="card">
-                                        <div v-if="event.img" class="image">
-                                            <img :src="event.img" :alt="event.name">
-                                            <div class="openTheater" @click="setTheaterImage(event.elId)"></div>
-                                        </div>
-
-                                        <div class="info">
-                                            <div class="title">{{event.name}}</div>
+                                        <div v-if="show_Qback">
+                                            <h3 class="title">{{card.name}}</h3>
                                             <div class="details">
-                                                <div class="date" v-if="!event.img">{{event.dateStr}}</div>
-                                                <div class="place">{{event.loc}}</div>
-                                                <div class="note" v-if="event.note" v-html="event.note"></div>
+                                                <div class="date">{{card.dateStr}}</div>
+                                                <div class="place">{{card.loc}}</div>
+                                                
+                                                <br><br>
+                                                <div class="note" v-if="card.note" v-html="card.note" style="white-space: pre-wrap;"></div>
                                             </div>
                                         </div>
 
-                                        <div v-if="event.recId" class="openRecord"
-                                            @click="setTheaterRecord(event.recId)"></div>
-                                        <div v-if="isAdmin" class="editButton" @click="openEditForm(event)"></div>
-                                    </div>
-
-                                    <div class="pointer-wrapper">
-                                        <div class="pointer"></div>
                                     </div>
                                 </div>
-
                             </div>
+
+
                         </div>
+
+
+                        <div id="controls">
+                            <button @click="activeQIdx = Math.max(0, activeQIdx - 1)">👈</button>
+                            <input v-model="displayQIdx" type="number" min="1" :max="quizCards.length" step="1" style="text-align: center;">
+                            <button @click="activeQIdx = Math.min(quizCards.length - 1, activeQIdx + 1)">👉</button>
+                        </div>
+                        
+                        
+                        <div id="leaveQuizBox">
+                            <div id="leaveQuiz" @click="showQuiz = false" class="btn btn-secondary">Leave Quiz</div>
+                        </div>
+
                     </div>
+
                 </div>
+
 
                 <div id="controls">
                     <div id="zoomBox">
@@ -116,14 +177,15 @@
                             <div id="addEvent" @click="openAddForm('event')" class="btn">+ Add Event</div>
                             <div id="addArc" @click="openAddForm('arc')" class="btn">+ Add Arc</div>
                             <div id="logout" @click="logoutAdmin" class="btn">Logout</div>
-
                         </div>
                         <div v-else>
                             <div id="login" @click="loginAdmin" class="btn">Login</div>
                         </div>
+                        
+                        <div id="startQuiz" @click="showQuiz = true" class="btn btn-primary" style="color: #fff !important">Quiz Me!</div>
+                    
                     </div>
                 </div>
-
 
                 <div id="right_panel" :class="{open: addingItem || editingItem}">
                     <div class="content-wrapper">
