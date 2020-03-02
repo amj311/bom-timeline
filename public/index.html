@@ -24,9 +24,12 @@
                         
                     <div id="timeline-box" class="fs-inner-wrapper">
     
-                        <div id="markers" onwheel="app.handleTimelineScroll(event)">
+
+                        <div id="markers" onwheel="app.handleTimelineScroll(event)" :style="{overflow: 'hidden', width: `${numEras * eraDuration * yearUnit}px`}">
+                            <div id="scrollmarker" :style="{left: `${zoomTargetPos}px`}"></div>
+
                             <div id="flatLine" :style="{bottom: `${dividerHeight}rem`}"></div>
-                            <div v-for="era in eras" class="century-block" :id="era" :style="{width: `${eraWidth}px`}">
+                            <div v-for="era in eras" class="century-block" :id="era" :style="{width: `${yearUnit * eraDuration}px`}">
                                 <div class="era-label">
                                     <span v-if="era < 0">{{-era}} BC</span>
                                     <span v-else>{{era}} AD</span>

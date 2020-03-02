@@ -31,8 +31,11 @@ var app = new Vue ({
         numEras: 9,
         eraDuration: null,
         yearUnit: 20,
+        dayUnit: this.yearUnit / 365,
         minYearUnit: null,
         zoomTimeout: false,
+        zoomTargetPos: 0,
+
         coverImg: true,
         theaterMode: "img",
         theaterOn: false,
@@ -118,6 +121,7 @@ var app = new Vue ({
           // },
         yearUnit: function() {
             this.checkEraDuration()
+            this.dayUnit = this.yearUnit / 365;
         },
         
         
@@ -438,22 +442,28 @@ var app = new Vue ({
 
         handleTimelineScroll(e) {
             var y = -e.deltaY;
-            let ival = 50;
+            let ival = 100;
 
             if (y != 0 && !this.zoomTimeout) {
                 if (Math.abs(y) > 1) {
                     let oldUnit = this.yearUnit;
 
+                    let scrollBox = document.querySelector('#timeline-box');
+                    let vp = scrollBox.getBoundingClientRect();
+                    let oldScrollPos = scrollBox.scrollLeft;
+                    let mouseX = e.clientX - vp.x;
+                    let mouseTimePos = scrollBox.scrollLeft + mouseX;
+
+
                     let delta = y / 500;
                     this.changeYearUnit(delta)
 
-                    // // modify scroll position relative to mouse
-                    // let scrollBox = document.querySelector('#timeline-box');
-                    // let vp = scrollBox.getBoundingClientRect();
-                    // let mouseX = e.clientX - vp.x;
+                    let newMPos = mouseTimePos * (this.yearUnit / oldUnit);
+                    scrollBox.scrollLeft = newMPos - mouseX;
 
-                    // let newMPos = (scrollBox.scrollLeft + mouseX) * this.yearUnit / oldUnit;
-                    // scrollBox.scrollLeft = newMPos - mouseX;
+                    let newScrollPos = scrollBox.scrollLeft;
+                    console.log(newScrollPos - oldScrollPos)
+
 
                     this.zoomTimeout = true;
                     setTimeout(function() { app.zoomTimeout = false }, ival)
@@ -471,20 +481,28 @@ var app = new Vue ({
             this.handleButtonZoom(-0.4)
         },
         handleButtonZoom(delta){
-            let oldUnit = this.yearUnit;
-            this.changeYearUnit(delta)
-
-            // modify scroll position to maintain center
             let scrollBox = document.querySelector('#timeline-box');
             let vp = scrollBox.getBoundingClientRect();
-            let newMPos = (scrollBox.scrollLeft + vp.width/2) * this.yearUnit / oldUnit;
-            scrollBox.scrollLeft = newMPos - vp.width/2;
+
+            let oldCenter = (scrollBox.scrollLeft + vp.width/2)
+            this.zoomTargetPos = oldCenter;
+
+            let oldUnit = this.yearUnit;
+            this.changeYearUnit(delta)
+            let unitRatio = this.yearUnit / oldUnit;
+
+            this.zoomTargetPos = oldCenter * unitRatio;
+            setTimeout( function() {
+                document.getElementById('scrollmarker').scrollIntoView({ inline: 'center'})
+            }, 5 )
+
         },
 
         changeYearUnit(delta) {
             this.yearUnit = Math.max(this.minYearUnit, this.yearUnit * (1 + delta));
             // console.log(this.minYearUnit, this.yearUnit);
         },
+
 
         checkEraDuration() {
             let range = this.dateMax - this.startYear;
@@ -542,9 +560,6 @@ var app = new Vue ({
             }
             return array;
         },
-        eraWidth() {
-            return this.yearUnit*this.eraDuration;
-        },
 
         timelineEls() {
             this.arcs.forEach(a => a.points = [])
@@ -552,13 +567,10 @@ var app = new Vue ({
             let events = []
 
             this.items.filter( i => i.type === 'event' ).forEach ( event => {
-                // if (event.eventType != 'anchor') event.eventType = "normal";
-                // this.tempItem.type = "event";
-                // this.addItem(event)
 
-                let yearPos = (event.year - this.startYear) * this.yearUnit;
-                let monthPos = event.month * this.yearUnit / 12;
-                let dayPos = event.day * this.yearUnit / (12 * 31) 
+                let yearPos = (event.year - this.startYear) * 365 * this.dayUnit;
+                let monthPos = event.month * 30 * this.dayUnit;
+                let dayPos = event.day * this.dayUnit; 
                 event.relX = yearPos + monthPos + dayPos;
                 
                 event.relY = (event.pos/100) * document.getElementById('timeline-box').offsetHeight;
