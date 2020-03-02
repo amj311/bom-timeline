@@ -39,7 +39,7 @@ var app = new Vue ({
         subsOn: true,
         theaterData: {},
         records: [],
-        MONTH: ["No Month", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "Novemeber", "December"],
+        MONTH: ["No Month", "Nisan", "Iyar", "Sivan", "Tammuz", "Ab", "Elul", "Tishri", "Heshvan", "Kisiev", "Tebeth", "Shebat", "Adar"],
         isMobile: false,
         dividerHeight: 0,
         handFont: true,
