@@ -32,7 +32,7 @@
                             <div v-for="era in eras" class="century-block" :id="era" :style="{width: `${yearUnit * eraDuration}px`}">
                                 <div class="era-label">
                                     <span v-if="era < 0">{{-era}} BC</span>
-                                    <span v-else>{{era}} AD</span>
+                                    <span v-else>{{era + 1}} AD</span>
                                 </div>
                             </div>
                         </div>

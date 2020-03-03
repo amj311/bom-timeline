@@ -574,8 +574,10 @@ var app = new Vue ({
 
             this.items.filter( i => i.type === 'event' ).forEach ( event => {
 
+                
                 let yearPos = (event.year - this.startYear) * 365 * this.dayUnit;
-                let monthPos = (event.month-1) * 30 * this.dayUnit;
+                if (event.year > 0) yearPos -= 365 * this.dayUnit;
+                let monthPos = (event.month-1) * 31 * this.dayUnit;
                 let dayPos = event.day * this.dayUnit; 
                 event.relX = yearPos + monthPos + dayPos;
                 
