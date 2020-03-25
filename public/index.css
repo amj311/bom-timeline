@@ -245,7 +245,7 @@ div#flatLine {
     transform: translate(-50%, 50%);
 }
 .eventPos.anchor {
-    z-index: 1;
+    /*z-index: 1;*/
     padding: 0;
 }
 .eventPos.hasImg {
@@ -321,7 +321,7 @@ div#flatLine {
 }
 .arc-group .card {
     z-index: 5;
-    transform: translate(-50%, 100%);
+    transform: translate(00%, 100%);
 }
 
 .card > * {
