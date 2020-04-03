@@ -245,7 +245,7 @@ div#flatLine {
     background: #fff;
     padding:.25em;
     z-index: 2;
-    filter: drop-shadow(0 0 2px #0002);
+    box-shadow: 0 0 2px #0002;
     transform: translate(-50%, 50%);
 }
 
@@ -495,7 +495,7 @@ div#timeline-wrapper #controls > div {
 div#controls .btn {
     color: initial !important;
     background: #fff;
-    box-shadow: 0 0 3px;
+    box-shadow: 0 0 3px #0006;
     margin: .5em;
     text-align: center;
     line-height: 1.5em;
