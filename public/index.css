@@ -223,6 +223,9 @@ div#flatLine {
 .item-wrapper:hover .content, .item-wrapper.hardFocus .content, .item-wrapper.focus .content, .item-wrapper:target .content {
     display: block;
 }
+.item-wrapper:hover .card, .item-wrapper.hardFocus .card, .item-wrapper.focus .card, .item-wrapper:target .card {
+    box-shadow: 2px 2px 5px #0003;
+}
 
 .focusOne .item-wrapper:not(.hardFocus) {
     opacity: .5;
@@ -242,10 +245,14 @@ div#flatLine {
     background: #fff;
     padding:.25em;
     z-index: 2;
+    filter: drop-shadow(0 0 2px #0002);
     transform: translate(-50%, 50%);
 }
+
+.eventPos.minor {
+    padding: 0;
+}
 .eventPos.anchor {
-    /*z-index: 1;*/
     padding: 0;
 }
 .eventPos.hasImg {
@@ -311,6 +318,7 @@ div#flatLine {
     border: 2px solid;
     background: #fff;
     position: absolute;
+    border-radius: .5em;
     display: flex;
     left: 0;
     bottom: 0;
