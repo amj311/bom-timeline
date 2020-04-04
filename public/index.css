@@ -245,12 +245,12 @@ div#flatLine {
     background: #fff;
     padding:.25em;
     z-index: 2;
-    box-shadow: 0 0 2px #0002;
+    box-shadow: 0 0 2px #0006;
     transform: translate(-50%, 50%);
 }
 
-.eventPos.minor {
-    padding: 0;
+.eventPos.secondary {
+    padding: 1px;
 }
 .eventPos.anchor {
     padding: 0;
@@ -342,19 +342,16 @@ div#flatLine {
     color: #fff;
 }
 
-.hasImg .image {
+.image {
     background-image: url(/images/loading.gif);
     background-position: center;
     background-repeat: no-repeat;
-    height: 6vh;
+    height: 8vh;
     max-height: 8em;
     min-height: 4em;
     position: relative;
 }
 
-.hasImg:hover .image {
-    height: 10vh;
-}
 
 .image img {
     color: transparent;

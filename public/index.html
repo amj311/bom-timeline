@@ -69,7 +69,7 @@
                             </div>
     
     
-                            <div v-for="event in timelineEls.events" :id="event.idString" class="item-wrapper eventPos" :class="{anchor: event.eventType == 'anchor', hasImg: event.img, ext: event.group === 'ext', hardFocus: event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
+                            <div v-for="event in timelineEls.events" :id="event.idString" class="item-wrapper eventPos" :class="{anchor: event.eventType == 'anchor', hardFocus: event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
                                 <div class="content">
     
                                     <div class="line" :style="{height: event.relY+'px'}">
