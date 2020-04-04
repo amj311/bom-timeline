@@ -255,8 +255,7 @@ div#flatLine {
 .eventPos.anchor {
     padding: 0;
 }
-.eventPos.hasImg {
-    z-index: 2;
+.eventPos.hasImg .content {
 }
 .eventPos.ext {
     bottom: 1rem !important;
@@ -366,23 +365,7 @@ div#flatLine {
 .image .openTheater {
     display: none;
     position: absolute;
-    top: 0;
-    right: 0;
-    font-size: 1em;
-    height: 100%;
-    width: 100%;
-    padding: .3em;
-    text-align: right;
-    background: #0003;
     cursor: pointer;
-}
-.image .openTheater::after {
-    content: '🔍';
-}
-.eventPos:hover .openTheater {
-    display: block;
-}
-.mobile .openTheater {
     top: .2em;
     right: .2em;
     font-size: 1em;
@@ -393,7 +376,12 @@ div#flatLine {
     border-radius: .3em;
     background: #00000055;
 }
-
+.image .openTheater::after {
+    content: '🔍';
+}
+.eventPos:hover .openTheater {
+    display: block;
+}
 
 .card .info {
     max-width: 18em;
@@ -425,6 +413,7 @@ div#flatLine {
 }
 .card .note > * {
     display: inline-block;
+    white-space: pre-wrap;
 }
 
 .card .openRecord {
@@ -766,6 +755,7 @@ div#subs > div {
     max-height: 30vh;
     overflow-y: auto;
     padding-right: 1em;
+    white-space: pre-wrap;
 }
 
 #subs .title {

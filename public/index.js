@@ -33,6 +33,7 @@ var app = new Vue ({
         yearUnit: 20,
         dayUnit: this.yearUnit / 365,
         minYearUnit: null,
+        initYearUnit: 1,
         canZoom: true,
         zoomTargetPos: 0,
 
@@ -106,13 +107,17 @@ var app = new Vue ({
 
         this.isMobile = window.mobileAndTabletCheck();
 
-        this.setZoom();
+        this.setZoom(true);
         
         
         // Qwizard
         this.displayQIdx = this.activeQIdx + 1;
 
         this.isLoading = false;
+        
+        setTimeout(function() {
+            app.resetZoom();
+        }, 0);
     },
 
     watch: {
@@ -423,7 +428,7 @@ var app = new Vue ({
             this.subsOn = !this.subsOn;
         },
 
-        setZoom() {
+        setZoom(setInit) {
             let viewWidth = document.getElementById('timeline-box').offsetWidth;
 
             let years = this.timelineEls.events.map(e => e.year)
@@ -432,7 +437,7 @@ var app = new Vue ({
             let range = this.dateMax - this.dateMin;
 
             this.minYearUnit = ((viewWidth - 50) / (range))
-            this.yearUnit = this.minYearUnit;
+            this.yearUnit = setInit ? this.initYearUnit : this.minYearUnit;
 
             this.checkEraDuration()
 
@@ -481,12 +486,18 @@ var app = new Vue ({
             this.handleButtonZoom(0.4)
         },
         resetZoom(){
-            this.yearUnit = this.minYearUnit;
+            this.yearUnit = this.initYearUnit;
+            setTimeout( function() {
+                document.getElementById('timeline-box').scrollLeft = document.getElementById('timeline-box').scrollWidth/2 - document.getElementById('timeline-box').offsetWidth/2;
+            }, 0 )
+            
         },
         handleButtonZoomOut(){
             this.handleButtonZoom(-0.4)
         },
         handleButtonZoom(delta){
+            app.isLoading = true;
+            
             let scrollBox = document.querySelector('#timeline-box');
             let vp = scrollBox.getBoundingClientRect();
 
@@ -500,7 +511,9 @@ var app = new Vue ({
             this.zoomTargetPos = oldCenter * unitRatio;
             setTimeout( function() {
                 document.getElementById('scrollmarker').scrollIntoView({ inline: 'center'})
-            }, 5 )
+                app.isLoading = false;
+            }, 0 )
+            
 
         },
 
@@ -646,4 +659,8 @@ document.addEventListener('keyup', e => {
     else if (e.keyCode === 27 && app.theaterOn) { return app.closeTheater() }
 })
 
-document.addEventListener('scroll', app.doScroll)
+window.addEventListener('resize', () => {
+    setTimeout( () => {
+        app.handleButtonZoom(.0001)
+    })
+}, 5)
