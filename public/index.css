@@ -297,10 +297,11 @@ div#flatLine {
 }
 
 
-.line {
+.item-wrapper .line {
     position: absolute;
     border-left: 1px solid;
     box-sizing: content-box;
+    pointer-events: none;
 }
 
 
