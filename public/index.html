@@ -200,9 +200,9 @@
                             <div v-if="tempItem.type == 'event'">
                                 <div>
                                     Type of Event:
-                                    <select v-model="tempItem.eventType">
-                                        <option value="normal">Normal</option>
-                                        <option value="anchor">Anchor</option>
+                                    <select v-model="tempItem.eventType" style="text-transform: capitalize;">
+                                        <option v-for="type in eventTypes" :value="type">{{type}}</option>
+                                        <!--<option value="anchor">Anchor</option>-->
                                     </select>
                                 </div>
 
@@ -218,18 +218,6 @@
                                 <p v-if="tempItem.eventType == 'normal'">
                                     <label for="img">Image URL</label><br>
                                     <input id="img" v-model="tempItem.img">
-                                </p>
-                                <p v-if="tempItem.img">
-                                    <label for="tag">Image Tag</label><br>
-                                    <input id="tag" v-model="tempItem.elId">
-                                </p>
-                                <p v-if="tempItem.eventType == 'normal'">
-                                    <label for="recId">Link to Record</label><br>
-                                    <input id="recId" list="recIdList" v-model="tempItem.recId">
-                                    <datalist id="recIdList">
-                                        <option v-for="option in getOptionsFor(records, 'elId')" :value="option">
-                                        </option>
-                                    </datalist>
                                 </p>
                                 <p>
                                     <label for="year">Year</label><br>
@@ -248,12 +236,13 @@
                                         </div>
                                     </div>
                                 </p>
-                                <p v-if="tempItem.eventType == 'normal'">
-                                    <label for="group">List</label><br>
-                                    <select id="group" v-model="tempItem.group">
-                                        <option value="int">Main Events</option>
-                                        <option value="ext">Exterior Events</option>
-                                    </select>
+                                <p>
+                                    <label for="recId">Add to Lists</label><br>
+                                    <input id="recId" list="recIdList" v-model="tempItem.recId">
+                                    <datalist id="recIdList">
+                                        <option v-for="option in getOptionsFor(records, 'elId')" :value="option">
+                                        </option>
+                                    </datalist>
                                 </p>
                                 <p>
                                     <label for="arcId">Arc</label><br>

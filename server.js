@@ -36,7 +36,16 @@ const arcSchema = new mongoose.Schema({
   color: {
     type: String,
     default: '#bbb',
-  }
+  },
+  note: String,
+  isMainStory: {
+    default: false
+  },
+  drawLines: {
+    default: true
+  },
+  lineAlgorithm: String,
+  
 });
 
 // Create a model for arcs in the timeline.
@@ -113,27 +122,25 @@ app.delete('/api/arcs/:id', async(req, res) => {
 // Create a scheme for items in the timeline: a title and a path to an image.
 const timelineObjectSchema = new mongoose.Schema({
   name: String,
-  artist: String,
   day: Number,
   month: Number,
   year: Number,
   pos: Number,
   img: String,
-  period: String,
+  width: Number,
   note: String,
   type: String,
   eventType: {
     type: String,
     default: 'noraml',
   },
-  recId: String,
-  elId: String,
-  group: String,
   title: String,
   body: String,
   loc: String,
   order: String,
   arcId: String,
+  lists: [String],
+  prophecies: [String],
 });
 
 // Create a model for items in the timeline.

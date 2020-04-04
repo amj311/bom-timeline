@@ -53,6 +53,8 @@ var app = new Vue ({
 
         tempItem: {},
 
+        itemTypes: ['event','arc'],
+        eventTypes: ['normal', 'seconday', 'image', 'floating', 'anchor'],
         addingType: "",
         addingItem: false,
         newEventDefault: {
@@ -242,10 +244,10 @@ var app = new Vue ({
                         "img": null,
                         "period": null,
                         "id": 2,
-                        "group": "int",
-                        "recId": null,
                         "note": "",
                         "arcId": null,
+                        "lists": [],
+                        "prophecies": [],
                         isNewPlaceholder: true,
                     };
                     this.items.push(this.tempItem)
@@ -596,7 +598,7 @@ var app = new Vue ({
                 
                 event.relY = (event.pos/100) * document.getElementById('timeline-box').offsetHeight;
 
-                event.idString = `event_${events.length}`
+                event.idString = `event_${event._id || events.length}`
                 event.yearStr = event.year < 0 ?
                     -event.year+' BC' : event.year+' AD';
                 
