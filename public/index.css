@@ -244,21 +244,26 @@ div#flatLine {
     border-radius: 50%;
     background: #fff;
     padding:.25em;
-    z-index: 2;
+    z-index: 3;
     box-shadow: 0 0 2px #0006;
     transform: translate(-50%, 50%);
 }
 
 .eventPos.secondary {
-    padding: 1px;
+    padding: 2px;
+    border: 0.2em solid;
 }
 .eventPos.anchor {
     padding: 0;
+    box-shadow: none;
+    border: 1px solid;
+    background: transparent;
 }
-.eventPos.hasImg .content {
+.isAdmin .eventPos.anchor {
+    border: 2px solid;
 }
-.eventPos.ext {
-    bottom: 1rem !important;
+#app:not(.isAdmin) .eventPos.anchor .content {
+    display: none;
 }
 
 .eventPos .content {

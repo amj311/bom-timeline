@@ -615,9 +615,6 @@ var app = new Vue ({
                     event.arc.points.push({"relY": event.relY, "relX": event.relX})
                 }
                 
-                event.classes = []
-                event.classes.push(event.eventType)
-
                 events.push(event)
             })
 
