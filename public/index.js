@@ -445,15 +445,23 @@ var app = new Vue ({
         },
         
         highlightEventByIdString(idString) {
-            console.log(idString)
-            let el = document.getElementById(idString)
-            if (el) this.scrollToEl(el)
+            let waitTime = 0;
+            
+            if (this.isMobile) {
+                waitTime = 1000;
+                this.toggleMenu()
+            }
+
+            setTimeout( () => {
+                let el = document.getElementById(idString)
+                if (el) app.scrollToEl(el)
+            }, waitTime)
         },
         
         scrollToEl(el){
             el.classList.add('focus')
             el.scrollIntoView({behavior: "smooth", block: "center", inline: "center"})
-            setTimeout( function(){ el.classList.remove('focus') }, 2000)
+            setTimeout( function(){ el.classList.remove('focus') }, 5000)
         },
 
         openTheater() {
@@ -541,25 +549,28 @@ var app = new Vue ({
             this.handleButtonZoom(-0.4)
         },
         handleButtonZoom(delta){
-            app.isLoading = true;
-            
-            let scrollBox = document.querySelector('#timeline-box');
-            let vp = scrollBox.getBoundingClientRect();
-
-            let oldCenter = (scrollBox.scrollLeft + vp.width/2)
-            this.zoomTargetPos = oldCenter;
-
-            let oldUnit = this.yearUnit;
-            this.changeYearUnit(delta)
-            let unitRatio = this.yearUnit / oldUnit;
-
-            this.zoomTargetPos = oldCenter * unitRatio;
-            setTimeout( function() {
-                document.getElementById('scrollmarker').scrollIntoView({ inline: 'center'})
-                app.isLoading = false;
-            }, 0 )
-            
-
+            if (this.canZoom) {
+                app.isLoading = true;
+                this.pauseZoom()
+                
+                let scrollBox = document.querySelector('#timeline-box');
+                let vp = scrollBox.getBoundingClientRect();
+    
+                let oldCenter = (scrollBox.scrollLeft + vp.width/2)
+                this.zoomTargetPos = oldCenter;
+    
+                let oldUnit = this.yearUnit;
+                this.changeYearUnit(delta)
+                let unitRatio = this.yearUnit / oldUnit;
+    
+                this.zoomTargetPos = oldCenter * unitRatio;
+                setTimeout( function() {
+                    document.getElementById('scrollmarker').scrollIntoView({ inline: 'center'})
+                    app.isLoading = false;
+                    app.allowZoom()
+                }, 0 )
+                
+            }
         },
 
         changeYearUnit(delta) {

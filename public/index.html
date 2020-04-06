@@ -203,7 +203,7 @@
                 </div>
 
 
-                <div id="mainPanel">
+                <div id="mainPanel" v-show="!(isMobile && menuIsOpen)">
 
                     <div id="timeline-box" class="fs-inner-wrapper" onwheel="app.handleTimelineScroll(event)">
 
@@ -275,6 +275,8 @@
                                                     <div class="date">{{event.dateStr}}</div>
                                                     <div class="place">{{event.loc}}</div>
                                                     <div class="note" v-if="event.note" v-html="event.note"></div>
+                                                    <div class="list lists" v-if="event.lists[0]"><i>Lists: </i><span v-for="list in event.lists"><a href="#" @click="">{{list}}</a></span></div>
+                                                    <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="">{{prophecy}}</a></span></span></div>
                                                 </div>
                                             </div>
 
@@ -297,6 +299,9 @@
 
                     </div>
 
+
+                    <div v-if="isLoading" id="loadingSplash"></div>
+
                     <div id="controls">
                         <div id="zoomBox">
                             <div id="zoomIn" @click="handleButtonZoomIn()" class="btn btn-sm btn-light zoom"></div>
@@ -318,8 +323,7 @@
                         </div>
                     </div>
 
-
-                    <div v-if="isLoading" id="loadingSplash"></div>
+                    <div v-if="menuIsOpen && isMobile" id="menuCloserSplash" @click="toggleMenu()"></div>
 
                 </div>
 
