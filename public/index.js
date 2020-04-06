@@ -37,6 +37,7 @@ var app = new Vue ({
         initYearUnit: 1,
         canZoom: true,
         zoomTargetPos: 0,
+        minEventDistance: 10,
 
         coverImg: true,
         theaterMode: "img",
@@ -72,7 +73,6 @@ var app = new Vue ({
             "id": 2,
             "group":"int",
             "recId":null,
-            lists: [],
             isNewPlaceholder: true,
         },
         newListName: '',
@@ -121,6 +121,7 @@ var app = new Vue ({
         setTimeout(function() {
             app.resetZoom();
         }, 0);
+        
     },
 
     watch: {
@@ -131,7 +132,8 @@ var app = new Vue ({
             this.checkEraDuration()
             this.dayUnit = this.yearUnit / 365;
         },
-        
+        items: function() {
+        },
         
         // Qwizard
         activeQIdx: () => {
@@ -242,6 +244,7 @@ var app = new Vue ({
                         "arcId": null,
                         "lists": [],
                         "prophecies": [],
+                        scriptureLink: null,
                         isNewPlaceholder: true,
                     };
                     this.items.push(this.tempItem)
@@ -282,6 +285,9 @@ var app = new Vue ({
         handleChangeListName(listType, listName, newName){
             // if (this.getOptionsFor(this.timelineEls.events, listType).lastIndexOf(newName) >= 0) return alert('that list already exists!')
             this.timelineEls.events.forEach( e => e[listType].filter( l => l != listName))
+        },
+        codifyString(string){
+            return string.split(' ').join('_')
         },
 
         handleSubmitForm(){
@@ -388,6 +394,19 @@ var app = new Vue ({
         getArcById(id) {
             return this.arcs.filter(a => a._id === id)[0]
         },
+        
+        getPrevEvent(id) {
+            for (let i = 0; i < this.timelineEls.events.length; i++) {
+                if ( this.timelineEls.events[i].id == id) return this.timelineEls.events[i-1];
+            }
+            return false;
+        },
+        getNextEvent(id) {
+            for (let i = 0; i < this.timelineEls.events.length; i++) {
+                if ( this.timelineEls.events[i].id == id) return this.timelineEls.events[i+1];
+            }
+            return false;
+        },
 
         setTheaterImageByTag(shortId) {
             this.theaterMode = 'img'
@@ -424,6 +443,13 @@ var app = new Vue ({
             }
 
         },
+        
+        highlightEventByIdString(idString) {
+            console.log(idString)
+            let el = document.getElementById(idString)
+            if (el) this.scrollToEl(el)
+        },
+        
         scrollToEl(el){
             el.classList.add('focus')
             el.scrollIntoView({behavior: "smooth", block: "center", inline: "center"})
@@ -506,6 +532,9 @@ var app = new Vue ({
             setTimeout( function() {
                 document.getElementById('timeline-box').scrollLeft = document.getElementById('timeline-box').scrollWidth/2 - document.getElementById('timeline-box').offsetWidth/2;
             }, 0 )
+            setTimeout(function() {
+                app.handleButtonZoom(.001);
+            }, 2);
             
         },
         handleButtonZoomOut(){
@@ -629,7 +658,7 @@ var app = new Vue ({
                     event.arc.points.push({"relY": event.relY, "relX": event.relX})
                 }
                 events.push(event)
-                events.sort( (a,b) => a.relX - b.relX)
+                this.items = this.items.sort( (a,b) => a.relX - b.relX )
             })
 
             this.arcs.forEach(arc => {

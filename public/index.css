@@ -406,6 +406,11 @@ div#flatLine {
     font-size: .9em;
     line-height: 1.35;
 }
+
+.details .list span:last-child::after {content: '';}
+
+.details .list span::after {content: ', ';}
+
 .event-info-layout .note {
     max-height: 5em;
     overflow-y: auto;
@@ -422,46 +427,28 @@ div#flatLine {
     white-space: pre-wrap;
 }
 
-.event-info-layout .openRecord {
-    color: #000;
-    background: #fff;
-    width: 1.8em;
-    height: 1.8em;
-    line-height: 1.8em;
-    font-size: .9em;
+
+
+.event-info-layout .buttons {
+    display: flex;
+    flex-direction: column;
+}
+.event-info-layout .buttons > a {
+    opacity: .5;
+    color: #555;
+    font-size: 1.3em;
+    margin-bottom: -.3em;
     text-align: center;
-    border: 1px solid #00000033;
     cursor: pointer;
-    display: none;
+    user-select: none;
+    text-decoration: none;
 }
-.openRecord:hover {
-    background: #f3f3f3;
-}
-.event-info-layout:hover .openRecord {
-    display: block;
-}
-.openRecord::before {
-    content: '📜';
+.event-info-layout .buttons > a:hover {
+    opacity: 1;
 }
 
-
-
-.event-info-layout .editButton {
-    color: #000;
-    background: #fff;
-    width: 1.8em;
-    height: 1.8em;
-    line-height: 1.8em;
-    font-size: .9em;
-    text-align: center;
-    border: 1px solid #00000033;
-    cursor: pointer;
-}
-.editButton:hover {
-    background: #f3f3f3;
-}
-.editButton::before {
-    content: '📝';
+.event-info-layout .buttons i.material-icons {
+    font-size: inherit;
 }
 
 
@@ -592,6 +579,7 @@ li.nav-item {
     width: 100%;
     height: calc(100% - 2.2rem);
     flex-direction: column;
+    overflow-y: auto;
 }
 .tab-content .tab-pane.active {
     display: flex;
@@ -624,8 +612,12 @@ li.nav-item {
     max-height: none;
 }
 
-
-
+.card-header {
+    padding: .5em;
+}
+.card-body {
+    padding: 0;
+}
 
 
 

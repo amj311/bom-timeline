@@ -151,6 +151,11 @@ const timelineObjectSchema = new mongoose.Schema({
     default: [],
     required: true,
   },
+  scriptureLink: {
+    type: String,
+    default: undefined,
+    required: true,
+  },
 });
 
 // Create a model for items in the timeline.
