@@ -58,7 +58,7 @@
                                         <div class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
 
                                             <div v-if="event.img" class="event-image" :style="{'background-image': `url(${event.img})`}">
-                                                <div class="openTheater" @click="setTheaterImageByObj(event)"></div>
+                                                <div class="openTheater" @click="setTheaterImageByObj(event)"><i class="material-icons">fullscreen</i></div>
                                             </div>
 
                                             <div class="event-info-layout">
@@ -69,9 +69,11 @@
                                                         <div class="date">{{event.dateStr}}</div>
                                                         <div class="place">{{event.loc}}</div>
 
-                                                        <div class="note" v-if="event.note" v-html="event.note"></div>
-                                                        <div class="list lists" v-if="event.lists[0]"><i>Lists: </i><span v-for="list in event.lists"><a href="#" @click="openMenuToList('lists', list)">{{list}}</a></span></div>
-                                                        <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="openMenuToList('prophecies', prophecy)">{{prophecy}}</a></span></div>
+                                                        <div v-if="event.note || event.lists[0] || event.prophecies" class="long-details">
+                                                            <div class="note" v-if="event.note">{{event.note}}</div>
+                                                            <div class="list lists" v-if="event.lists[0]"><span v-for="list in event.lists"><a href="#" @click="openMenuToList('lists', list)">{{list}}</a></span></div>
+                                                            <div class="list prophecies" v-if="event.prophecies[0]"><span v-for="prophecy in event.prophecies"><a href="#" @click="openMenuToList('prophecies', prophecy)">{{prophecy}}</a></span></div>
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -109,7 +111,7 @@
                                                         <div class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
 
                                                             <div v-if="event.img" class="event-image" :style="{'background-image': `url(${event.img})`}">
-                                                                <div class="openTheater" @click="setTheaterImageByObj(event)"></div>
+                                                                <div class="openTheater" @click="setTheaterImageByObj(event)"><i class="material-icons">fullscreen</i></div>
                                                             </div>
 
                                                             <div class="event-info-layout">
@@ -120,9 +122,11 @@
                                                                         <div class="date">{{event.dateStr}}</div>
                                                                         <div class="place">{{event.loc}}</div>
 
-                                                                        <div class="note" v-if="event.note" v-html="event.note"></div>
-                                                                        <div class="list lists" v-if="event.lists[0]"><i>Lists: </i><span v-for="list in event.lists"><a href="#" @click="openMenuToList('lists', list)">{{list}}</a></span></div>
-                                                                        <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="openMenuToList('prophecies', prophecy)">{{prophecy}}</a></span></div>
+                                                                        <div v-if="event.note || event.lists[0] || event.prophecies[0]" class="long-details">
+                                                                            <div class="note" v-if="event.note">{{event.note}}</div>
+                                                                            <div class="list lists" v-if="event.lists[0]"><span v-for="list in event.lists"><a href="#" @click="openMenuToList('lists', list)">{{list}}</a></span></div>
+                                                                            <div class="list prophecies" v-if="event.prophecies[0]"><span v-for="prophecy in event.prophecies"><a href="#" @click="openMenuToList('prophecies', prophecy)">{{prophecy}}</a></span></div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
 
@@ -165,7 +169,7 @@
                                                         <div class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
 
                                                             <div v-if="event.img" class="event-image" :style="{'background-image': `url(${event.img})`}">
-                                                                <div class="openTheater" @click="setTheaterImageByObj(event)"></div>
+                                                                <div class="openTheater" @click="setTheaterImageByObj(event)"><i class="material-icons">fullscreen</i></div>
                                                             </div>
 
                                                             <div class="event-info-layout">
@@ -176,9 +180,11 @@
                                                                         <div class="date">{{event.dateStr}}</div>
                                                                         <div class="place">{{event.loc}}</div>
 
-                                                                        <div class="note" v-if="event.note" v-html="event.note"></div>
-                                                                        <div class="list lists" v-if="event.lists[0]"><i>Lists: </i><span v-for="list in event.lists"><a href="#" @click="openMenuToList('lists', list)">{{list}}</a></span></div>
-                                                                        <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="openMenuToList('prophecies', prophecy)">{{prophecy}}</a></span></div>
+                                                                        <div v-if="event.note || event.lists[0] || event.prophecies[0]" class="long-details">
+                                                                            <div class="note" v-if="event.note">{{event.note}}</div>
+                                                                            <div class="list lists" v-if="event.lists[0]"><span v-for="list in event.lists"><a href="#" @click="openMenuToList('lists', list)">{{list}}</a></span></div>
+                                                                            <div class="list prophecies" v-if="event.prophecies[0]"><span v-for="prophecy in event.prophecies"><a href="#" @click="openMenuToList('prophecies', prophecy)">{{prophecy}}</a></span></div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
 
@@ -279,7 +285,11 @@
                                             <div class="details">
                                                 <div class="date">{{arc.dateStr}}</div>
                                                 <div class="place">{{arc.loc}}</div>
-                                                <div class="note" v-if="arc.note" v-html="arc.note"></div>
+
+                                                <div v-if="arc.note" class="long-details">
+                                                    <div class="note" v-if="arc.note">{{arc.note}}</div>
+                                                </div>
+
                                             </div>
                                         </div>
 
@@ -308,7 +318,7 @@
                                         <div class="time-card event-info-layout">
                                             <div v-if="event.img && event.eventType != 'image'" class="event-image">
                                                 <img :src="event.img" :alt="event.name">
-                                                <div class="openTheater" @click="setTheaterImageByObj(event)"></div>
+                                                <div class="openTheater" @click="setTheaterImageByObj(event)"><i class="material-icons">fullscreen</i></div>
                                             </div>
 
                                             <div class="info">
@@ -316,9 +326,13 @@
                                                 <div class="details">
                                                     <div class="date">{{event.dateStr}}</div>
                                                     <div class="place">{{event.loc}}</div>
-                                                    <div class="note" v-if="event.note" v-html="event.note"></div>
-                                                    <div class="list lists" v-if="event.lists[0]"><i>Lists: </i><span v-for="list in event.lists"><a href="#" @click="openMenuToList('lists', list)">{{list}}</a></span></div>
-                                                    <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="openMenuToList('prophecies', prophecy)">{{prophecy}}</a></span></div>
+
+                                                    <div v-if="event.note || event.lists[0] || event.prophecies[0]" class="long-details">
+                                                        <div class="note" v-if="event.note">{{event.note}}</div>
+                                                        <div class="list lists" v-if="event.lists[0]"><span v-for="list in event.lists"><a href="#" @click="openMenuToList('lists', list)">{{list}}</a></span></div>
+                                                        <div class="list prophecies" v-if="event.prophecies[0]"><span v-for="prophecy in event.prophecies"><a href="#" @click="openMenuToList('prophecies', prophecy)">{{prophecy}}</a></span></div>
+                                                    </div>
+
                                                 </div>
                                             </div>
 
@@ -441,20 +455,24 @@
                                     </select>
                                 </div>
 
-                                <p>
+                                <div>
                                     <label for="loc">Location</label><br>
                                     <input id="loc" list="locList" v-model="tempItem.loc">
                                     <datalist id="locList">
                                         <option v-for="option in getOptionsFor(timelineEls.events, 'loc')"
                                             :value="option"></option>
                                     </datalist>
-                                </p>
+                                </div>
 
-                                <p>
+                                <div>
                                     <label for="img">Image URL</label><br>
                                     <input id="img" v-model="tempItem.img">
-                                </p>
-                                <p>
+                                </div>
+                                <div v-if="tempItem.img">
+                                    <label for="imgCred">Image Attribution</label><br>
+                                    <input id="imgCred" v-model="tempItem.imgCred">
+                                </div>
+                                <div>
                                     <label for="year">Year</label><br>
                                     <input id="year" v-model="tempItem.year" @change="handleChangeAddYear" type="number">
                                     <div style="display:flex">
@@ -469,88 +487,93 @@
                                             <input id="day" v-model="tempItem.day" type="number" min="1" max="31">
                                         </div>
                                     </div>
-                                </p>
-                                <p>
+                                </div>
+                                <div>
                                     <label for="pos">Position</label><br>
                                     <input id="pos" v-model="tempItem.pos" type="range" min="6" max="90" step="1">
-                                </p>
+                                </div>
 
-                                <p v-if="tempItem.eventType == 'image'">
+                                <div v-if="tempItem.eventType == 'image'">
                                     <label for="width">Size</label><br>
                                     <input id="width" v-model="tempItem.width" type="range" min="50" max="800" step="1">
-                                </p>
-                                <p v-if="tempItem.eventType == 'image'">
+                                </div>
+                                <div v-if="tempItem.eventType == 'image'">
                                     <label for="offset">Offset</label><br>
                                     <input id="offset" v-model="tempItem.offset" type="range" min="-100" max="0" step="1">
-                                </p>
+                                </div>
 
-                                <p>
+                                <div>
                                     <label for="lists">Lists</label>
-                                    <span class="lists-list-wrapper">
-                                        <small v-if="tempItem.lists.length === 0">Not in any lists.</small>
-                                    
-                                        <span class="lists-list-item-wrapper" v-for="list in tempItem.lists">
-                                            <span class="lists-lists-item-name">{{list}}</span>
-                                    <a class="lists-lists-item-remove" @click="handleRemoveItemFromList('lists', list)"></a>
-                                    </span>
-                                    <datalist id="listsList">
+                                    <div class="lists-list-wrapper">
+                                        <p>
+                                            <span v-if="tempItem.lists.length === 0">Not in any lists.</span>
+
+                                            <div class="lists-list-item-wrapper" v-for="list in tempItem.lists">
+                                                <span class="lists-lists-item-name">{{list}}</span>
+                                                <a class="lists-lists-item-remove" @click="handleRemoveItemFromList('lists', list)"></a>
+                                            </div>
+                                        </p>
+                                        <datalist id="listsList">
                                             <option v-for="option in getOptionsFor(timelineEls.events, 'lists')" :value="option">{{option}}</option>
                                             <option :value="newListName">(Create new)</option>
                                         </datalist>
-                                    <span class="lists-list-add-new"><input type="text" list="listsList" v-model="newListName"><input type="reset"  class="btn btn-sm btn-primary" @click="handleAddItemToList('lists', newListName)" value="Add to List" :disabled="!newListName.length" /></span>
-                                    </span>
-                                </p>
-                                <p>
+                                        <p class="lists-list-add-new"><input type="text" list="listsList" v-model="newListName"><input type="reset" class="btn btn-sm btn-primary" @click="handleAddItemToList('lists', newListName)" value="Add to List" :disabled="!newListName.length"></p>
+                                    </div>
+                                </div>
+                                <div>
                                     <label for="lists">Prophecies</label>
-                                    <span class="lists-list-wrapper">
-                                        <small v-if="tempItem.prophecies.length === 0">Not linked to any prophecy.</small>
-                                    
-                                        <span class="lists-list-item-wrapper" v-for="prophecy in tempItem.prophecies">
-                                            <span class="lists-lists-item-name">{{prophecy}}</span>
-                                    <a class="lists-lists-item-remove" @click="handleRemoveItemFromList('prophecies', prophecy)"></a>
-                                    </span>
-                                    <datalist id="propheciesList">
+                                    <div class="lists-list-wrapper">
+                                        <p>
+
+                                            <span v-if="tempItem.prophecies.length === 0">Not linked to any prophecy.</span>
+
+                                            <div class="lists-list-item-wrapper" v-for="prophecy in tempItem.prophecies">
+                                                <span class="lists-lists-item-name">{{prophecy}}</span>
+                                                <a class="lists-lists-item-remove" @click="handleRemoveItemFromList('prophecies', prophecy)"></a>
+                                            </div>
+                                        </p>
+                                        <datalist id="propheciesList">
                                             <option v-for="option in getOptionsFor(timelineEls.events, 'prophecies')" :value="option">{{option}}</option>
                                             <option :value="newListName">(Create new)</option>
                                         </datalist>
-                                    <span class="lists-list-add-new"><input type="text" list="propheciesList" v-model="newListName"><input type="reset"  class="btn btn-sm btn-primary" @click="handleAddItemToList('prophecies', newListName)" value="Link To Prophecy" :disabled="!newListName.length" /></span>
-                                    </span>
-                                </p>
-                                <p>
+                                        <p class="lists-list-add-new"><input type="text" list="propheciesList" v-model="newProphecyName"><input type="reset" class="btn btn-sm btn-primary" @click="handleAddItemToList('prophecies', newProphecyName)" value="Link To Prophecy" :disabled="!newProphecyName.length"></p>
+                                    </div>
+                                </div>
+                                <div>
                                     <label for="arcId">Arc</label><br>
                                     <select id="arcId" v-model="tempItem.arcId">
                                         <option :value="null">No arc</option>
                                         <option v-for="arc in arcs" :value="arc._id"
                                             :style="{backgroundColor: arc.color, color: '#fff'}">{{arc.name}}</option>
                                     </select>
-                                </p>
+                                </div>
 
                             </div>
 
                             <div v-if="tempItem.type == 'arc'">
-                                <p>
+                                <div>
                                     <label for="color">Color</label><br>
                                     <input type="color" id="color" v-model="tempItem.color" />
-                                </p>
+                                </div>
                             </div>
 
-                            <p>
+                            <div>
                                 <label for="scriptureLink">Link to Scripture</label><br>
                                 <input id="scriptureLink" v-model="tempItem.scriptureLink">
-                            </p>
+                            </div>
 
-                            <p>
+                            <div>
                                 <label for="note">Notes</label><br>
                                 <textarea id="note" v-model="tempItem.note"></textarea>
-                            </p>
+                            </div>
 
 
 
-                            <p style="white-space: no-wrap">
+                            <div style="text-align: right">
                                 <input type="submit" class="btn btn-sm btn-primary">
                                 <input type="reset" @click="handleCancelForm" class="btn btn-sm btn-secondary btn-outline" value="Cancel">
                                 <input type="reset" @click="deleteItem(tempItem)" class="btn btn-sm btn-danger btn-outline" value="Delete">
-                            </p>
+                            </div>
                         </form>
 
 

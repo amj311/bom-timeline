@@ -76,6 +76,7 @@ var app = new Vue ({
             isNewPlaceholder: true,
         },
         newListName: '',
+        newProphecyName: '',
         currentOptionsFilter: [],
         editingItem: false,
         tempItemIdx: null,
@@ -238,6 +239,7 @@ var app = new Vue ({
                         "displayYear": false,
                         "pos": 50,
                         "img": null,
+                        imgCred: null,
                         width: 100,
                         offset: -50,
                         "period": null,
@@ -271,12 +273,12 @@ var app = new Vue ({
 
         handleChangeAddYear(){
             if(this.tempItem.year > this.dateMax || this.tempItem.year < this.dateMin) this.setZoom()
-            // this.scrollToEl(document.querySelector('.eventPos.hardFocus')) 
+            setTimeout( () => this.scrollToEl(document.querySelector('.eventPos.hardFocus')), 5 )
         },
         
         handleAddItemToList(listType, listName) {
             if (this.tempItem[listType].lastIndexOf(listName) < 0) this.tempItem[listType].push(listName)
-            this.newListName = '';
+            this.newListName = this.newProphecyName = '';
         },
         handleRemoveItemFromList(listType, listName){
             this.tempItem[listType] = this.tempItem[listType].filter(list => list != listName)
@@ -294,11 +296,11 @@ var app = new Vue ({
             this.menuIsOpen = true;
             $('#myTab a#'+listType+'-tab').tab('show')
             $('#'+this.codifyString(listName)).collapse('show')
-            setTimeout( () => this.scrollToEl($('#'+this.codifyString(listName))[0]), 10)
+            setTimeout( () => this.scrollToEl($('#'+this.codifyString(listName))[0]), 200)
         },
         
         codifyString(string){
-            return string.split(' ').join('_')
+            return string.split('').filter(c => !/[^a-zA-Z0-9]/.test(c)).join('')
         },
 
         handleSubmitForm(){
@@ -351,6 +353,7 @@ var app = new Vue ({
                 item.hasFocus = true;
 
                 this.editingItem = true;
+                setTimeout( () => this.scrollToEl(document.querySelector('.eventPos.hardFocus')), 5 )
             }
         },
 

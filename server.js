@@ -129,6 +129,7 @@ const timelineObjectSchema = new mongoose.Schema({
   year: Number,
   pos: Number,
   img: String,
+  imgCred: String,
   note: String,
   type: String,
   eventType: {
