@@ -656,13 +656,14 @@ var app = new Vue ({
         quizCards: function() {
             let id = 0;
             return this.items.reduce( (acc,c) => {
-                if(c.eventType === 'anchor') return acc;
-                
-                c.reversed = false;
-                c.id = id;
-                id++;
-                acc.push(c)
+                if ( c.eventType === 'normal' || c.eventType === 'secondary' ) {
+                    c.reversed = false;
+                    c.id = id;
+                    id++;
+                    acc.push(c)
+                }
                 return acc;
+                
             }, []);
         },
 

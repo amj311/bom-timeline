@@ -562,6 +562,7 @@ div.side-panel.open {
 ul#myTab {
     flex-wrap: nowrap;
     border-bottom: none;
+    z-index: 1;
 }
 
 li.nav-item {
