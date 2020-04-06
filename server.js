@@ -39,9 +39,11 @@ const arcSchema = new mongoose.Schema({
   },
   note: String,
   isMainStory: {
+    type: Boolean,
     default: false
   },
   drawLines: {
+    type: Boolean,
     default: true
   },
   lineAlgorithm: String,
@@ -139,8 +141,16 @@ const timelineObjectSchema = new mongoose.Schema({
   loc: String,
   order: String,
   arcId: String,
-  lists: [String],
-  prophecies: [String],
+  lists: {
+    type: [],
+    default: [],
+    required: true,
+  },
+  prophecies: {
+    type: [],
+    default: [],
+    required: true,
+  },
 });
 
 // Create a model for items in the timeline.
@@ -199,9 +209,9 @@ app.delete('/api/items/:id', async(req, res) => {
 
 app.put('/api/items/:id', async(req, res) => {
   try {
-    console.log("Edit TimeObject");
+    console.log("Edit TimeObject: ",req.body);
     var item = await TimeObject.findByIdAndUpdate({ _id: req.params.id }, req.body);
-    console.log(item);
+    console.log("saved object: ", item);
     res.send(item)
   }
   catch (error) {

@@ -15,6 +15,7 @@ var app = new Vue ({
         isLoading: true,
         isAdmin: false,
         adminKey: 'immerseBOM',
+        menuIsOpen: false,
 
         mouseTimePos: {
             x: null,
@@ -54,7 +55,7 @@ var app = new Vue ({
         tempItem: {},
 
         itemTypes: ['event','arc'],
-        eventTypes: ['normal', 'seconday', 'image', 'floating', 'anchor'],
+        eventTypes: ['normal', 'secondary', 'image', 'floating', 'anchor'],
         addingType: "",
         addingItem: false,
         newEventDefault: {
@@ -71,8 +72,11 @@ var app = new Vue ({
             "id": 2,
             "group":"int",
             "recId":null,
+            lists: [],
             isNewPlaceholder: true,
         },
+        newListName: '',
+        currentOptionsFilter: [],
         editingItem: false,
         tempItemIdx: null,
         editOriginal: {},
@@ -103,9 +107,6 @@ var app = new Vue ({
 
         await this.getEvents()
         await this.getArcs()
-        await this.getNotes()
-        await this.getRecords()
-        await this.getSources()
 
         this.isMobile = window.mobileAndTabletCheck();
 
@@ -163,6 +164,11 @@ var app = new Vue ({
         },
 
 
+        toggleMenu() {
+            this.menuIsOpen = !this.menuIsOpen;
+        },
+
+
         async getEvents() {
             try {
                 let response = await axios.get("/api/items");
@@ -185,18 +191,6 @@ var app = new Vue ({
                 console.log(error);
             }
         },
-
-        getNotes(){
-            this.notes = notesData;
-        },
-
-        getRecords(){
-            this.records = recordsData;
-        },
-        getSources(){
-            this.sources = sourcesData;
-        },
-
 
         async deleteItem(item) {
             if (confirm(`Are you sure you want to delete ${item.type} '${item.name}?'`)) {
@@ -274,7 +268,21 @@ var app = new Vue ({
             if(this.tempItem.year > this.dateMax || this.tempItem.year < this.dateMin) this.setZoom()
             // this.scrollToEl(document.querySelector('.eventPos.hardFocus')) 
         },
-
+        
+        handleAddItemToList(listType, listName) {
+            if (this.tempItem[listType].lastIndexOf(listName) < 0) this.tempItem[listType].push(listName)
+            this.newListName = '';
+        },
+        handleRemoveItemFromList(listType, listName){
+            this.tempItem[listType] = this.tempItem[listType].filter(list => list != listName)
+        },
+        handleRemoveALLFromList(listType, listName){
+            this.timelineEls.events.forEach( e => e[listType].filter( l => l != listName))
+        },
+        handleChangeListName(listType, listName, newName){
+            // if (this.getOptionsFor(this.timelineEls.events, listType).lastIndexOf(newName) >= 0) return alert('that list already exists!')
+            this.timelineEls.events.forEach( e => e[listType].filter( l => l != listName))
+        },
 
         handleSubmitForm(){
             if (this.addingItem) this.addItem(this.tempItem)
@@ -313,6 +321,7 @@ var app = new Vue ({
             if (this.addingItem) {
                 this.addingItem = false;
             }
+            this.newListName = '';
         },
 
         openEditForm(item) {
@@ -358,7 +367,8 @@ var app = new Vue ({
             if (this.editingItem) {
                 this.tempItem.hasFocus = false;
                 this.tempItem = false;
-
+                
+                this.newListName = '';
                 this.editingItem = false;
             }
         },
@@ -366,8 +376,12 @@ var app = new Vue ({
         getOptionsFor(list, prop) {
             let options = [];
             list.forEach(item => {
+                
                 if (options.lastIndexOf(item[prop]) < 0) options.push(item[prop])
             })
+            options = options.flat(Infinity)
+            options.sort()
+            options = new Set(options)
             return options;
         },
 
@@ -614,8 +628,8 @@ var app = new Vue ({
                     event.arc = this.getArcById(event.arcId)
                     event.arc.points.push({"relY": event.relY, "relX": event.relX})
                 }
-                
                 events.push(event)
+                events.sort( (a,b) => a.relX - b.relX)
             })
 
             this.arcs.forEach(arc => {

@@ -4,6 +4,7 @@
 <head>
     <title>Immerse Study</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="index.css" type="text/css" />
 </head>
 
@@ -13,17 +14,87 @@
         <div id="main-view">
 
             <div id="person-summary">
+                <div class="hamburger-container" :class="{change: menuIsOpen}" @click="toggleMenu">
+                    <div class="bar1"></div>
+                    <div class="bar2"></div>
+                    <div class="bar3"></div>
+                </div>
                 <div class="profile-img" style="background-image: url(./images/nephi.png)"></div>
-                <h3>Book of Mormon Timeline</h3>
+                <h6>Book of Mormon Timeline</h6>
             </div>
 
             <div id="timeline-wrapper">
-                
-                
+
+                <div id="left_panel" class="side-panel" :class="{open: menuIsOpen && !(addingItem || editingItem)}">
+                    <div class="content-wrapper">
+
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">All</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Lists</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Prophecies</a>
+                            </li>
+                        </ul>
+
+
+                        <div class="tab-content" id="myTabContent">
+                            <!-- ALL EVENTS TAB-->
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div id="eventsFilters"></div>
+
+                                <div class="events-list">
+                                    <div v-for="event in timelineEls.events.filter(e => e.eventType == 'normal' || e.eventType == 'secondary')">
+
+                                        <div class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
+                                            
+                                            <div v-if="event.img" class="event-image" :style="{'background-image': `url(${event.img})`}">
+                                                <div class="openTheater" @click="setTheaterImageByObj(event)"></div>
+                                            </div>
+                                            
+                                            <div class="event-info-layout">
+
+                                                <div class="info">
+                                                    <div class="title">{{event.name}}</div>
+                                                    <div class="details">
+                                                        <div class="date">{{event.dateStr}}</div>
+                                                        <div class="place">{{event.loc}}</div>
+                                                        <div class="note" v-if="event.note" v-html="event.note"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="buttons">
+                                                    <div v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"></div>
+                                                    <div v-if="isAdmin" class="editButton" @click="openEditForm(event)"></div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- LISTS TAB -->
+                            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+
+                            </div>
+
+                            <!-- Prophecies Tabs -->
+                            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
                 <div id="mainPanel">
-                        
+
                     <div id="timeline-box" class="fs-inner-wrapper" onwheel="app.handleTimelineScroll(event)">
-    
 
                         <div id="markers" :style="{overflow: 'hidden', width: `${numEras * eraDuration * yearUnit}px`}">
                             <div id="scrollmarker" :style="{left: `${zoomTargetPos}px`}"></div>
@@ -36,22 +107,21 @@
                                 </div>
                             </div>
                         </div>
-    
-    
+
                         <div id="gallery">
-    
+
                             <div v-for="arc in timelineEls.arcs" class="arc-group item-wrapper" :class="{hardFocus: arc.hasFocus}" :style="{color: arc.color}">
-    
+
                                 <svg :style="{position: 'absolute', left: arc.left, bottom: arc.base}" :height="arc.top-arc.base" :width="arc.right-arc.left">
                                     <line v-for="i in arc.points.length" v-if="arc.points[i]"
                                         :x1="arc.points[i-1].relX - arc.left" :y1="arc.points[i-1].relY - arc.base"
                                         :x2="arc.points[i].relX - arc.left" :y2="arc.points[i].relY - arc.base"
                                         :style="{stroke: arc.color, strokeWidth: 3}" />
                                 </svg>
-    
-    
+
+
                                 <div class="content">
-                                    <div class="card" :style="{left: `${arc.left}px`, bottom: `calc(${Math.max(arc.base, 0)}px - 0em)`}">
+                                    <div class="time-card" :style="{left: `${arc.left}px`, bottom: `calc(${Math.max(arc.base, 0)}px - 0em)`}">
                                         <div class="info">
                                             <div class="title">{{arc.name}}</div>
                                             <div class="details">
@@ -60,29 +130,32 @@
                                                 <div class="note" v-if="arc.note" v-html="arc.note"></div>
                                             </div>
                                         </div>
-    
-                                        <div v-if="arc.recId" class="openRecord" @click="setTheaterRecord(arc.recId)"></div>
-                                        <div v-if="isAdmin" class="editButton" @click="openEditForm(arc)"></div>
+
+                                        <div class="buttons">
+                                            <div v-if="arc.recId" class="openRecord" @click="setTheaterRecord(arc.recId)"></div>
+                                            <div v-if="isAdmin" class="editButton" @click="openEditForm(arc)"></div>
+                                        </div>
                                     </div>
                                 </div>
-    
+
                             </div>
-    
-    
-                            <div v-for="event in timelineEls.events" :id="event.idString" class="item-wrapper eventPos" :class="{anchor: event.eventType == 'anchor', secondary: event.eventType == 'secondary', image: event.eventType == 'image', floating: event.eventType == 'floating', hardFocus: event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
+
+
+                            <div v-for="event in timelineEls.events" :id="event.idString" class="item-wrapper eventPos" :class="{anchor: event.eventType == 'anchor', secondary: event.eventType == 'secondary', image: event.eventType == 'image', floating: event.eventType == 'floating', hardFocus: event.hasFocus}"
+                                :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
                                 <div class="content">
-    
+
                                     <div class="line" :style="{height: event.relY+'px'}">
                                         <div class="date-tag">{{event.dateStr}}</div>
                                     </div>
-    
-                                    <div class="card-wrapper" @mouseenter="pauseZoom()" @mouseleave="allowZoom()">
-                                        <div class="card">
-                                            <div v-if="event.img" class="image">
+
+                                    <div class="time-card-wrapper" @mouseenter="pauseZoom()" @mouseleave="allowZoom()">
+                                        <div class="time-card event-info-layout">
+                                            <div v-if="event.img" class="event-image">
                                                 <img :src="event.img" :alt="event.name">
                                                 <div class="openTheater" @click="setTheaterImageByObj(event)"></div>
                                             </div>
-    
+
                                             <div class="info">
                                                 <div class="title">{{event.name}}</div>
                                                 <div class="details">
@@ -91,23 +164,52 @@
                                                     <div class="note" v-if="event.note" v-html="event.note"></div>
                                                 </div>
                                             </div>
-    
-                                            <div v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"></div>
-                                            <div v-if="isAdmin" class="editButton" @click="openEditForm(event)"></div>
+
+                                            <div class="buttons">
+                                                <div v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"></div>
+                                                <div v-if="isAdmin" class="editButton" @click="openEditForm(event)"></div>
+                                            </div>
                                         </div>
-    
+
                                         <div class="pointer-wrapper">
                                             <div class="pointer"></div>
                                         </div>
                                     </div>
-    
+
                                 </div>
                             </div>
+                        </div>
+
+                    </div>
+
+                    <div id="controls">
+                        <div id="zoomBox">
+                            <div id="zoomIn" @click="handleButtonZoomIn()" class="btn btn-sm btn-light zoom"></div>
+                            <div id="resetZoom" @click="resetZoom()" class="btn btn-sm btn-light zoom"></div>
+                            <div id="zoomOut" @click="handleButtonZoomOut()" class="btn btn-sm btn-light zoom"></div>
+                        </div>
+                        <div id="addEventBox">
+                            <div v-if="isAdmin">
+                                <div id="addEvent" @click="openAddForm('event')" class="btn btn-sm btn-light">+ Add Event</div>
+                                <div id="addArc" @click="openAddForm('arc')" class="btn btn-sm btn-light">+ Add Arc</div>
+                                <div id="logout" @click="logoutAdmin" class="btn btn-sm btn-light">Logout</div>
+                            </div>
+                            <div v-else>
+                                <div id="login" @click="loginAdmin" class="btn btn-sm btn-light">Login</div>
+                            </div>
+
+                            <div id="startQuiz" @click="showQuiz = true" class="btn btn-sm btn-primary">Quiz Me!</div>
+
                         </div>
                     </div>
 
 
+                    <div v-if="isLoading" id="loadingSplash"></div>
+
                 </div>
+
+
+
 
                 <div id="quizOverlay" v-show="showQuiz">
 
@@ -120,7 +222,7 @@
                                     <div class="qcard-content">
 
                                         <div v-if="!show_Qback">
-                                            <div v-if="card.img" class="card-image-wrapper">
+                                            <div v-if="card.img" class="qcard-image-wrapper">
                                                 <img :src="card.img" />
                                             </div>
                                             <div v-else>
@@ -128,11 +230,11 @@
                                             </div>
                                         </div>
                                         <div v-if="show_Qback">
-                                            <h3 class="title">{{card.name}}</h3>
+                                            <h5 class="title">{{card.name}}</h5>
                                             <div class="details">
                                                 <div class="date">{{card.dateStr}}</div>
                                                 <div class="place">{{card.loc}}</div>
-                                                
+
                                                 <br><br>
                                                 <div class="note" v-if="card.note" v-html="card.note" style="white-space: pre-wrap;"></div>
                                             </div>
@@ -151,45 +253,23 @@
                             <input v-model="displayQIdx" type="number" min="1" :max="quizCards.length" step="1" style="text-align: center;">
                             <button @click="activeQIdx = Math.min(quizCards.length - 1, activeQIdx + 1)">👉</button>
                         </div>
-                        
-                        
+
+
                         <div id="leaveQuizBox">
-                            <div id="leaveQuiz" @click="showQuiz = false" class="btn btn-secondary">Leave Quiz</div>
+                            <div id="leaveQuiz" @click="showQuiz = false" class="btn btn-sm btn-secondary">Leave Quiz</div>
                         </div>
 
                     </div>
 
                 </div>
 
-
-                <div id="controls">
-                    <div id="zoomBox">
-                        <div id="zoomIn" @click="handleButtonZoomIn()" class="btn zoom"></div>
-                        <div id="resetZoom" v-if="yearUnit > minYearUnit" @click="resetZoom()" class="btn zoom"></div>
-                        <div id="zoomOut" @click="handleButtonZoomOut()" class="btn zoom"></div>
-                    </div>
-                    <div id="addEventBox">
-                        <div v-if="isAdmin">
-                            <div id="addEvent" @click="openAddForm('event')" class="btn">+ Add Event</div>
-                            <div id="addArc" @click="openAddForm('arc')" class="btn">+ Add Arc</div>
-                            <div id="logout" @click="logoutAdmin" class="btn">Logout</div>
-                        </div>
-                        <div v-else>
-                            <div id="login" @click="loginAdmin" class="btn">Login</div>
-                        </div>
-                        
-                        <div id="startQuiz" @click="showQuiz = true" class="btn btn-primary" style="color: #fff !important">Quiz Me!</div>
-                    
-                    </div>
-                </div>
-
-                <div id="right_panel" :class="{open: addingItem || editingItem}">
+                <div id="right_panel" class="side-panel" :class="{open: addingItem || editingItem}">
                     <div class="content-wrapper">
 
                         <form @submit.prevent="handleSubmitForm()">
 
-                            <h2 v-if="editingItem">Editing {{tempItem.type}}</h2>
-                            <h2 v-if="addingItem">Adding {{tempItem.type}}</h2>
+                            <h4 v-if="editingItem">Editing {{tempItem.type}}</h4>
+                            <h4 v-if="addingItem">Adding {{tempItem.type}}</h4>
 
                             <p>
                                 <label for="name">Name</label><br>
@@ -202,11 +282,10 @@
                                     Type of Event:
                                     <select v-model="tempItem.eventType" style="text-transform: capitalize;">
                                         <option v-for="type in eventTypes" :value="type">{{type}}</option>
-                                        <!--<option value="anchor">Anchor</option>-->
                                     </select>
                                 </div>
 
-                                <p v-if="tempItem.eventType == 'normal'">
+                                <p>
                                     <label for="loc">Location</label><br>
                                     <input id="loc" list="locList" v-model="tempItem.loc">
                                     <datalist id="locList">
@@ -215,14 +294,13 @@
                                     </datalist>
                                 </p>
 
-                                <p v-if="tempItem.eventType == 'normal'">
+                                <p>
                                     <label for="img">Image URL</label><br>
                                     <input id="img" v-model="tempItem.img">
                                 </p>
                                 <p>
                                     <label for="year">Year</label><br>
-                                    <input id="year" v-model="tempItem.year" @change="handleChangeAddYear"
-                                        type="number">
+                                    <input id="year" v-model="tempItem.year" @change="handleChangeAddYear" type="number">
                                     <div style="display:flex">
                                         <div>
                                             <label for="month">Month</label><br>
@@ -237,12 +315,36 @@
                                     </div>
                                 </p>
                                 <p>
-                                    <label for="recId">Add to Lists</label><br>
-                                    <input id="recId" list="recIdList" v-model="tempItem.recId">
-                                    <datalist id="recIdList">
-                                        <option v-for="option in getOptionsFor(records, 'elId')" :value="option">
-                                        </option>
-                                    </datalist>
+                                    <label for="lists">Lists</label>
+                                    <span class="lists-list-wrapper">
+                                        <small v-if="tempItem.lists.length === 0">Not in any lists.</small>
+                                    
+                                        <span class="lists-list-item-wrapper" v-for="list in tempItem.lists">
+                                            <span class="lists-lists-item-name">{{list}}</span>
+                                    <a class="lists-lists-item-remove" @click="handleRemoveItemFromList('lists', list)"></a>
+                                    </span>
+                                    <datalist id="listsList">
+                                            <option v-for="option in getOptionsFor(timelineEls.events, 'lists')" :value="option">{{option}}</option>
+                                            <option :value="newListName">(Create new)</option>
+                                        </datalist>
+                                    <span class="lists-list-add-new"><input type="text" list="listsList" v-model="newListName"><input type="reset"  class="btn btn-sm btn-primary" @click="handleAddItemToList('lists', newListName)" value="Add to List" :disabled="!newListName.length" /></span>
+                                    </span>
+                                </p>
+                                <p>
+                                    <label for="lists">Prophecies</label>
+                                    <span class="lists-list-wrapper">
+                                        <small v-if="tempItem.prophecies.length === 0">Not linked to any prophecy.</small>
+                                    
+                                        <span class="lists-list-item-wrapper" v-for="prophecy in tempItem.prophecies">
+                                            <span class="lists-lists-item-name">{{prophecy}}</span>
+                                    <a class="lists-lists-item-remove" @click="handleRemoveItemFromList('prophecies', prophecy)"></a>
+                                    </span>
+                                    <datalist id="propheciesList">
+                                            <option v-for="option in getOptionsFor(timelineEls.events, 'prophecies')" :value="option">{{option}}</option>
+                                            <option :value="newListName">(Create new)</option>
+                                        </datalist>
+                                    <span class="lists-list-add-new"><input type="text" list="propheciesList" v-model="newListName"><input type="reset"  class="btn btn-sm btn-primary" @click="handleAddItemToList('prophecies', newListName)" value="Link To Prophecy" :disabled="!newListName.length" /></span>
+                                    </span>
                                 </p>
                                 <p>
                                     <label for="arcId">Arc</label><br>
@@ -271,20 +373,16 @@
                                 <textarea id="note" v-model="tempItem.note"></textarea>
                             </p>
 
-                            <p>
-                                <input type="submit" class="btn btn-primary">
-                                <input type="reset" @click="handleCancelForm" class="btn btn-secondary btn-outline"
-                                    value="Cancel">
-                                <input type="reset" @click="deleteItem(tempItem)" class="btn btn-danger btn-outline"
-                                    value="Delete">
+                            <p style="white-space: no-wrap">
+                                <input type="submit" class="btn btn-sm btn-primary">
+                                <input type="reset" @click="handleCancelForm" class="btn btn-sm btn-secondary btn-outline" value="Cancel">
+                                <input type="reset" @click="deleteItem(tempItem)" class="btn btn-sm btn-danger btn-outline" value="Delete">
                             </p>
                         </form>
 
 
                     </div>
                 </div>
-
-                <div v-if="isLoading" id="loadingSplash"></div>
 
 
             </div>
@@ -296,8 +394,7 @@
 
                 <div id="exitTheater" @click="closeTheater">&times;</div>
 
-                <div id="imageBox" v-if="theaterMode == 'img'" :style="{backgroundImage: `url(${theaterData.img})`}"
-                    @click="toggleSubs"></div>
+                <div id="imageBox" v-if="theaterMode == 'img'" :style="{backgroundImage: `url(${theaterData.img})`}" @click="toggleSubs"></div>
 
                 <div id="recordBox" v-show="theaterMode == 'rec'" :class="{hand: handFont}">
                     <div id="records">
@@ -310,8 +407,7 @@
                     </div>
                 </div>
 
-                <div id="toggleFont" v-show="theaterMode == 'rec'" :class="{hand: handFont}"><label
-                        for="handFont">Aa</label><input type="checkbox" v-model="handFont" id="handFont"></div>
+                <div id="toggleFont" v-show="theaterMode == 'rec'" :class="{hand: handFont}"><label for="handFont">Aa</label><input type="checkbox" v-model="handFont" id="handFont"></div>
 
             </div>
             <div id="subs" v-if="theaterData.hasSubs" :class="{on: subsOn}">
@@ -356,11 +452,12 @@
 
     </div>
 
-    <script src="notesData.js"></script>
-    <script src="recordsData.js"></script>
-    <script src="sourcesData.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
     <script src="gallery.js"></script>
     <script src="index.js"></script>
 
