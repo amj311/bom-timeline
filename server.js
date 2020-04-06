@@ -129,7 +129,6 @@ const timelineObjectSchema = new mongoose.Schema({
   year: Number,
   pos: Number,
   img: String,
-  width: Number,
   note: String,
   type: String,
   eventType: {
@@ -154,7 +153,14 @@ const timelineObjectSchema = new mongoose.Schema({
   scriptureLink: {
     type: String,
     default: undefined,
-    required: true,
+  },
+  width: {
+    type: Number,
+    default: 100,
+  },
+  offset: {
+    type: Number,
+    default: -50,
   },
 });
 

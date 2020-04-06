@@ -238,6 +238,8 @@ var app = new Vue ({
                         "displayYear": false,
                         "pos": 50,
                         "img": null,
+                        width: 100,
+                        offset: -50,
                         "period": null,
                         "id": 2,
                         "note": "",
@@ -286,6 +288,15 @@ var app = new Vue ({
             // if (this.getOptionsFor(this.timelineEls.events, listType).lastIndexOf(newName) >= 0) return alert('that list already exists!')
             this.timelineEls.events.forEach( e => e[listType].filter( l => l != listName))
         },
+        
+        openMenuToList(listType, listName) {
+            console.log('opening list')
+            this.menuIsOpen = true;
+            $('#myTab a#'+listType+'-tab').tab('show')
+            $('#'+this.codifyString(listName)).collapse('show')
+            setTimeout( () => this.scrollToEl($('#'+this.codifyString(listName))[0]), 10)
+        },
+        
         codifyString(string){
             return string.split(' ').join('_')
         },
@@ -642,6 +653,7 @@ var app = new Vue ({
             this.arcs.forEach(a => a.points = [])
 
             let events = []
+            let images = []
 
             this.items.filter( i => i.type === 'event' ).forEach ( event => {
 
@@ -670,9 +682,13 @@ var app = new Vue ({
                     event.arc = this.getArcById(event.arcId)
                     event.arc.points.push({"relY": event.relY, "relX": event.relX})
                 }
-                events.push(event)
-                this.items = this.items.sort( (a,b) => a.relX - b.relX )
+                
+                if (event.eventType == 'image') images.push(event)
+                else events.push(event)
             })
+            
+            events = events.sort( (a,b) => a.relX - b.relX )
+            
 
             this.arcs.forEach(arc => {
                 arc.type = 'arc';
@@ -683,7 +699,7 @@ var app = new Vue ({
                 arc.top = arc.points.reduce( (max,p) => Math.max(p.relY, max), 0 ) + 5;
             })
             
-            return {events, "arcs": this.arcs};
+            return {images, events, "arcs": this.arcs};
         },
 
         // noteEls(){
@@ -723,3 +739,18 @@ window.addEventListener('resize', () => {
         app.handleButtonZoom(.0001)
     })
 }, 5)
+
+
+
+
+
+
+function example () {
+    if (false) {
+        var ex = 5;
+    }
+    
+    return ex;
+}
+
+console.log(example())

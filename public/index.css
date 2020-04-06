@@ -23,6 +23,25 @@
     border: 1px solid #efefef;
 }
 
+
+.hidden-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+.hidden-scroll::-webkit-scrollbar-thumb {
+    background: red;
+    border: 0px solid #efefef;
+    padding: 0px;
+}
+.hidden-scroll::-webkit-scrollbar-thumb:hover {
+    background: #fafafa;
+}
+.hidden-scroll::-webkit-scrollbar-track {
+    background: #efefef;
+    border: 0px solid #efefef;
+}
+
+
 * {
     box-sizing: border-box;
 }
@@ -35,7 +54,7 @@ body {
     width: 100%;
     height: 100%;
     font-family: 'Roboto', Arial, Helvetica, sans-serif;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 input, select {
@@ -204,7 +223,7 @@ div#menuCloserSplash {
     border-top: 1px solid #00000033;
     width: 100%;
     line-height: 2em;
-    font-size: 1.2em;
+    font-size: 1em;
     background: #0000000a;
 }
 div#flatLine {
@@ -218,6 +237,7 @@ div#flatLine {
     height: calc(100% - 7em);
     bottom: 0;
     left: 0;
+    z-index: 5;
 }
 
 
@@ -253,29 +273,29 @@ div#flatLine {
     color: #00000033;
     position: absolute;
     bottom: 0%;
-    border: 0.25em solid;
+    padding: .2em;
+    border: 0.38em solid;
     border-radius: 50%;
     background: #fff;
-    padding:.25em;
     z-index: 3;
     box-shadow: 0 0 2px #0006;
     transform: translate(-50%, 50%);
 }
 
 .eventPos.secondary {
-    padding: 2px;
-    border: 0.2em solid;
+    padding: 0px;
+    border: 0.35em solid;
 }
 .eventPos.anchor {
     z-index: 0;
     padding: 0;
     box-shadow: none;
-    border: 1px solid;
+    border: 4px solid;
     background: transparent;
 }
 .isAdmin .eventPos.anchor {
     z-index: 3;
-    border: .25em solid;
+    border: 4px solid;
 }
 #app:not(.isAdmin) .eventPos.anchor .content {
     display: none;
@@ -463,8 +483,35 @@ div#flatLine {
 
 
 
+
+
+div#watercolors {
+    opacity: .7;
+}
+
+.eventPos.image {
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none;
+    background: transparent;
+    z-index: 1
+}
+
+.eventPos.image img.watercolor {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    filter: contrast(1) sepia(.3);
+}
+
+
+
+
+
 .arc-group svg {
     transform: scaleY(-1);
+    filter: drop-shadow(1px 0px 2px #0005);
 }
 
 
@@ -558,6 +605,9 @@ ul#myTab {
     flex-wrap: nowrap;
     border-bottom: none;
     z-index: 1;
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: -1px;
 }
 
 li.nav-item {
@@ -567,9 +617,9 @@ li.nav-item {
 
 .nav-tabs .nav-link {
     color: #9c9c9c;
-    font-weight: bold;
     border: none !important;
-    border-bottom: 1px solid !important;
+    border-bottom: .1em solid !important;
+    white-space: nowrap;
 }
 
 .nav-tabs .nav-link:not(.active):hover {
@@ -579,7 +629,7 @@ li.nav-item {
 
 .nav-tabs .nav-link.active {
     color: var(--blue);
-    border-bottom-width: 2px !important;
+    border-bottom-width: .25em !important;
 }
 
 .tab-pane {
@@ -589,6 +639,10 @@ li.nav-item {
     flex-direction: column;
     overflow-y: auto;
 }
+div#contact.tab-pane {
+    padding: 1em;
+}
+
 .tab-content .tab-pane.active {
     display: flex;
 }
@@ -600,7 +654,7 @@ li.nav-item {
 }
 .events-list-item {
     width: 100%;
-    border-bottom: 1px solid #bbb;
+    border-bottom: 1px solid #ddd;
 }
 .events-list-item .event-info-layout {
     padding: .7em;
