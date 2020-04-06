@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="index.css" type="text/css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    
+
 </head>
 
 <body>
-    <div id="app" :class="{ mobile: isMobile, isAdmin: isAdmin, focusOne: addingItem || editingItem }">
+    <div id="app" :class="{ mobile: isMobile, wideMenu: (true && menuIsOpen), isAdmin: isAdmin, focusOne: addingItem || editingItem }">
 
         <div id="main-view">
 
@@ -53,11 +53,11 @@
                                     <div v-for="event in timelineEls.events.filter(e => e.eventType == 'normal' || e.eventType == 'secondary')">
 
                                         <div class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
-                                            
+
                                             <div v-if="event.img" class="event-image" :style="{'background-image': `url(${event.img})`}">
                                                 <div class="openTheater" @click="setTheaterImageByObj(event)"></div>
                                             </div>
-                                            
+
                                             <div class="event-info-layout">
 
                                                 <div class="info">
@@ -65,16 +65,17 @@
                                                     <div class="details">
                                                         <div class="date">{{event.dateStr}}</div>
                                                         <div class="place">{{event.loc}}</div>
-                                                        
+
                                                         <div class="note" v-if="event.note" v-html="event.note"></div>
                                                         <div class="list lists" v-if="event.lists[0]"><i>Lists: </i><span v-for="list in event.lists"><a href="#" @click="">{{list}}</a></span></div>
-                                                        <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="">{{prophecy}}</a></span></span></div>
+                                                        <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="">{{prophecy}}</a></span></span>
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="buttons">
                                                     <a v-if="isAdmin" class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
-                                                    <a @click="highlightEventByIdString(event.idString)"><i class="material-icons">gps_fixed</i></a>
+                                                    <a @click="highlightEventByIdString(event.idString, true)"><i class="material-icons">gps_fixed</i></a>
                                                     <a v-if="event.scriptureLink" :href="event.scriptureLink" target="_blank"><i class="material-icons">import_contacts</i></a>
                                                     <a v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"><i class="material-icons">description</i></a>
                                                 </div>
@@ -88,114 +89,116 @@
                             <!-- LISTS TAB -->
                             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                                 <div class="accordion" id="accordionLists">
-                                  
-                                  <div v-for="list in getOptionsFor(items, 'lists')" class="card">
-                                    <div class="card-header">
-                                      <h4 class="mb-0">
-                                        <button class="btn btn-link" type="button" data-toggle="collapse" :data-target="'#'+codifyString(list)" aria-expanded="true" aria-controls="collapseOne">
+
+                                    <div v-for="list in getOptionsFor(items, 'lists')" class="card">
+                                        <div class="card-header">
+                                            <h4 class="mb-0">
+                                                <button class="btn btn-link" type="button" data-toggle="collapse" :data-target="'#'+codifyString(list)" aria-expanded="true" aria-controls="collapseOne">
                                           {{list}}
                                         </button>
-                                      </h4>
-                                    </div>
-                                
-                                    <div :id="codifyString(list)" class="collapse" aria-labelledby="headingOne" data-parent="#accordionLists">
-                                        <div class="card-body">
-                                            <div class="events-list">
-                                                <div v-for="event in timelineEls.events.filter(e => e.lists.lastIndexOf(list) >= 0 && (e.eventType == 'normal' || e.eventType == 'secondary'))">
-            
-                                                    <div class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
-                                                        
-                                                        <div v-if="event.img" class="event-image" :style="{'background-image': `url(${event.img})`}">
-                                                            <div class="openTheater" @click="setTheaterImageByObj(event)"></div>
-                                                        </div>
-                                                        
-                                                        <div class="event-info-layout">
-            
-                                                            <div class="info">
-                                                                <div class="title">{{event.name}}</div>
-                                                                <div class="details">
-                                                                    <div class="date">{{event.dateStr}}</div>
-                                                                    <div class="place">{{event.loc}}</div>
-                                                                    
-                                                                    <div class="note" v-if="event.note" v-html="event.note"></div>
-                                                                    <div class="list lists" v-if="event.lists[0]"><i>Lists: </i><span v-for="list in event.lists"><a href="#" @click="">{{list}}</a></span></div>
-                                                                    <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="">{{prophecy}}</a></span></span></div>
+                                            </h4>
+                                        </div>
+
+                                        <div :id="codifyString(list)" class="collapse" aria-labelledby="headingOne" data-parent="#accordionLists">
+                                            <div class="card-body">
+                                                <div class="events-list">
+                                                    <div v-for="event in timelineEls.events.filter(e => e.lists.lastIndexOf(list) >= 0 && (e.eventType == 'normal' || e.eventType == 'secondary'))">
+
+                                                        <div class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
+
+                                                            <div v-if="event.img" class="event-image" :style="{'background-image': `url(${event.img})`}">
+                                                                <div class="openTheater" @click="setTheaterImageByObj(event)"></div>
+                                                            </div>
+
+                                                            <div class="event-info-layout">
+
+                                                                <div class="info">
+                                                                    <div class="title">{{event.name}}</div>
+                                                                    <div class="details">
+                                                                        <div class="date">{{event.dateStr}}</div>
+                                                                        <div class="place">{{event.loc}}</div>
+
+                                                                        <div class="note" v-if="event.note" v-html="event.note"></div>
+                                                                        <div class="list lists" v-if="event.lists[0]"><i>Lists: </i><span v-for="list in event.lists"><a href="#" @click="">{{list}}</a></span></div>
+                                                                        <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="">{{prophecy}}</a></span></span>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
+
+                                                                <div class="buttons">
+                                                                    <a v-if="isAdmin" class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
+                                                                    <a @click="highlightEventByIdString(event.idString, true)"><i class="material-icons">gps_fixed</i></a>
+                                                                    <a v-if="event.scriptureLink" :href="event.scriptureLink" target="_blank"><i class="material-icons">import_contacts</i></a>
+                                                                    <a v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"><i class="material-icons">description</i></a>
+                                                                </div>
+
                                                             </div>
-            
-                                                            <div class="buttons">
-                                                                <a v-if="isAdmin" class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
-                                                                <a @click="highlightEventByIdString(event.idString)"><i class="material-icons">gps_fixed</i></a>
-                                                                <a v-if="event.scriptureLink" :href="event.scriptureLink" target="_blank"><i class="material-icons">import_contacts</i></a>
-                                                                <a v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"><i class="material-icons">description</i></a>
-                                                            </div>
-            
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                  </div>
-                        
+
                                 </div>
                             </div>
 
                             <!-- Prophecies Tabs -->
                             <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
                                 <div class="accordion" id="accordionProphecy">
-                                  
-                                  <div v-for="prophecy in getOptionsFor(items, 'prophecies')" class="card">
-                                    <div class="card-header">
-                                      <h4 class="mb-0">
-                                        <button class="btn btn-link" type="button" data-toggle="collapse" :data-target="'#'+codifyString(prophecy)" aria-controls="collapseOne">
+
+                                    <div v-for="prophecy in getOptionsFor(items, 'prophecies')" class="card">
+                                        <div class="card-header">
+                                            <h4 class="mb-0">
+                                                <button class="btn btn-link" type="button" data-toggle="collapse" :data-target="'#'+codifyString(prophecy)" aria-controls="collapseOne">
                                           {{prophecy}}
                                         </button>
-                                      </h4>
-                                    </div>
-                                
-                                    <div :id="codifyString(prophecy)" class="collapse" aria-labelledby="headingOne" data-parent="#accordionProphecy">
-                                        <div class="card-body">
-                                            <div class="events-list">
-                                                <div v-for="event in timelineEls.events.filter(e => e.prophecies.lastIndexOf(prophecy) >= 0 && (e.eventType == 'normal' || e.eventType == 'secondary'))">
-            
-                                                    <div class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
-                                                        
-                                                        <div v-if="event.img" class="event-image" :style="{'background-image': `url(${event.img})`}">
-                                                            <div class="openTheater" @click="setTheaterImageByObj(event)"></div>
-                                                        </div>
-                                                        
-                                                        <div class="event-info-layout">
-            
-                                                            <div class="info">
-                                                                <div class="title">{{event.name}}</div>
-                                                                <div class="details">
-                                                                    <div class="date">{{event.dateStr}}</div>
-                                                                    <div class="place">{{event.loc}}</div>
-                                                                    
-                                                                    <div class="note" v-if="event.note" v-html="event.note"></div>
-                                                                    <div class="list lists" v-if="event.lists[0]"><i>Lists: </i><span v-for="list in event.lists"><a href="#" @click="">{{list}}</a></span></div>
-                                                                    <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="">{{prophecy}}</a></span></span></div>
+                                            </h4>
+                                        </div>
+
+                                        <div :id="codifyString(prophecy)" class="collapse" aria-labelledby="headingOne" data-parent="#accordionProphecy">
+                                            <div class="card-body">
+                                                <div class="events-list">
+                                                    <div v-for="event in timelineEls.events.filter(e => e.prophecies.lastIndexOf(prophecy) >= 0 && (e.eventType == 'normal' || e.eventType == 'secondary'))">
+
+                                                        <div class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
+
+                                                            <div v-if="event.img" class="event-image" :style="{'background-image': `url(${event.img})`}">
+                                                                <div class="openTheater" @click="setTheaterImageByObj(event)"></div>
+                                                            </div>
+
+                                                            <div class="event-info-layout">
+
+                                                                <div class="info">
+                                                                    <div class="title">{{event.name}}</div>
+                                                                    <div class="details">
+                                                                        <div class="date">{{event.dateStr}}</div>
+                                                                        <div class="place">{{event.loc}}</div>
+
+                                                                        <div class="note" v-if="event.note" v-html="event.note"></div>
+                                                                        <div class="list lists" v-if="event.lists[0]"><i>Lists: </i><span v-for="list in event.lists"><a href="#" @click="">{{list}}</a></span></div>
+                                                                        <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="">{{prophecy}}</a></span></span>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
+
+                                                                <div class="buttons">
+                                                                    <a v-if="isAdmin" class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
+                                                                    <a @click="highlightEventByIdString(event.idString, true)"><i class="material-icons">gps_fixed</i></a>
+                                                                    <a v-if="event.scriptureLink" :href="event.scriptureLink" target="_blank"><i class="material-icons">import_contacts</i></a>
+                                                                    <a v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"><i class="material-icons">description</i></a>
+                                                                </div>
+
                                                             </div>
-            
-                                                            <div class="buttons">
-                                                                <a v-if="isAdmin" class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
-                                                                <a @click="highlightEventByIdString(event.idString)"><i class="material-icons">gps_fixed</i></a>
-                                                                <a v-if="event.scriptureLink" :href="event.scriptureLink" target="_blank"><i class="material-icons">import_contacts</i></a>
-                                                                <a v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"><i class="material-icons">description</i></a>
-                                                            </div>
-            
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                  </div>
-                        
+
                                 </div>
-                            
+
                             </div>
                         </div>
 
@@ -203,7 +206,7 @@
                 </div>
 
 
-                <div id="mainPanel" v-show="!(isMobile && menuIsOpen)">
+                <div id="mainPanel">
 
                     <div id="timeline-box" class="fs-inner-wrapper" onwheel="app.handleTimelineScroll(event)">
 
@@ -276,7 +279,8 @@
                                                     <div class="place">{{event.loc}}</div>
                                                     <div class="note" v-if="event.note" v-html="event.note"></div>
                                                     <div class="list lists" v-if="event.lists[0]"><i>Lists: </i><span v-for="list in event.lists"><a href="#" @click="">{{list}}</a></span></div>
-                                                    <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="">{{prophecy}}</a></span></span></div>
+                                                    <div class="list prophecies" v-if="event.prophecies[0]"><i>Prophecies: </i><span v-for="prophecy in event.prophecies"><a href="#" @click="">{{prophecy}}</a></span></span>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -309,6 +313,7 @@
                             <div id="zoomOut" @click="handleButtonZoomOut()" class="btn btn-sm btn-light zoom"></div>
                         </div>
                         <div id="addEventBox">
+                            <div id="startQuiz" @click="showQuiz = true" class="btn btn-sm btn-primary">Quiz Me!</div>
                             <div v-if="isAdmin">
                                 <div id="addEvent" @click="openAddForm('event')" class="btn btn-sm btn-light">+ Add Event</div>
                                 <div id="addArc" @click="openAddForm('arc')" class="btn btn-sm btn-light">+ Add Arc</div>
@@ -317,13 +322,10 @@
                             <div v-else>
                                 <div id="login" @click="loginAdmin" class="btn btn-sm btn-light">Login</div>
                             </div>
-
-                            <div id="startQuiz" @click="showQuiz = true" class="btn btn-sm btn-primary">Quiz Me!</div>
-
                         </div>
                     </div>
 
-                    <div v-if="menuIsOpen && isMobile" id="menuCloserSplash" @click="toggleMenu()"></div>
+                    <!--<div v-if="menuIsOpen && isMobile" id="menuCloserSplash" @click="toggleMenu()"></div>-->
 
                 </div>
 
@@ -491,13 +493,13 @@
                                 <label for="scriptureLink">Link to Scripture</label><br>
                                 <input id="scriptureLink" v-model="tempItem.scriptureLink">
                             </p>
-                            
+
                             <p>
                                 <label for="note">Notes</label><br>
                                 <textarea id="note" v-model="tempItem.note"></textarea>
                             </p>
-                            
-                            
+
+
 
                             <p style="white-space: no-wrap">
                                 <input type="submit" class="btn btn-sm btn-primary">

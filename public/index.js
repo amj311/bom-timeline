@@ -444,10 +444,12 @@ var app = new Vue ({
 
         },
         
-        highlightEventByIdString(idString) {
+        highlightEventByIdString(idString, exclusive = false) {
+            if (exclusive) document.querySelectorAll('.focus').forEach( el => el.classList.remove('focus') )
+            
             let waitTime = 0;
             
-            if (this.isMobile) {
+            if (window.innerWidth < 495) {
                 waitTime = 1000;
                 this.toggleMenu()
             }
