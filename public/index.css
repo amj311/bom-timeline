@@ -244,6 +244,13 @@ div#menuCloserSplash {
     font-size: 1em;
     background: #0000000a;
 }
+.book-label-wrapper .era-label {
+    border: 1px solid #0002;
+    padding-left: .3em;
+    background: #f5f5f5;
+    overflow: hidden;
+    white-space: nowrap;
+}
 
 div#flatLine {
     position: absolute;
@@ -336,13 +343,13 @@ div#flatLine {
 .eventPos .content {
     position: absolute;
     left: 50%;
-    top: 0;
+    top: 50%;
     transform: translate(-50%, -50%);
 }
 
 
 .eventPos .time-card-wrapper {
-    transform: translateY(-.75em);
+    transform: translateY(-1em);
 }
 
 
@@ -375,15 +382,14 @@ div#flatLine {
     box-sizing: content-box;
     pointer-events: none;
 }
-
-
-.date-tag {
+.line .date-tag {
     position: absolute;
     bottom: 2px;
     left: 0;
     width: max-content;
     background: #f3f3f3;
-    padding: .3em;
+    line-height: 1.8em;
+    padding: 0 .3em;
 }
 
 

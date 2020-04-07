@@ -23,7 +23,8 @@
                     <div class="bar3"></div>
                 </div>
                 <div class="profile-img" style="background-image: url(./images/nephi.png)"></div>
-                <h6>Book of Mormon Timeline</h6>
+                <h6 style="flex-grow: 1">Book of Mormon Timeline</h6>
+                <div class="material-icons" style="cursor: pointer" @click="openMenuToTab('contact-tab')">help</div>
             </div>
 
             <div id="timeline-wrapper">
@@ -33,7 +34,7 @@
 
                         <ul class="nav nav-tabs hidden-scroll" id="myTab" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" id="all-events-tab" data-toggle="tab" href="#all-events" role="tab" aria-controls="all-events" aria-selected="true">Events</a>
+                                <a class="nav-link active" id="all-events-tab" data-toggle="tab" href="#all-events" role="tab" aria-controls="all-events" aria-selected="true" onclick="app.scrollToEl(this)">Events</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="lists-tab" data-toggle="tab" href="#lists" role="tab" aria-controls="lists" aria-selected="false">Lists</a>
@@ -78,7 +79,7 @@
                                                 </div>
 
                                                 <div class="buttons">
-                                                    <a v-if="isAdmin" class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
+                                                    <a class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
                                                     <a title="Highlght on timeline." @click="highlightEventByIdString(event.idString, true)"><i class="material-icons">gps_fixed</i></a>
                                                     <a title="Open in the scriptures." v-if="event.scriptureLink" :href="event.scriptureLink" target="_blank"><i class="material-icons">import_contacts</i></a>
                                                     <a title="View stylized document." v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"><i class="material-icons">description</i></a>
@@ -131,7 +132,7 @@
                                                                 </div>
 
                                                                 <div class="buttons">
-                                                                    <a v-if="isAdmin" class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
+                                                                    <a class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
                                                                     <a title="Highlght on timeline." @click="highlightEventByIdString(event.idString, true)"><i class="material-icons">gps_fixed</i></a>
                                                                     <a title="Open in the scriptures." v-if="event.scriptureLink" :href="event.scriptureLink" target="_blank"><i class="material-icons">import_contacts</i></a>
                                                                     <a title="View stylized document." v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"><i class="material-icons">description</i></a>
@@ -189,7 +190,7 @@
                                                                 </div>
 
                                                                 <div class="buttons">
-                                                                    <a v-if="isAdmin" class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
+                                                                    <a class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
                                                                     <a title="Highlght on timeline." @click="highlightEventByIdString(event.idString, true)"><i class="material-icons">gps_fixed</i></a>
                                                                     <a title="Open in the scriptures." v-if="event.scriptureLink" :href="event.scriptureLink" target="_blank"><i class="material-icons">import_contacts</i></a>
                                                                     <a title="View stylized document." v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"><i class="material-icons">description</i></a>
@@ -227,13 +228,15 @@
                         <div id="markers" :style="{overflow: 'hidden', width: `${numEras * eraDuration * yearUnit}px`}">
                             <div id="scrollmarker" :style="{left: `${zoomTargetPos}px`}"></div>
 
-                            <div id="flatLine" :style="{bottom: `${dividerHeight}rem`}"></div>
+                            <!--<div id="flatLine" :style="{bottom: `${dividerHeight}rem`}"></div>-->
+
                             <div v-for="era in eras" class="century-block" :id="era" :style="{width: `${yearUnit * eraDuration}px`}">
                                 <div class="era-label">
                                     <span v-if="era < 0">{{-era}} BC</span>
                                     <span v-else>{{era + 1}} AD</span>
                                 </div>
                             </div>
+
                         </div>
 
                         <div id="watercolors">
@@ -269,6 +272,12 @@
                         </div>
 
                         <div id="gallery">
+
+                            <!--<div style="border:1em solid red; position: absolute; top: 25%" :style="{left: (initCenterYear-startYear) * yearUnit+'px'}"></div>-->
+                            <div v-for="book in books" class="book-label-wrapper" :style="{position: 'absolute', bottom: `calc(2*${book.step}em - 1px`, left: (book.startYear-startYear)*yearUnit+'px', width: ((book.endYear-book.startYear)*yearUnit) + 1 +'px'}">
+                                <div class="era-label">{{book.name}}</div>
+                            </div>
+
                             <div v-for="arc in timelineEls.arcs" class="arc-group item-wrapper" :class="{hardFocus: arc.hasFocus}" :style="{color: arc.color}">
                                 <svg :style="{position: 'absolute', left: arc.left, bottom: arc.base}" :height="arc.top-arc.base" :width="arc.right-arc.left">
                                     <line v-for="i in arc.points.length" v-if="arc.points[i]"
@@ -337,7 +346,7 @@
                                             </div>
 
                                             <div class="buttons">
-                                                <a v-if="isAdmin" class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
+                                                <a class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
                                                 <a title="Open in the scriptures." v-if="event.scriptureLink" :href="event.scriptureLink" target="_blank"><i class="material-icons">import_contacts</i></a>
                                                 <a title="View stylized document." v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"><i class="material-icons">description</i></a>
                                             </div>
@@ -448,7 +457,7 @@
 
 
                             <div v-if="tempItem.type == 'event'">
-                                <div>
+                                <div v-if="isAdmin">
                                     Type of Event:
                                     <select v-model="tempItem.eventType" style="text-transform: capitalize;">
                                         <option v-for="type in eventTypes" :value="type">{{type}}</option>
@@ -472,34 +481,37 @@
                                     <label for="imgCred">Image Attribution</label><br>
                                     <input id="imgCred" v-model="tempItem.imgCred">
                                 </div>
-                                <div>
-                                    <label for="year">Year</label><br>
-                                    <input id="year" v-model="tempItem.year" @change="handleChangeAddYear" type="number">
-                                    <div style="display:flex">
-                                        <div>
-                                            <label for="month">Month</label><br>
-                                            <select id="month" v-model="tempItem.month">
-                                                <option v-for="i in MONTH.length" :value="i-1">{{MONTH[i-1]}}</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label for="day">Day</label><br>
-                                            <input id="day" v-model="tempItem.day" type="number" min="1" max="31">
+
+                                <div v-if="isAdmin">
+                                    <div>
+                                        <label for="year">Year</label><br>
+                                        <input id="year" v-model="tempItem.year" @change="handleChangeAddYear" type="number">
+                                        <div style="display:flex">
+                                            <div>
+                                                <label for="month">Month</label><br>
+                                                <select id="month" v-model="tempItem.month">
+                                                    <option v-for="i in MONTH.length" :value="i-1">{{MONTH[i-1]}}</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label for="day">Day</label><br>
+                                                <input id="day" v-model="tempItem.day" type="number" min="1" max="31">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <label for="pos">Position</label><br>
-                                    <input id="pos" v-model="tempItem.pos" type="range" min="6" max="90" step="1">
-                                </div>
+                                    <div>
+                                        <label for="pos">Position</label><br>
+                                        <input id="pos" v-model="tempItem.pos" type="range" min="6" max="90" step="1">
+                                    </div>
 
-                                <div v-if="tempItem.eventType == 'image'">
-                                    <label for="width">Size</label><br>
-                                    <input id="width" v-model="tempItem.width" type="range" min="50" max="800" step="1">
-                                </div>
-                                <div v-if="tempItem.eventType == 'image'">
-                                    <label for="offset">Offset</label><br>
-                                    <input id="offset" v-model="tempItem.offset" type="range" min="-100" max="0" step="1">
+                                    <div v-if="tempItem.eventType == 'image'">
+                                        <label for="width">Size</label><br>
+                                        <input id="width" v-model="tempItem.width" type="range" min="50" max="800" step="1">
+                                    </div>
+                                    <div v-if="tempItem.eventType == 'image'">
+                                        <label for="offset">Offset</label><br>
+                                        <input id="offset" v-model="tempItem.offset" type="range" min="-100" max="0" step="1">
+                                    </div>
                                 </div>
 
                                 <div>
@@ -539,15 +551,17 @@
                                         <p class="lists-list-add-new"><input type="text" list="propheciesList" v-model="newProphecyName"><input type="reset" class="btn btn-sm btn-primary" @click="handleAddItemToList('prophecies', newProphecyName)" value="Link To Prophecy" :disabled="!newProphecyName.length"></p>
                                     </div>
                                 </div>
-                                <div>
-                                    <label for="arcId">Arc</label><br>
-                                    <select id="arcId" v-model="tempItem.arcId">
-                                        <option :value="null">No arc</option>
-                                        <option v-for="arc in arcs" :value="arc._id"
-                                            :style="{backgroundColor: arc.color, color: '#fff'}">{{arc.name}}</option>
-                                    </select>
-                                </div>
 
+                                <div v-if="isAdmin">
+                                    <div>
+                                        <label for="arcId">Arc</label><br>
+                                        <select id="arcId" v-model="tempItem.arcId">
+                                            <option :value="null">No arc</option>
+                                            <option v-for="arc in arcs" :value="arc._id"
+                                                :style="{backgroundColor: arc.color, color: '#fff'}">{{arc.name}}</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
 
                             <div v-if="tempItem.type == 'arc'">
