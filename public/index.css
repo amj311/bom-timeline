@@ -72,6 +72,10 @@ select {
     display: inline-block;
     max-width: 100%;
 }
+.btn[disabled] {
+    opacity: .6;
+    pointer-events: none;
+}
 
 
 
@@ -414,7 +418,7 @@ div#flatLine {
     background-image: url(/images/loading.gif);
     background-position: center;
     background-repeat: no-repeat;
-    height: 8vh;
+    height: 12vh;
     max-height: 8em;
     min-height: 4em;
     position: relative;
@@ -512,7 +516,7 @@ div#flatLine {
 }
 
 .event-info-layout .buttons>a {
-    opacity: .5;
+    opacity: .7;
     color: #555;
     font-size: 1.3em;
     margin-bottom: -.3em;
@@ -581,6 +585,11 @@ div#timeline-wrapper #controls>div {
     left: initial !important;
 }
 
+#zoomBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 div#controls .btn {
     display: block;
     box-shadow: 0 0 3px #0006;
@@ -593,20 +602,23 @@ div#controls .btn {
 }
 
 div#controls .btn.zoom {
+    font-size: 1.3em;
     width: 1.5em;
     padding: 0;
+    z-index: 1;
 }
 
-div#zoomIn::before {
-    content: '+';
+div#zoomBox div#zoomIn.btn.zoom {
+    padding-bottom: .3em;
 }
-
-div#resetZoom::before {
-    content: '\00D7';
+div#resetZoom.btn.zoom {
+    border-radius: 50%;
+    font-size: 1.75em;
+    z-index: 2;
+    margin: -.7em;
 }
-
-div#zoomOut::before {
-    content: '\2212';
+div#zoomBox div#zoomOut.btn.zoom {
+    padding-top: .3em;
 }
 
 
@@ -649,6 +661,10 @@ div.side-panel.open {
 
 
 /* LEFT PANEL */
+
+div#left_panel {
+    max-width: 20rem;
+}
 
 /* Tabs*/
 
@@ -717,7 +733,7 @@ div#contact.tab-pane {
 }
 
 .events-list-item .event-image {
-    height: 6em;
+    height: 7em;
     border-top-right-radius: 1em;
     box-shadow: inset 0 -20px 10px -10px #0008;
     background-size: cover;
@@ -725,9 +741,9 @@ div#contact.tab-pane {
     transition: 500ms;
 }
 
-.events-list-item:hover .event-image {
-    height: 12em;
-}
+/*.events-list-item:hover .event-image {*/
+/*    height: 12em;*/
+/*}*/
 
 .events-list-item .info {
     flex-grow: 1;

@@ -125,6 +125,7 @@ app.delete('/api/arcs/:id', async(req, res) => {
 const timelineObjectSchema = new mongoose.Schema({
   name: String,
   day: Number,
+  color: String,
   month: Number,
   year: Number,
   pos: Number,

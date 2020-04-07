@@ -35,6 +35,7 @@ var app = new Vue ({
         dayUnit: this.yearUnit / 365,
         minYearUnit: null,
         initYearUnit: 1,
+        initCenterYear: -100,
         canZoom: true,
         zoomTargetPos: 0,
         minEventDistance: 10,
@@ -117,10 +118,10 @@ var app = new Vue ({
         // Qwizard
         this.displayQIdx = this.activeQIdx + 1;
 
-        this.isLoading = false;
         
         setTimeout(function() {
             app.resetZoom();
+            this.isLoading = false;
         }, 0);
         
     },
@@ -229,6 +230,7 @@ var app = new Vue ({
                 // default new event
                 if (type === "event") {
                     this.tempItem = {
+                        idString: "tempItem",
                         "type": "event",
                         eventType: 'normal',
                         "name": "New Event",
@@ -257,13 +259,14 @@ var app = new Vue ({
                 // default new arc
                 if (type === "arc") {
                     this.tempItem = {
+                        idString: "tempItem",
                         "type": "arc",
                         "name": "New Arc",
                         "color": "#bbb",
                         "note": "",
                         isNewPlaceholder: true,
                     };
-                    this.items.push(this.tempItem)
+                    this.arcs.push(this.tempItem)
                 }
 
             this.tempItem.hasFocus = true;
@@ -273,7 +276,7 @@ var app = new Vue ({
 
         handleChangeAddYear(){
             if(this.tempItem.year > this.dateMax || this.tempItem.year < this.dateMin) this.setZoom()
-            setTimeout( () => this.scrollToEl(document.querySelector('.eventPos.hardFocus')), 5 )
+            this.scrollToFocusedEl()
         },
         
         handleAddItemToList(listType, listName) {
@@ -474,6 +477,10 @@ var app = new Vue ({
             }, waitTime)
         },
         
+        scrollToFocusedEl(){
+            setTimeout( () => this.scrollToEl(document.querySelector('.eventPos.hardFocus')), 500 )
+        },
+        
         scrollToEl(el){
             el.classList.add('focus')
             el.scrollIntoView({behavior: "smooth", block: "center", inline: "center"})
@@ -552,12 +559,18 @@ var app = new Vue ({
             this.handleButtonZoom(0.4)
         },
         resetZoom(){
+            this.isLoading = true;
             this.yearUnit = this.initYearUnit;
+            let scrollTarget = this.initCenterYear ?
+                (this.initCenterYear - this.startYear) * this.yearUnit :
+                document.getElementById('timeline-box').scrollWidth/2;
+                
             setTimeout( function() {
-                document.getElementById('timeline-box').scrollLeft = document.getElementById('timeline-box').scrollWidth/2 - document.getElementById('timeline-box').offsetWidth/2;
+                document.getElementById('timeline-box').scrollLeft = scrollTarget - document.getElementById('timeline-box').offsetWidth/2;
             }, 0 )
             setTimeout(function() {
                 app.handleButtonZoom(.001);
+                this.isLoading = false;
             }, 2);
             
         },

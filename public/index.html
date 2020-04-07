@@ -360,11 +360,11 @@
 
                     <div id="controls">
                         <div id="zoomBox">
-                            <div id="zoomIn" @click="handleButtonZoomIn()" class="btn btn-sm btn-light zoom"></div>
-                            <div id="resetZoom" @click="resetZoom()" class="btn btn-sm btn-light zoom"></div>
-                            <div id="zoomOut" @click="handleButtonZoomOut()" class="btn btn-sm btn-light zoom"></div>
+                            <div id="zoomIn" @click="handleButtonZoomIn()" class="material-icons btn btn-sm btn-light zoom">zoom_in</div>
+                            <div id="resetZoom" @click="resetZoom()" class="material-icons btn btn-sm btn-light zoom">home</div>
+                            <div id="zoomOut" @click="handleButtonZoomOut()" class="material-icons btn btn-sm btn-light zoom" :disabled="yearUnit <= this.minYearUnit">zoom_out</div>
                         </div>
-                        <div id="addEventBox">
+                        <div id="addEventBox" v-if="!(addingItem || editingItem)">
                             <div id="startQuiz" @click="showQuiz = true" class="btn btn-sm btn-primary">Quiz Me!</div>
                             <div v-if="isAdmin">
                                 <div id="addEvent" @click="openAddForm('event')" class="btn btn-sm btn-light">+ Add Event</div>
