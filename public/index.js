@@ -33,11 +33,14 @@ var app = new Vue({
         yearUnit: 20,
         dayUnit: this.yearUnit / 365,
         minYearUnit: null,
+        maxYearUnit: null,
         initYearUnit: 1,
         initCenterYear: 34,
         canZoom: true,
         zoomTargetPos: 0,
-        minEventDistance: 10,
+        minEventDistance: 8,
+        maxZoomDeterminant: 15,
+        minEventPosDiff: 2,
 
         coverImg: true,
         theaterMode: "img",
@@ -56,7 +59,7 @@ var app = new Vue({
         tempItem: {},
 
         itemTypes: ['event', 'arc'],
-        eventTypes: ['normal', 'secondary', 'image', 'floating', 'anchor'],
+        eventTypes: ['normal', 'secondary', 'image', 'anchor'],
         addingType: "",
         addingItem: false,
         newEventDefault: {
@@ -110,7 +113,7 @@ var app = new Vue({
             { name: "Jarom", startYear: -420, endYear: -361, step: 1 },
             { name: "Omni", startYear: -361, endYear: -135, step: 1 },
             { name: "Words of Mormon", startYear: -135, endYear: -123, step: 1 },
-            { name: "Mosiah", startYear: -135, endYear: -90, step: 1 },
+            { name: "Mosiah", startYear: -123, endYear: -90, step: 1 },
             { name: "Mosiah 9-24", startYear: -176, endYear: -120, step: 2 },
             { name: "Alma", startYear: -90, endYear: -51, step: 1 },
             { name: "Helaman", startYear: -51, endYear: 0, step: 1 },
@@ -188,7 +191,7 @@ var app = new Vue({
         toggleMenu() {
             this.menuIsOpen = !this.menuIsOpen;
         },
-        
+
         openMenuToTab(tabTriggerId) {
             let tab = $('#myTab a#' + tabTriggerId)
             if (tab) {
@@ -202,6 +205,18 @@ var app = new Vue({
             this.openMenuToTab(listType + '-tab')
             $('#' + this.codifyString(listName)).collapse('show')
             setTimeout(() => this.scrollToEl($('#' + this.codifyString(listName))[0]), 200)
+        },
+
+        openMenuToEvent(eventIdString) {
+            this.openMenuToTab('all-events-tab')
+            setTimeout(() => this.scrollToEl($('#menu_' + eventIdString)[0]), 200)
+        },
+
+        openMenuToPlace(placeName) {
+            this.openMenuToTab('places-tab')
+            let $el = $('#' + this.codifyString(placeName))
+            $el.collapse('show')
+            setTimeout(() => this.scrollToEl($el[0]), 200)
         },
 
         async getEvents() {
@@ -328,7 +343,8 @@ var app = new Vue({
         },
 
         codifyString(string) {
-            return string.split('').filter(c => !/[^a-zA-Z0-9]/.test(c)).join('')
+            console.log(string)
+            if (string) return string.split('').filter(c => !/[^a-zA-Z0-9]/.test(c)).join('')
         },
 
         handleSubmitForm() {
@@ -526,6 +542,10 @@ var app = new Vue({
             this.subsOn = !this.subsOn;
         },
 
+        setMaxZoom(smallestEventDaysDiff) {
+            this.maxYearUnit = (this.maxZoomDeterminant / smallestEventDaysDiff) * 365;
+        },
+
         setZoom(setInit) {
             let viewWidth = document.getElementById('timeline-box').offsetWidth;
 
@@ -628,7 +648,8 @@ var app = new Vue({
         },
 
         changeYearUnit(delta) {
-            this.yearUnit = Math.max(this.minYearUnit, this.yearUnit * (1 + delta));
+            if (delta < 0) this.yearUnit = Math.max(this.minYearUnit, this.yearUnit * (1 + delta));
+            if (delta > 0) this.yearUnit = Math.min(this.maxYearUnit, this.yearUnit * (1 + delta));
             // console.log(this.minYearUnit, this.yearUnit);
         },
 
@@ -685,30 +706,27 @@ var app = new Vue({
     computed: {
         eras() {
             let array = [];
-            for (i = 0; i < this.numEras; i++) {
+            for (let i = 0; i < this.numEras; i++) {
                 array.push(this.startYear + i * this.eraDuration)
             }
             return array;
         },
 
         timelineEls() {
-            console.log('calculating timelineEls')
+            console.log('Parsing Timeline Objects')
             this.arcs.forEach(a => a.points = [])
 
             let events = []
             let images = []
 
             this.items.filter(i => i.type === 'event').forEach(event => {
-
-
                 let yearInDays = (event.year - this.startYear) * 365;
                 if (event.year > 0) yearInDays -= 365;
                 let monthInDays = (event.month - 1) * 31;
                 let days = event.day;
-                let totalDays = yearInDays + monthInDays + days;
-                event.relX = totalDays * this.dayUnit;
+                event.totalDays = yearInDays + monthInDays + days;
 
-                event.relY = (event.pos / 100) * document.getElementById('timeline-box').offsetHeight;
+                 event.relY = (event.pos / 100) * document.getElementById('timeline-box').offsetHeight;
 
                 event.idString = `event_${event._id || events.length}`
                 event.yearStr = event.year < 0 ?
@@ -724,22 +742,43 @@ var app = new Vue({
 
                 if (this.getArcById(event.arcId)) {
                     event.arc = this.getArcById(event.arcId)
-                    event.arc.points.push({ "relY": event.relY, "relX": event.relX })
+                    event.arc.points.push({ "relY": event.relY, "relX": event.relX, "totalDays": event.totalDays })
                 }
 
                 if (event.eventType == 'image') images.push(event)
                 else events.push(event)
             })
 
-            events = events.sort((a, b) => a.relX - b.relX)
+            events = events.sort((a, b) => a.totalDays - b.totalDays)
+
+            let smallestEventDist = null;
+
+            for (let i = 0; i < events.length; i++) {
+                if (events[i - 1] && events[i - 1].arcId === events[i].arcId && Math.abs(events[i].pos - events[i - 1].pos) < this.minEventPosDiff) {
+                    if (!smallestEventDist) smallestEventDist = events[i].totalDays - events[i - 1].totalDays;
+
+                    console.log(smallestEventDist)
+                    // events[i].leftNbrName = events[i-1].name
+
+                    events[i].hasLeftNbr = true;
+                    events[i - 1].hasRightNbr = true;
+                    let dist = events[i].totalDays - events[i - 1].totalDays
+                    events[i].daysLeft = dist;
+                    events[i - 1].daysRight = dist;
+
+                    if (dist < smallestEventDist) smallestEventDist = dist;
+                }
+            }
+
+            setTimeout( function(){ app.setMaxZoom(smallestEventDist)}, 2);
 
 
             this.arcs.forEach(arc => {
                 arc.type = 'arc';
-                arc.points.sort((a, b) => a.relX - b.relX);
-                arc.left = arc.points.reduce((min, p) => Math.min(p.relX, min), Infinity) - 5;
+                arc.points.sort((a, b) => a.totalDays - b.totalDays);
+                arc.left = arc.points.reduce((min, p) => Math.min(p.totalDays, min), Infinity) - 5;
                 arc.base = arc.points.reduce((min, p) => Math.min(p.relY, min), Infinity) - 5;
-                arc.right = arc.points.reduce((max, p) => Math.max(p.relX, max), 0) + 5;
+                arc.right = arc.points.reduce((max, p) => Math.max(p.totalDays, max), 0) + 5;
                 arc.top = arc.points.reduce((max, p) => Math.max(p.relY, max), 0) + 5;
             })
 

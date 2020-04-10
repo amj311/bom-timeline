@@ -12,12 +12,12 @@
 </head>
 
 <body>
-    <div id="app" :class="{ mobile: isMobile, wideMenu: (true && menuIsOpen), isAdmin: isAdmin, focusOne: addingItem || editingItem }">
+    <div id="app" :class="{ mobile: isMobile, showMenu: menuIsOpen && !(addingItem || editingItem ), isAdmin: isAdmin, focusOne: addingItem || editingItem }">
 
         <div id="main-view">
 
             <div id="person-summary">
-                <div class="hamburger-container" :class="{change: menuIsOpen}" @click="toggleMenu">
+                <div class="hamburger-container" :class="{disabled: addingItem || editingItem }" @click="toggleMenu">
                     <div class="bar1"></div>
                     <div class="bar2"></div>
                     <div class="bar3"></div>
@@ -43,6 +43,9 @@
                                 <a class="nav-link" id="prophecies-tab" data-toggle="tab" href="#prophecies" role="tab" aria-controls="prophecies" aria-selected="false" onclick="app.scrollToEl(this)">Prophecies</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" id="places-tab" data-toggle="tab" href="#places" role="tab" aria-controls="places" aria-selected="false" onclick="app.scrollToEl(this)">Places</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" onclick="app.scrollToEl(this)">Project Info</a>
                             </li>
                         </ul>
@@ -57,7 +60,7 @@
 
                                     <div v-for="event in timelineEls.images.concat(timelineEls.events)">
 
-                                        <div v-if="isAdmin || (event.eventType == 'normal' || event.eventType == 'secondary')" class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
+                                        <div v-if="isAdmin || (event.eventType == 'normal' || event.eventType == 'secondary')" class="events-list-item" :id="'menu_'+event.idString" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
 
                                             <div v-if="event.img" class="event-image" :style="{'background-image': `url(${event.img})`}">
                                                 <div class="openTheater" @click="setTheaterImageByObj(event)"><i class="material-icons">fullscreen</i></div>
@@ -66,10 +69,10 @@
                                             <div class="event-info-layout">
 
                                                 <div class="info">
-                                                    <div class="title">{{event.name}}</div>
+                                                    <div class="title"><span v-if="event.customIcon">{{event.customIcon}} </span>{{event.name}}</div>
                                                     <div class="details">
-                                                        <div class="date">{{event.dateStr}}</div>
-                                                        <div class="place">{{event.loc}}</div>
+                                                        <div class="date" v-if="event.dateStr"><i class="material-icons">event</i> {{event.dateStr}}</div>
+                                                        <div class="place" v-if="event.loc"><i class="material-icons">location_on</i> <a href="#" @click="openMenuToPlace(event.loc)">{{event.loc}}</a></div>
 
                                                         <div v-if="event.note || event.lists[0] || event.prophecies" class="long-details">
                                                             <div class="note" v-if="event.note">{{event.note}}</div>
@@ -119,10 +122,10 @@
                                                             <div class="event-info-layout">
 
                                                                 <div class="info">
-                                                                    <div class="title">{{event.name}}</div>
+                                                                    <div class="title"><span v-if="event.customIcon">{{event.customIcon}} </span>{{event.name}}</div>
                                                                     <div class="details">
-                                                                        <div class="date">{{event.dateStr}}</div>
-                                                                        <div class="place">{{event.loc}}</div>
+                                                                        <div class="date" v-if="event.dateStr"><i class="material-icons">event</i> {{event.dateStr}}</div>
+                                                                        <div class="place" v-if="event.loc"><i class="material-icons">location_on</i> <a href="#" @click="openMenuToPlace(event.loc)">{{event.loc}}</a></div>
 
                                                                         <div v-if="event.note || event.lists[0] || event.prophecies[0]" class="long-details">
                                                                             <div class="note" v-if="event.note">{{event.note}}</div>
@@ -177,10 +180,69 @@
                                                             <div class="event-info-layout">
 
                                                                 <div class="info">
-                                                                    <div class="title">{{event.name}}</div>
+                                                                    <div class="title"><span v-if="event.customIcon">{{event.customIcon}} </span>{{event.name}}</div>
                                                                     <div class="details">
-                                                                        <div class="date">{{event.dateStr}}</div>
-                                                                        <div class="place">{{event.loc}}</div>
+                                                                        <div class="date" v-if="event.dateStr"><i class="material-icons">event</i> {{event.dateStr}}</div>
+                                                                        <div class="place" v-if="event.loc"><i class="material-icons">location_on</i> <a href="#" @click="openMenuToPlace(event.loc)">{{event.loc}}</a></div>
+
+                                                                        <div v-if="event.note || event.lists[0] || event.prophecies[0]" class="long-details">
+                                                                            <div class="note" v-if="event.note">{{event.note}}</div>
+                                                                            <div class="list lists" v-if="event.lists[0]"><span v-for="list in event.lists"><a href="#" @click="openMenuToList('lists', list)">{{list}}</a></span></div>
+                                                                            <div class="list prophecies" v-if="event.prophecies[0]"><span v-for="prophecy in event.prophecies"><a href="#" @click="openMenuToList('prophecies', prophecy)">{{prophecy}}</a></span></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="buttons">
+                                                                    <a class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
+                                                                    <a title="Highlght on timeline." @click="highlightEventByIdString(event.idString, true)"><i class="material-icons">gps_fixed</i></a>
+                                                                    <a title="Open in the scriptures." v-if="event.scriptureLink" :href="event.scriptureLink" target="_blank"><i class="material-icons">import_contacts</i></a>
+                                                                    <a title="View stylized document." v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"><i class="material-icons">description</i></a>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- PLACES TAB -->
+                            <div class="tab-pane fade" id="places" role="tabpanel" aria-labelledby="places-tab">
+                                <div class="accordion" id="accordionPlaces">
+
+                                    <div v-for="place in getOptionsFor(items, 'loc')" class="card">
+                                        <div class="card-header" v-if="place">
+                                            <h4 class="mb-0">
+                                                <button class="btn btn-link" type="button" data-toggle="collapse" :data-target="'#'+codifyString(place)" aria-controls="collapseOne">
+                                                    {{place}}
+                                                </button>
+                                            </h4>
+                                        </div>
+
+                                        <div :id="codifyString(place)" class="collapse" aria-labelledby="headingOne" data-parent="#accordionPlaces">
+                                            <div class="card-body">
+                                                <div class="events-list">
+                                                    <div v-for="event in timelineEls.events.filter(e => e.loc === place && (e.eventType == 'normal' || e.eventType == 'secondary'))">
+
+                                                        <div class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
+
+                                                            <div v-if="event.img" class="event-image" :style="{'background-image': `url(${event.img})`}">
+                                                                <div class="openTheater" @click="setTheaterImageByObj(event)"><i class="material-icons">fullscreen</i></div>
+                                                            </div>
+
+                                                            <div class="event-info-layout">
+
+                                                                <div class="info">
+                                                                    <div class="title"><span v-if="event.customIcon">{{event.customIcon}} </span>{{event.name}}</div>
+                                                                    <div class="details">
+                                                                        <div class="date" v-if="event.dateStr"><i class="material-icons">event</i> {{event.dateStr}}</div>
+                                                                        <div class="place" v-if="event.loc"><i class="material-icons">location_on</i> {{event.loc}}</div>
 
                                                                         <div v-if="event.note || event.lists[0] || event.prophecies[0]" class="long-details">
                                                                             <div class="note" v-if="event.note">{{event.note}}</div>
@@ -280,7 +342,7 @@
 
                         <div id="watercolors">
 
-                            <div v-for="event in timelineEls.images" :id="event.idString" class="item-wrapper eventPos image" :class="{hardFocus: event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
+                            <div v-for="event in timelineEls.images" :id="event.idString" class="item-wrapper eventPos image" :class="{hardFocus: event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.totalDays*dayUnit}px`, bottom: `${event.relY}px`}">
 
                                 <img v-if="event.eventType == 'image'" class="watercolor" :src="event.img" loading="eager" :style="{width: event.width+'px', transform: `translate(${event.offset}%, -50%)`}" />
 
@@ -318,16 +380,16 @@
                             </div>
 
                             <div v-for="arc in timelineEls.arcs" class="arc-group item-wrapper" :class="{hardFocus: arc.hasFocus}" :style="{color: arc.color}">
-                                <svg :style="{position: 'absolute', left: arc.left, bottom: arc.base}" :height="arc.top-arc.base" :width="arc.right-arc.left">
+                                <svg v-if="arc.points && arc.points.length > 1" :style="{position: 'absolute', left: arc.left*dayUnit-3, bottom: arc.base}" :height="arc.top-arc.base" :width="(arc.right-arc.left)*dayUnit+6">
                                     <line v-for="i in arc.points.length" v-if="arc.points[i]"
-                                        :x1="arc.points[i-1].relX - arc.left" :y1="arc.points[i-1].relY - arc.base"
-                                        :x2="arc.points[i].relX - arc.left" :y2="arc.points[i].relY - arc.base"
-                                        :style="{stroke: arc.color, strokeWidth: 5}" />
+                                        :x1="(arc.points[i-1].totalDays - arc.left)*dayUnit+3" :y1="arc.points[i-1].relY - arc.base"
+                                        :x2="(arc.points[i].totalDays - arc.left)*dayUnit+3" :y2="arc.points[i].relY - arc.base"
+                                        :style="{stroke: arc.color}" />
                                 </svg>
 
 
                                 <div class="content">
-                                    <div class="time-card event-info-layout" :style="{left: `${arc.left}px`, bottom: `calc(${Math.max(arc.base, 0)}px - 0em)`}">
+                                    <div class="time-card event-info-layout" :style="{left: `${arc.left*dayUnit}px`, bottom: `calc(${Math.max(arc.base, 0)}px - 0em)`}">
                                         <div class="info">
                                             <div class="title">{{arc.name}}</div>
                                             <div class="details">
@@ -353,15 +415,15 @@
                             </div>
 
 
-                            <div v-for="event in timelineEls.events" :id="event.idString" class="item-wrapper eventPos" :class="{anchor: event.eventType == 'anchor', secondary: event.eventType == 'secondary', image: event.eventType == 'image', floating: event.eventType == 'floating', hardFocus: event.hasFocus}"
-                                :style="{color: event.color || event.arc ? event.arc.color : null, left: `${event.relX}px`, bottom: `${event.relY}px`}">
+                            <div v-for="event in timelineEls.events" :id="event.idString" class="item-wrapper eventPos" :class="{anchor: event.eventType == 'anchor', secondary: event.eventType == 'secondary', image: event.eventType == 'image', hardFocus: event.hasFocus, hidden: event.eventType == 'secondary' && ( (event.hasLeftNbr && event.daysLeft*dayUnit < minEventDistance) || (event.hasRightNbr && event.daysRight*dayUnit < minEventDistance))}"
+                                :style="{color: event.arc ? event.arc.color : 'var(--blue)', left: `${event.totalDays*dayUnit}px`, bottom: `${event.relY}px`}">
 
                                 <div v-if="event.customIcon" class="marker custom-icon-marker">{{event.customIcon}}</div>
                                 <div v-else class="marker"></div>
 
                                 <div class="content">
 
-                                    <div class="line" :style="{height: event.relY+'px'}">
+                                    <div class="line" :style="{height: `calc(${event.relY}px - .2em)`}">
                                         <div class="date-tag">{{event.dateStr}}</div>
                                     </div>
 
@@ -373,10 +435,10 @@
                                             </div>
 
                                             <div class="info">
-                                                <div class="title">{{event.name}}</div>
+                                                <div class="title"><span v-if="event.customIcon">{{event.customIcon}} </span>{{event.name}}</div>
                                                 <div class="details">
-                                                    <div class="date">{{event.dateStr}}</div>
-                                                    <div class="place">{{event.loc}}</div>
+                                                    <div class="date" v-if="event.dateStr"><i class="material-icons">event</i> {{event.dateStr}}</div>
+                                                    <div class="place" v-if="event.loc"><i class="material-icons">location_on</i> <a href="#" @click="openMenuToPlace(event.loc)">{{event.loc}}</a></div>
 
                                                     <div v-if="event.note || event.lists[0] || event.prophecies[0]" class="long-details">
                                                         <div class="note" v-if="event.note">{{event.note}}</div>
@@ -389,6 +451,7 @@
 
                                             <div class="buttons">
                                                 <a class="editButton" @click="openEditForm(event)"><i class="material-icons">create</i></a>
+                                                <a title="Open in the menu."><i class="material-icons" @click="openMenuToEvent(event.idString)">sort</i></a>
                                                 <a title="Open in the scriptures." v-if="event.scriptureLink" :href="event.scriptureLink" target="_blank"><i class="material-icons">import_contacts</i></a>
                                                 <a title="View stylized document." v-if="event.recId" class="openRecord" @click="setTheaterRecord(event.recId)"><i class="material-icons">description</i></a>
                                             </div>
@@ -411,10 +474,14 @@
 
                     <div id="controls">
                         <div id="zoomBox">
-                            <div id="zoomIn" @click="handleButtonZoomIn()" class="material-icons btn btn-sm btn-light zoom">zoom_in</div>
+                            <div id="zoomIn" @click="handleButtonZoomIn()" class="material-icons btn btn-sm btn-light zoom" :disabled="yearUnit >= this.maxYearUnit">zoom_in</div>
                             <div id="resetZoom" @click="resetZoom()" class="material-icons btn btn-sm btn-light zoom">home</div>
                             <div id="zoomOut" @click="handleButtonZoomOut()" class="material-icons btn btn-sm btn-light zoom" :disabled="yearUnit <= this.minYearUnit">zoom_out</div>
+                            <!--<div class="range-wrapper">-->
+                            <!--    <input type="range" v-model="yearUnit" :min="minYearUnit" :max="maxYearUnit">-->
+                            <!--</div>-->
                         </div>
+
                         <div id="addEventBox" v-if="!(addingItem || editingItem)">
                             <div id="startQuiz" @click="showQuiz = true" class="btn btn-sm btn-primary">Quiz Me!</div>
                             <div v-if="isAdmin">

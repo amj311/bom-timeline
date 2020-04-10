@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Homemade+Apple|La+Belle+Aurore&display=swap');
 :root {
     --blue: #30a1e2;
+    --blue-trans: #30a1e2aa;
     --primary: #30a1e2;
     --secondary: #aaa;
     --danger: rgb(255, 0, 0);
@@ -111,6 +112,10 @@ div#person-summary>* {
     cursor: pointer;
     transform: scale(.5);
 }
+.hamburger-container.disabled {
+    cursor: default;
+    pointer-events: none;
+}
 
 .bar1,
 .bar2,
@@ -122,16 +127,16 @@ div#person-summary>* {
     transition: 0.4s;
 }
 
-.change .bar1 {
+.showMenu .bar1 {
     -webkit-transform: rotate(-45deg) translate(-9px, 6px);
     transform: rotate(-45deg) translate(-9px, 6px);
 }
 
-.change .bar2 {
+.showMenu .bar2 {
     opacity: 0;
 }
 
-.change .bar3 {
+.showMenu .bar3 {
     -webkit-transform: rotate(45deg) translate(-8px, -8px);
     transform: rotate(45deg) translate(-8px, -8px);
 }
@@ -298,6 +303,7 @@ div#flatLine {
 .item-wrapper:target {
     color: var(--blue);
     z-index: 10;
+    visibility: visible !important;
 }
 
 .item-wrapper:hover .content,
@@ -332,6 +338,9 @@ div#flatLine {
     z-index: 3;
     transform: translate(-50%, 50%);
 }
+.eventPos.hidden {
+    visibility: hidden;
+}
 
 .marker {
     position: absolute;
@@ -353,22 +362,20 @@ div#flatLine {
 }
 
 .eventPos.anchor .marker {
-    z-index: 0;
-    padding: 0;
-    box-shadow: none;
-    border: 2.5px solid;
-    background: transparent;
+    display: none;
 }
 
 .isAdmin .eventPos.anchor .marker {
+    display: block;
+    padding: 0;
     z-index: 3;
-    border: 4px solid;
+    border: .25em solid;
 }
 
 .eventPos .marker.custom-icon-marker {
     border: none;
     background: none;
-    font-size: 1.5em;
+    font-size: 1.3em;
 }
 
 #app:not(.isAdmin) .eventPos.anchor .content {
@@ -416,6 +423,7 @@ div#flatLine {
     border-left: 1px solid;
     box-sizing: content-box;
     pointer-events: none;
+    transform: translateY(.2em);
 }
 .line .date-tag {
     position: absolute;
@@ -609,6 +617,10 @@ div#watercolors {
     transform: scaleY(-1);
     filter: drop-shadow(1px 0px 2px #0005);
 }
+.arc-group svg line {
+    stroke-width: 5;
+    stroke-linecap: round;
+}
 
 
 
@@ -755,6 +767,21 @@ div#contact.tab-pane {
 .tab-content .tab-pane.active {
     display: flex;
 }
+.accordion>.card>.card-header:hover {
+    background: #00000003;
+}
+.accordion>.card>.card-header button.btn-link {
+    color: #555;
+    text-decoration: none !important;
+}
+.accordion>.card>.card-header button[aria-expanded="true"] {
+    color: var(--blue);
+}
+
+.accordion>.card>.card-header button.btn-link::after {
+    content: '▾';
+}
+.accordion>.card>.card-header button[aria-expanded="true"]::after {content: '▴';}
 
 .events-list {
     overflow-y: auto;
@@ -764,7 +791,16 @@ div#contact.tab-pane {
 
 .events-list-item {
     width: 100%;
+    transition: 200ms;
     border-bottom: 2px solid #eee;
+}
+.accordion .collapse.focus, .events-list-item.focus {
+    outline: 3px solid var(--blue-trans);
+}
+
+.events-list-item:hover {
+    box-shadow: 0 0 .5em #0005;
+    z-index: 1;
 }
 
 .events-list-item .event-info-layout {
@@ -777,6 +813,7 @@ div#contact.tab-pane {
     height: 7em;
     border-top-right-radius: 1em;
     box-shadow: inset 0 -20px 10px -10px #0008;
+    border-right: 1px solid #0003;
     background-size: cover;
     background-position: center 15%;
     transition: 500ms;
@@ -1475,11 +1512,11 @@ s[ft]::before {
 
 
 @media only screen and (max-width: 450px) {
-    .wideMenu #left_panel.open {
+    .showMenu #left_panel.open {
         width: 100%;
         max-width: none;
     }
-    .wideMenu:not(.focusOne) div#timeline-wrapper #controls>div {
+    .showMenu:not(.focusOne) div#timeline-wrapper #controls>div {
         display: none;
     }
 }
