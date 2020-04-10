@@ -230,11 +230,31 @@ div#menuCloserSplash {
 .century-block {
     position: relative;
     align-items: flex-end;
-    ;
     display: flex;
     height: 100%;
     background-image: linear-gradient(90deg, transparent, #00000004);
     border-right: 1px solid #0001;
+}
+.era-line {
+    position: absolute;
+    top: 0px;
+    height: 100%;
+    background-image: linear-gradient(90deg, transparent, #00000004);
+    border-right: 1px solid #0001;
+    display: flex;
+    align-items: flex-end;
+}
+
+.sub-eras-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+.sub-era-line {
+    height: 100%;
+    flex-grow: 1;
+    border-right: 1px solid #00000005;
 }
 
 .era-label {
@@ -306,34 +326,49 @@ div#flatLine {
 }
 
 .eventPos {
-    color: #00000033;
+    color: var(--blue);
     position: absolute;
     bottom: 0%;
+    z-index: 3;
+    transform: translate(-50%, 50%);
+}
+
+.marker {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
     padding: .2em;
     border: 0.38em solid;
     border-radius: 50%;
     background: #fff;
-    z-index: 3;
-    box-shadow: 0 0 2px #0006;
+    z-index: 0;
+    filter: drop-shadow(0 0 2px #0006);
     transform: translate(-50%, 50%);
+    cursor: default;
 }
 
-.eventPos.secondary {
+.eventPos.secondary .marker {
     padding: 0px;
     border: 0.35em solid;
 }
 
-.eventPos.anchor {
+.eventPos.anchor .marker {
     z-index: 0;
     padding: 0;
     box-shadow: none;
-    border: 4px solid;
+    border: 2.5px solid;
     background: transparent;
 }
 
-.isAdmin .eventPos.anchor {
+.isAdmin .eventPos.anchor .marker {
     z-index: 3;
     border: 4px solid;
+}
+
+.eventPos .marker.custom-icon-marker {
+    border: none;
+    background: none;
+    font-size: 1.5em;
 }
 
 #app:not(.isAdmin) .eventPos.anchor .content {
@@ -714,7 +749,7 @@ li.nav-item {
 }
 
 div#contact.tab-pane {
-    padding: 1em;
+    padding: 1.5em;
 }
 
 .tab-content .tab-pane.active {
@@ -811,9 +846,8 @@ div#contact.tab-pane {
     margin: .5em 0 0;
 }
 
-textarea#note {
-    min-width: 100%;
-    min-height: 7em;
+input[type="range"] {
+    width: 100%;
 }
 
 .lists-list-wrapper {
@@ -853,6 +887,10 @@ a.lists-lists-item-remove {
 }
 
 
+textarea#note {
+    min-width: 100%;
+    min-height: 7em;
+}
 
 
 

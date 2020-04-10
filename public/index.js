@@ -5,7 +5,6 @@ window.mobileAndTabletCheck = function() {
 };
 
 
-
 var app = new Vue({
     el: '#app',
 
@@ -106,10 +105,19 @@ var app = new Vue({
         books: [
             { name: "1 Nephi", startYear: -599, endYear: -589, step: 1 },
             { name: "2 Nephi", startYear: -589, endYear: -544, step: 1 },
-            { name: "Jacob", startYear: -544, endYear: -519, step: 1 },
-            { name: "Enos", startYear: -544, endYear: -519, step: 1 },
-            { name: "Jarom", startYear: -544, endYear: -519, step: 1 },
-            { name: "Omni", startYear: -544, endYear: -519, step: 1 },
+            { name: "Jacob", startYear: -544, endYear: -515, step: 1 },
+            { name: "Enos", startYear: -515, endYear: -420, step: 1 },
+            { name: "Jarom", startYear: -420, endYear: -361, step: 1 },
+            { name: "Omni", startYear: -361, endYear: -135, step: 1 },
+            { name: "Words of Mormon", startYear: -135, endYear: -123, step: 1 },
+            { name: "Mosiah", startYear: -135, endYear: -90, step: 1 },
+            { name: "Mosiah 9-24", startYear: -176, endYear: -120, step: 2 },
+            { name: "Alma", startYear: -90, endYear: -51, step: 1 },
+            { name: "Helaman", startYear: -51, endYear: 0, step: 1 },
+            { name: "3 Nephi", startYear: 0, endYear: 35, step: 1 },
+            { name: "4 Nephi", startYear: 35, endYear: 321, step: 1 },
+            { name: "Mormon", startYear: 321, endYear: 385, step: 1 },
+            { name: "Moroni", startYear: 385, endYear: 421, step: 1 },
         ],
     },
 
@@ -255,6 +263,8 @@ var app = new Vue({
                     this.tempItem = {
                         idString: "tempItem",
                         "type": "event",
+                        color: null,
+                        customIcon: null,
                         eventType: 'normal',
                         "name": "New Event",
                         "artist": null,
@@ -629,7 +639,9 @@ var app = new Vue({
             this.eraDuration = 1;
 
             while (this.yearUnit * this.eraDuration < this.minEraWidth) {
-                if (this.eraDuration % 2 == 0 || this.eraDuration == 1) this.eraDuration *= 5
+                if (this.eraDuration % 2 == 0 || this.eraDuration == 1) {
+                    this.eraDuration *= 5;
+                }
                 else this.eraDuration *= 2;
             }
 
@@ -680,6 +692,7 @@ var app = new Vue({
         },
 
         timelineEls() {
+            console.log('calculating timelineEls')
             this.arcs.forEach(a => a.points = [])
 
             let events = []
@@ -688,11 +701,12 @@ var app = new Vue({
             this.items.filter(i => i.type === 'event').forEach(event => {
 
 
-                let yearPos = (event.year - this.startYear) * 365 * this.dayUnit;
-                if (event.year > 0) yearPos -= 365 * this.dayUnit;
-                let monthPos = (event.month - 1) * 31 * this.dayUnit;
-                let dayPos = event.day * this.dayUnit;
-                event.relX = yearPos + monthPos + dayPos;
+                let yearInDays = (event.year - this.startYear) * 365;
+                if (event.year > 0) yearInDays -= 365;
+                let monthInDays = (event.month - 1) * 31;
+                let days = event.day;
+                let totalDays = yearInDays + monthInDays + days;
+                event.relX = totalDays * this.dayUnit;
 
                 event.relY = (event.pos / 100) * document.getElementById('timeline-box').offsetHeight;
 

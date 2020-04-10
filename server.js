@@ -124,6 +124,7 @@ app.delete('/api/arcs/:id', async(req, res) => {
 // Create a scheme for items in the timeline: a title and a path to an image.
 const timelineObjectSchema = new mongoose.Schema({
   name: String,
+  customIcon: String,
   day: Number,
   color: String,
   month: Number,

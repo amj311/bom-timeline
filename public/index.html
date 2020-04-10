@@ -37,13 +37,13 @@
                                 <a class="nav-link active" id="all-events-tab" data-toggle="tab" href="#all-events" role="tab" aria-controls="all-events" aria-selected="true" onclick="app.scrollToEl(this)">Events</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="lists-tab" data-toggle="tab" href="#lists" role="tab" aria-controls="lists" aria-selected="false">Lists</a>
+                                <a class="nav-link" id="lists-tab" data-toggle="tab" href="#lists" role="tab" aria-controls="lists" aria-selected="false" onclick="app.scrollToEl(this)">Lists</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="prophecies-tab" data-toggle="tab" href="#prophecies" role="tab" aria-controls="prophecies" aria-selected="false">Prophecies</a>
+                                <a class="nav-link" id="prophecies-tab" data-toggle="tab" href="#prophecies" role="tab" aria-controls="prophecies" aria-selected="false" onclick="app.scrollToEl(this)">Prophecies</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Project Info</a>
+                                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" onclick="app.scrollToEl(this)">Project Info</a>
                             </li>
                         </ul>
 
@@ -54,9 +54,10 @@
                                 <div id="eventsFilters"></div>
 
                                 <div class="events-list">
-                                    <div v-for="event in timelineEls.events.filter(e => e.eventType == 'normal' || e.eventType == 'secondary')">
 
-                                        <div class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
+                                    <div v-for="event in timelineEls.images.concat(timelineEls.events)">
+
+                                        <div v-if="isAdmin || (event.eventType == 'normal' || event.eventType == 'secondary')" class="events-list-item" :style="{'border-left': `5px solid ${ event.arc ? event.arc.color : '#aaa' }`}">
 
                                             <div v-if="event.img" class="event-image" :style="{'background-image': `url(${event.img})`}">
                                                 <div class="openTheater" @click="setTheaterImageByObj(event)"><i class="material-icons">fullscreen</i></div>
@@ -211,7 +212,30 @@
 
                             <!-- Info Tab -->
                             <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                                <h3>Project Information</h3>
                                 <p>This project is part of a suite of study tools called Immerse. For more information or to support the project, contact Arthur Judd.</p>
+
+                                <h6>Determing Dates</h6>
+                                <p>Most of the dates on this timeline reflect information found soley in the Book of Mormon. Out of those, the majority have enough information to determine the year only, with approximate time from sequential events. In cases
+                                    where one event clearly came some time after another but still in the same year, an artibirary month was chosen to simply show the passing of time. In a future update the reliablilty of each date will be identified
+                                    for each case.</p>
+                                <p>In some cases, like the Book of Jared, an event was necessary to include but the records do not give enough information to secure a specific year and a certain of speculation was involved in deciding the year based on average
+                                    life span or duration or similar factors. In those cases, these outside sources were referenced to aid in the estimation:</p>
+                                <ul>
+                                    <li><a href="https://gentlyhewstone.com/2016/06/12/a-timeline-for-the-book-of-ether/#comments" target="_blank">"Gently Hew Stone" Blog</a></li>
+                                    <li><a href="https://gentlyhewstone.com/2016/06/12/a-timeline-for-the-book-of-ether/#comments" target="_blank">BYU Studies Book of Mormon Charts</a></li>
+                                </ul>
+
+                                <h6>Navigation</h6>
+                                <ul>
+                                    <li>Move through the timeline by scrolling left or right.</li>
+                                    <li>Zoom in and out by scrolling up and down, or with the <i class="material-icons">zoom_in</i> and <i class="material-icons">zoom_out</i> buttons.</li>
+                                    <li>You can return the initial position by clicking the <i class="material-icons">home</i> icon.</li>
+                                    <li>Event images can be expanded with the <i class="material-icons">fullscreen</i> button.</li>
+                                    <li>Click on the <i class="material-icons">gps_fixed</i> icon to jump to an event on the timeline.</li>
+                                    <li>Click on the <i class="material-icons">create</i> icon to edit the info for an event.</li>
+                                    <li>Click on the <i class="material-icons">import_contacts</i> icon to open the scripture associated with an event.</li>
+                                </ul>
                                 <p>Collaborators, <a href="#" @click="loginAdmin">login with your password</a> to edit the data.</p>
 
                             </div>
@@ -229,21 +253,36 @@
                             <div id="scrollmarker" :style="{left: `${zoomTargetPos}px`}"></div>
 
                             <!--<div id="flatLine" :style="{bottom: `${dividerHeight}rem`}"></div>-->
+                            <div v-for="era in eras" class="era-line" :style="{width: eraDuration*yearUnit+'px', left: (era-startYear)*yearUnit+'px'}">
 
-                            <div v-for="era in eras" class="century-block" :id="era" :style="{width: `${yearUnit * eraDuration}px`}">
+                                <!--<div class="sub-eras-wrapper">-->
+                                <!--    <div v-for="i in 5" class="sub-era-line"></div>-->
+                                <!--    <div v-if="eraDuration === 1" class="sub-era-line"></div>-->
+                                <!--</div>-->
+
                                 <div class="era-label">
                                     <span v-if="era < 0">{{-era}} BC</span>
                                     <span v-else>{{era + 1}} AD</span>
                                 </div>
                             </div>
 
+                            <!--<div v-for="era in eras" class="century-block" :id="era" :style="{width: `${yearUnit * eraDuration}px`}">-->
+                            <!--    <div class="era-label">-->
+                            <!--        <span v-if="era < 0">{{-era}} BC</span>-->
+                            <!--        <span v-else>{{era + 1}} AD</span>-->
+                            <!--    </div>-->
+                            <!--</div>-->
+
+                        </div>
+
+                        <div id="verticalMarkers">
                         </div>
 
                         <div id="watercolors">
 
                             <div v-for="event in timelineEls.images" :id="event.idString" class="item-wrapper eventPos image" :class="{hardFocus: event.hasFocus}" :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
 
-                                <img v-if="event.eventType == 'image'" class="watercolor" :src="event.img" :style="{width: event.width+'px', transform: `translate(${event.offset}%, -50%)`}" />
+                                <img v-if="event.eventType == 'image'" class="watercolor" :src="event.img" loading="eager" :style="{width: event.width+'px', transform: `translate(${event.offset}%, -50%)`}" />
 
                                 <div class="content" v-if="isAdmin">
 
@@ -315,7 +354,10 @@
 
 
                             <div v-for="event in timelineEls.events" :id="event.idString" class="item-wrapper eventPos" :class="{anchor: event.eventType == 'anchor', secondary: event.eventType == 'secondary', image: event.eventType == 'image', floating: event.eventType == 'floating', hardFocus: event.hasFocus}"
-                                :style="{color: event.arc ? event.arc.color : '#bbb', left: `${event.relX}px`, bottom: `${event.relY}px`}">
+                                :style="{color: event.color || event.arc ? event.arc.color : null, left: `${event.relX}px`, bottom: `${event.relY}px`}">
+
+                                <div v-if="event.customIcon" class="marker custom-icon-marker">{{event.customIcon}}</div>
+                                <div v-else class="marker"></div>
 
                                 <div class="content">
 
@@ -326,7 +368,7 @@
                                     <div class="time-card-wrapper" @mouseenter="pauseZoom()" @mouseleave="allowZoom()">
                                         <div class="time-card event-info-layout">
                                             <div v-if="event.img && event.eventType != 'image'" class="event-image">
-                                                <img :src="event.img" :alt="event.name">
+                                                <img :src="event.img" :alt="event.name" loading="lazy">
                                                 <div class="openTheater" @click="setTheaterImageByObj(event)"><i class="material-icons">fullscreen</i></div>
                                             </div>
 
@@ -457,11 +499,27 @@
 
 
                             <div v-if="tempItem.type == 'event'">
+
                                 <div v-if="isAdmin">
                                     Type of Event:
                                     <select v-model="tempItem.eventType" style="text-transform: capitalize;">
                                         <option v-for="type in eventTypes" :value="type">{{type}}</option>
                                     </select>
+                                </div>
+
+                                <div>
+                                    <label for="color">Color</label><br>
+                                    <input type="color" id="color" v-model="tempItem.color">
+                                    <input type="reset" class="btn btn-light btn-sm" @click="tempItem.color = null" value="Remove Color">
+                                </div>
+
+                                <div>
+                                    <label for="customIcon">Custom Icon</label><br>
+                                    <input id="customIcon" list="iconList" maxlength="2" v-model="tempItem.customIcon">
+                                    <datalist id="iconList">
+                                        <option v-for="option in getOptionsFor(timelineEls.events, 'customIcon')"
+                                            :value="option"></option>
+                                    </datalist>
                                 </div>
 
                                 <div>
@@ -564,12 +622,6 @@
                                 </div>
                             </div>
 
-                            <div v-if="tempItem.type == 'arc'">
-                                <div>
-                                    <label for="color">Color</label><br>
-                                    <input type="color" id="color" v-model="tempItem.color" />
-                                </div>
-                            </div>
 
                             <div>
                                 <label for="scriptureLink">Link to Scripture</label><br>
