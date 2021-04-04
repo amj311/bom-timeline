@@ -11,6 +11,8 @@ var app = new Vue({
     data: {
         timeBoxEl: document.querySelector('#timeline-box'),
 
+        apiUrl: "https://amj311-bom-timeline.herokuapp.com/api",
+
         isLoading: true,
         isAdmin: false,
         adminKey: 'immerseBOM',
@@ -221,7 +223,7 @@ var app = new Vue({
 
         async getEvents() {
             try {
-                let response = await axios.get("/api/items");
+                let response = await axios.get(this.apiUrl+"/items");
                 this.items = response.data;
                 console.log(response.data)
                 return true;
@@ -233,7 +235,7 @@ var app = new Vue({
 
         async getArcs() {
             try {
-                let response = await axios.get("/api/arcs");
+                let response = await axios.get(this.apiUrl+"/arcs");
                 this.arcs = response.data;
                 return true;
             }
@@ -255,8 +257,8 @@ var app = new Vue({
                     }
 
                     let url;
-                    if (item.type === 'event') url = "/api/items/";
-                    if (item.type === 'arc') url = "/api/arcs/";
+                    if (item.type === 'event') url = this.apiUrl+"/items/";
+                    if (item.type === 'arc') url = this.apiUrl+"/arcs/";
                     await axios.delete(url + item._id);
 
                     this.getEvents();
@@ -359,8 +361,8 @@ var app = new Vue({
 
         async addItem(item) {
             let urlBase;
-            if (item.type === 'event') urlBase = '/api/items';
-            if (item.type === 'arc') urlBase = '/api/arcs';
+            if (item.type === 'event') urlBase = this.apiUrl+'/items';
+            if (item.type === 'arc') urlBase = this.apiUrl+'/arcs';
             try {
                 let res = await axios.post(urlBase, item)
                 console.log(res)
@@ -403,8 +405,8 @@ var app = new Vue({
 
         async submitEdit(item) {
             let url;
-            if (item.type === 'event') url = "/api/items/";
-            if (item.type === 'arc') url = "/api/arcs/";
+            if (item.type === 'event') url = this.apiUrl+"/items/";
+            if (item.type === 'arc') url = this.apiUrl+"/arcs/";
 
             try {
                 let res = await axios.put(url + item._id, item)
