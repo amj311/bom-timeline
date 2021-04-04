@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require("body-parser");
+const cors = requore('cors')
 
 const app = express();
 app.use(bodyParser.json());
@@ -8,6 +9,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(express.static('public'))
+app.use(cors());
 
 // Configure multer so that it will upload to '/public/images'
 const multer = require('multer')
