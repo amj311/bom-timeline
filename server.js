@@ -234,5 +234,5 @@ app.put('/api/items/:id', async(req, res) => {
   }
 });
 
-let port = 4202;
+let port = process.env.PORT || 4202;
 app.listen(port, () => console.log('Server listening on port '+port));
