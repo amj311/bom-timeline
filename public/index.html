@@ -16,21 +16,15 @@
 
         <div id="main-view">
 
-            <div id="person-summary">
-                <div class="hamburger-container" :class="{disabled: addingItem || editingItem }" @click="toggleMenu">
-                    <div class="bar1"></div>
-                    <div class="bar2"></div>
-                    <div class="bar3"></div>
-                </div>
-                <div class="profile-img" style="background-image: url(./images/nephi.png)"></div>
-                <h6 style="flex-grow: 1">Book of Mormon Timeline</h6>
-                <div class="material-icons" style="cursor: pointer" @click="openMenuToTab('contact-tab')">help</div>
-            </div>
-
             <div id="timeline-wrapper">
 
                 <div id="left_panel" class="side-panel" :class="{open: menuIsOpen && !(addingItem || editingItem)}">
                     <div class="content-wrapper">
+
+                        <div id="appMenuHeader" style="display: flex">
+                            <div class="profile-img" style="background-image: url(./images/nephi.png)"></div>
+                            <h6 style="flex-grow: 1">Book of Mormon Timeline</h6>    
+                        </div>
 
                         <ul class="nav nav-tabs hidden-scroll" id="myTab" role="tablist">
                             <li class="nav-item">
@@ -377,7 +371,7 @@
                                 <div class="era-label">{{book.name}}</div>
                             </div>    
                         </div>
-                        
+
                         <div id="gallery">
 
                             <!--<div style="border:1em solid red; position: absolute; top: 25%" :style="{left: (initCenterYear-startYear) * yearUnit+'px'}"></div>-->
@@ -478,6 +472,12 @@
 
                     <div id="controls">
                         <div id="zoomBox">
+                            <div class="hamburger-container" :class="{disabled: addingItem || editingItem }" @click="toggleMenu">
+                                <div class="bar1"></div>
+                                <div class="bar2"></div>
+                                <div class="bar3"></div>
+                            </div>
+
                             <div id="zoomIn" @click="handleButtonZoomIn()" class="material-icons btn btn-sm btn-light zoom" :disabled="yearUnit >= this.maxYearUnit">zoom_in</div>
                             <div id="resetZoom" @click="resetZoom()" class="material-icons btn btn-sm btn-light zoom">home</div>
                             <div id="zoomOut" @click="handleButtonZoomOut()" class="material-icons btn btn-sm btn-light zoom" :disabled="yearUnit <= this.minYearUnit">zoom_out</div>
@@ -487,71 +487,17 @@
                         </div>
 
                         <div id="addEventBox" v-if="!(addingItem || editingItem)">
-                            <div id="startQuiz" @click="showQuiz = true" class="btn btn-sm btn-primary">Quiz Me!</div>
+                            <!-- <div id="startQuiz" @click="showQuiz = true" class="btn btn-sm btn-primary">Quiz Me!</div> -->
                             <div v-if="isAdmin">
                                 <div id="addEvent" @click="openAddForm('event')" class="btn btn-sm btn-light">+ Add Event</div>
                                 <div id="addArc" @click="openAddForm('arc')" class="btn btn-sm btn-light">+ Add Arc</div>
                                 <div id="logout" @click="logoutAdmin" class="btn btn-sm btn-light">Logout</div>
                             </div>
+                            <div class="material-icons" style="cursor: pointer" @click="openMenuToTab('contact-tab')">help</div>
                         </div>
                     </div>
 
                     <!--<div v-if="menuIsOpen && isMobile" id="menuCloserSplash" @click="toggleMenu()"></div>-->
-
-                </div>
-
-
-
-
-                <div id="quizOverlay" v-show="showQuiz">
-
-
-                    <div id="slides_area">
-                        <div class="deck_slider">
-
-                            <div v-for="card in quizCards" @click="reverseCard(card)" class="qcard" :class="{reversed: show_Qback, active: card.id === activeQIdx, left: card.id < activeQIdx, right: card.id > activeQIdx}">
-                                <div class="qcard-height">
-                                    <div class="qcard-content">
-
-                                        <div v-if="!show_Qback">
-                                            <div v-if="card.img" class="qcard-image-wrapper">
-                                                <img :src="card.img" />
-                                            </div>
-                                            <div v-else>
-                                                <h3>{{card.name}}</h3>
-                                            </div>
-                                        </div>
-                                        <div v-if="show_Qback">
-                                            <h5 class="title">{{card.name}}</h5>
-                                            <div class="details">
-                                                <div class="date">{{card.dateStr}}</div>
-                                                <div class="place">{{card.loc}}</div>
-
-                                                <br><br>
-                                                <div class="note" v-if="card.note" v-html="card.note" style="white-space: pre-wrap;"></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-
-
-                        </div>
-
-
-                        <div id="controls">
-                            <button @click="activeQIdx = Math.max(0, activeQIdx - 1)">👈</button>
-                            <input v-model="displayQIdx" type="number" min="1" :max="quizCards.length" step="1" style="text-align: center;">
-                            <button @click="activeQIdx = Math.min(quizCards.length - 1, activeQIdx + 1)">👉</button>
-                        </div>
-
-
-                        <div id="leaveQuizBox">
-                            <div id="leaveQuiz" @click="showQuiz = false" class="btn btn-sm btn-secondary">Leave Quiz</div>
-                        </div>
-
-                    </div>
 
                 </div>
 
@@ -718,6 +664,59 @@
                 </div>
 
 
+                
+
+                <div id="quizOverlay" v-show="showQuiz">
+
+
+                    <div id="slides_area">
+                        <div class="deck_slider">
+
+                            <div v-for="card in quizCards" @click="reverseCard(card)" class="qcard" :class="{reversed: show_Qback, active: card.id === activeQIdx, left: card.id < activeQIdx, right: card.id > activeQIdx}">
+                                <div class="qcard-height">
+                                    <div class="qcard-content">
+
+                                        <div v-if="!show_Qback">
+                                            <div v-if="card.img" class="qcard-image-wrapper">
+                                                <img :src="card.img" />
+                                            </div>
+                                            <div v-else>
+                                                <h3>{{card.name}}</h3>
+                                            </div>
+                                        </div>
+                                        <div v-if="show_Qback">
+                                            <h5 class="title">{{card.name}}</h5>
+                                            <div class="details">
+                                                <div class="date">{{card.dateStr}}</div>
+                                                <div class="place">{{card.loc}}</div>
+
+                                                <br><br>
+                                                <div class="note" v-if="card.note" v-html="card.note" style="white-space: pre-wrap;"></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+                        <div id="controls">
+                            <button @click="activeQIdx = Math.max(0, activeQIdx - 1)">👈</button>
+                            <input v-model="displayQIdx" type="number" min="1" :max="quizCards.length" step="1" style="text-align: center;">
+                            <button @click="activeQIdx = Math.min(quizCards.length - 1, activeQIdx + 1)">👉</button>
+                        </div>
+
+
+                        <div id="leaveQuizBox">
+                            <div id="leaveQuiz" @click="showQuiz = false" class="btn btn-sm btn-secondary">Leave Quiz</div>
+                        </div>
+
+                    </div>
+
+                </div>
             </div>
 
         </div>

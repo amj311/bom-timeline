@@ -125,20 +125,14 @@ div#person-summary>* {
     background-color: #333;
     margin: 6px 0;
     transition: 0.4s;
+    transform-origin: center left;
 }
 
 .showMenu .bar1 {
-    -webkit-transform: rotate(-45deg) translate(-9px, 6px);
-    transform: rotate(-45deg) translate(-9px, 6px);
-}
-
-.showMenu .bar2 {
-    opacity: 0;
-}
+    transform: rotate(-45deg) translate(-6px, 8px) scaleX(.75);}
 
 .showMenu .bar3 {
-    -webkit-transform: rotate(45deg) translate(-8px, -8px);
-    transform: rotate(45deg) translate(-8px, -8px);
+    transform: rotate(45deg) translate(-8px, -9px) scaleX(.75);
 }
 
 
@@ -636,6 +630,7 @@ div#timeline-wrapper #controls>div {
 #addEventBox {
     right: 0;
     left: initial !important;
+    text-align: right;
 }
 
 #zoomBox {
@@ -719,6 +714,18 @@ div#left_panel {
     max-width: 20rem;
 }
 
+
+
+#appMenuHeader {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+}
+
+div#appMenuHeader>* {
+    margin: 0 .5rem 0 0;
+}
+
 /* Tabs*/
 
 ul#myTab {
@@ -755,7 +762,7 @@ li.nav-item {
 .tab-pane {
     position: absolute;
     width: 100%;
-    height: calc(100% - 2.2rem);
+    height: calc(100% - 6.5rem);
     flex-direction: column;
     overflow-y: auto;
 }
@@ -796,11 +803,6 @@ div#contact.tab-pane {
 }
 .accordion .collapse.focus, .events-list-item.focus {
     outline: 3px solid var(--blue-trans);
-}
-
-.events-list-item:hover {
-    box-shadow: 0 0 .5em #0005;
-    z-index: 1;
 }
 
 .events-list-item .event-info-layout {
