@@ -786,9 +786,9 @@ div#contact.tab-pane {
 }
 
 .accordion>.card>.card-header button.btn-link::after {
-    content: '▾';
+    content: '\25BE';
 }
-.accordion>.card>.card-header button[aria-expanded="true"]::after {content: '▴';}
+.accordion>.card>.card-header button[aria-expanded="true"]::after {content: '\25B4';}
 
 .events-list {
     overflow-y: auto;
