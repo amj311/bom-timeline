@@ -1515,10 +1515,10 @@ s[ft]::before {
 
 @media only screen and (max-width: 450px) {
     .showMenu #left_panel.open {
-        width: 100%;
+        width: calc(100% - 3.5rem);
         max-width: none;
     }
-    .showMenu:not(.focusOne) div#timeline-wrapper #controls>div {
+    .showMenu:not(.focusOne) div#timeline-wrapper #addEventBox {
         display: none;
     }
 }
