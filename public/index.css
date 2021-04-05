@@ -289,6 +289,7 @@ div#flatLine {
     bottom: 0;
     left: 0;
     z-index: 5;
+    filter: drop-shadow(-5px 5px 1px #0002);
 }
 
 
@@ -351,7 +352,7 @@ div#flatLine {
     border-radius: 50%;
     background: #fff;
     z-index: 0;
-    filter: drop-shadow(0 0 2px #0006);
+    filter: drop-shadow(-1px 0 1px #0004);
     transform: translate(-50%, 50%);
     cursor: default;
 }
@@ -615,7 +616,6 @@ div#watercolors {
 
 .arc-group svg {
     transform: scaleY(-1);
-    filter: drop-shadow(1px 0px 2px #0005);
 }
 .arc-group svg line {
     stroke-width: 5;
