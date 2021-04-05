@@ -372,12 +372,16 @@
 
                         </div>
 
+                        <div id="books">
+                            <div v-for="book in books" class="book-label-wrapper" :style="{position: 'absolute', bottom: `calc(2*${book.step}em - 1px`, left: (book.startYear-startYear)*yearUnit+'px', width: ((book.endYear-book.startYear)*yearUnit) + 1 +'px'}">
+                                <div class="era-label">{{book.name}}</div>
+                            </div>    
+                        </div>
+                        
                         <div id="gallery">
 
                             <!--<div style="border:1em solid red; position: absolute; top: 25%" :style="{left: (initCenterYear-startYear) * yearUnit+'px'}"></div>-->
-                            <div v-for="book in books" class="book-label-wrapper" :style="{position: 'absolute', bottom: `calc(2*${book.step}em - 1px`, left: (book.startYear-startYear)*yearUnit+'px', width: ((book.endYear-book.startYear)*yearUnit) + 1 +'px'}">
-                                <div class="era-label">{{book.name}}</div>
-                            </div>
+
 
                             <div v-for="arc in timelineEls.arcs" class="arc-group item-wrapper" :class="{hardFocus: arc.hasFocus}" :style="{color: arc.color}">
                                 <svg v-if="arc.points && arc.points.length > 1" :style="{position: 'absolute', left: arc.left*dayUnit-3, bottom: arc.base}" :height="arc.top-arc.base" :width="(arc.right-arc.left)*dayUnit+6">
