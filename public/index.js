@@ -11,7 +11,7 @@ var app = new Vue({
     data: {
         timeBoxEl: document.querySelector('#timeline-box'),
 
-        apiUrl: "https://amj311-bom-timeline.herokuapp.com/api",
+        // apiUrl: "/api",
 
         isLoading: true,
         isAdmin: false,
@@ -24,8 +24,8 @@ var app = new Vue({
         },
         arcCardYPos: 0,
 
-        items: [],
-        arcs: [],
+        items: TimeObjects,
+        arcs: Arcs,
         minEraWidth: 80,
         dateMin: null,
         dateMax: null,
@@ -129,8 +129,8 @@ var app = new Vue({
     async created() {
         this.checkAdmin()
 
-        await this.getEvents()
-        await this.getArcs()
+        // await this.getEvents()
+        // await this.getArcs()
 
         this.isMobile = window.mobileAndTabletCheck();
         if (window.innerWidth > 500) this.menuIsOpen = true;
@@ -170,24 +170,24 @@ var app = new Vue({
     },
 
     methods: {
-        checkAdmin() {
-            if (localStorage.getItem('adminKey') === this.adminKey) {
-                this.isAdmin = true;
-            }
-        },
-        loginAdmin() {
-            if (prompt('What is the password?') === this.adminKey) {
-                localStorage.setItem('adminKey', this.adminKey)
-                this.isAdmin = true;
-            }
-            else alert('Sorry, wrong password.')
-        },
-        logoutAdmin() {
-            if (confirm('Are you sure you want to log out?')) {
-                localStorage.removeItem('adminKey')
-                this.isAdmin = false;
-            }
-        },
+        // checkAdmin() {
+        //     if (localStorage.getItem('adminKey') === this.adminKey) {
+        //         this.isAdmin = true;
+        //     }
+        // },
+        // loginAdmin() {
+        //     if (prompt('What is the password?') === this.adminKey) {
+        //         localStorage.setItem('adminKey', this.adminKey)
+        //         this.isAdmin = true;
+        //     }
+        //     else alert('Sorry, wrong password.')
+        // },
+        // logoutAdmin() {
+        //     if (confirm('Are you sure you want to log out?')) {
+        //         localStorage.removeItem('adminKey')
+        //         this.isAdmin = false;
+        //     }
+        // },
 
 
         toggleMenu() {
@@ -221,235 +221,235 @@ var app = new Vue({
             setTimeout(() => this.scrollToEl($el[0]), 200)
         },
 
-        async getEvents() {
-            try {
-                let response = await axios.get(this.apiUrl+"/items");
-                this.items = response.data;
-                console.log(response.data)
-                return true;
-            }
-            catch (error) {
-                console.log(error);
-            }
-        },
+        // async getEvents() {
+        //     try {
+        //         let response = await axios.get(this.apiUrl+"/items");
+        //         this.items = response.data;
+        //         console.log(response.data)
+        //         return true;
+        //     }
+        //     catch (error) {
+        //         console.log(error);
+        //     }
+        // },
 
-        async getArcs() {
-            try {
-                let response = await axios.get(this.apiUrl+"/arcs");
-                this.arcs = response.data;
-                return true;
-            }
-            catch (error) {
-                console.log(error);
-            }
-        },
+        // async getArcs() {
+        //     try {
+        //         let response = await axios.get(this.apiUrl+"/arcs");
+        //         this.arcs = response.data;
+        //         return true;
+        //     }
+        //     catch (error) {
+        //         console.log(error);
+        //     }
+        // },
 
-        async deleteItem(item) {
-            if (confirm(`Are you sure you want to delete ${item.type} '${item.name}?'`)) {
-                try {
+        // async deleteItem(item) {
+        //     if (confirm(`Are you sure you want to delete ${item.type} '${item.name}?'`)) {
+        //         try {
 
-                    if (item.type === 'arc') {
-                        this.items.forEach(i => {
-                            if (i.arcId === item._id) {
-                                i.arcId = null;
-                            }
-                        })
-                    }
+        //             if (item.type === 'arc') {
+        //                 this.items.forEach(i => {
+        //                     if (i.arcId === item._id) {
+        //                         i.arcId = null;
+        //                     }
+        //                 })
+        //             }
 
-                    let url;
-                    if (item.type === 'event') url = this.apiUrl+"/items/";
-                    if (item.type === 'arc') url = this.apiUrl+"/arcs/";
-                    await axios.delete(url + item._id);
+        //             let url;
+        //             if (item.type === 'event') url = this.apiUrl+"/items/";
+        //             if (item.type === 'arc') url = this.apiUrl+"/arcs/";
+        //             await axios.delete(url + item._id);
 
-                    this.getEvents();
-                    this.getArcs();
-                    this.closeEditForm();
-                    return true;
-                }
-                catch (error) {
-                    console.log(error);
-                }
-            }
-        },
+        //             // this.getEvents();
+        //             // this.getArcs();
+        //             this.closeEditForm();
+        //             return true;
+        //         }
+        //         catch (error) {
+        //             console.log(error);
+        //         }
+        //     }
+        // },
 
-        openAddForm(type) {
-            if (!this.editingItem && !this.addingItem) {
+        // openAddForm(type) {
+        //     if (!this.editingItem && !this.addingItem) {
 
-                // default new event
-                if (type === "event") {
-                    this.tempItem = {
-                        idString: "tempItem",
-                        "type": "event",
-                        color: null,
-                        customIcon: null,
-                        eventType: 'normal',
-                        "name": "New Event",
-                        "artist": null,
-                        "day": null,
-                        "month": null,
-                        "year": Math.floor((document.querySelector('#timeline-box').scrollLeft + document.querySelector('#timeline-box').offsetWidth / 4) / this.yearUnit + this.startYear),
-                        "displayYear": false,
-                        "pos": 50,
-                        "img": null,
-                        imgCred: null,
-                        width: 100,
-                        offset: -50,
-                        "period": null,
-                        "id": 2,
-                        "note": "",
-                        "arcId": null,
-                        "lists": [],
-                        "prophecies": [],
-                        scriptureLink: null,
-                        isNewPlaceholder: true,
-                    };
-                    this.items.push(this.tempItem)
-                }
+        //         // default new event
+        //         if (type === "event") {
+        //             this.tempItem = {
+        //                 idString: "tempItem",
+        //                 "type": "event",
+        //                 color: null,
+        //                 customIcon: null,
+        //                 eventType: 'normal',
+        //                 "name": "New Event",
+        //                 "artist": null,
+        //                 "day": null,
+        //                 "month": null,
+        //                 "year": Math.floor((document.querySelector('#timeline-box').scrollLeft + document.querySelector('#timeline-box').offsetWidth / 4) / this.yearUnit + this.startYear),
+        //                 "displayYear": false,
+        //                 "pos": 50,
+        //                 "img": null,
+        //                 imgCred: null,
+        //                 width: 100,
+        //                 offset: -50,
+        //                 "period": null,
+        //                 "id": 2,
+        //                 "note": "",
+        //                 "arcId": null,
+        //                 "lists": [],
+        //                 "prophecies": [],
+        //                 scriptureLink: null,
+        //                 isNewPlaceholder: true,
+        //             };
+        //             this.items.push(this.tempItem)
+        //         }
 
-                // default new arc
-                if (type === "arc") {
-                    this.tempItem = {
-                        idString: "tempItem",
-                        "type": "arc",
-                        "name": "New Arc",
-                        "color": "#bbb",
-                        "note": "",
-                        isNewPlaceholder: true,
-                    };
-                    this.arcs.push(this.tempItem)
-                }
+        //         // default new arc
+        //         if (type === "arc") {
+        //             this.tempItem = {
+        //                 idString: "tempItem",
+        //                 "type": "arc",
+        //                 "name": "New Arc",
+        //                 "color": "#bbb",
+        //                 "note": "",
+        //                 isNewPlaceholder: true,
+        //             };
+        //             this.arcs.push(this.tempItem)
+        //         }
 
-                this.tempItem.hasFocus = true;
-                this.addingItem = true;
-            }
-        },
+        //         this.tempItem.hasFocus = true;
+        //         this.addingItem = true;
+        //     }
+        // },
 
-        handleChangeAddYear() {
-            if (this.tempItem.year > this.dateMax || this.tempItem.year < this.dateMin) this.setZoom()
-            this.scrollToFocusedEl()
-        },
+        // handleChangeAddYear() {
+        //     if (this.tempItem.year > this.dateMax || this.tempItem.year < this.dateMin) this.setZoom()
+        //     this.scrollToFocusedEl()
+        // },
 
-        handleAddItemToList(listType, listName) {
-            if (this.tempItem[listType].lastIndexOf(listName) < 0) this.tempItem[listType].push(listName)
-            this.newListName = this.newProphecyName = '';
-        },
-        handleRemoveItemFromList(listType, listName) {
-            this.tempItem[listType] = this.tempItem[listType].filter(list => list != listName)
-        },
-        handleRemoveALLFromList(listType, listName) {
-            this.timelineEls.events.forEach(e => e[listType].filter(l => l != listName))
-        },
-        handleChangeListName(listType, listName, newName) {
-            // if (this.getOptionsFor(this.timelineEls.events, listType).lastIndexOf(newName) >= 0) return alert('that list already exists!')
-            this.timelineEls.events.forEach(e => e[listType].filter(l => l != listName))
-        },
+        // handleAddItemToList(listType, listName) {
+        //     if (this.tempItem[listType].lastIndexOf(listName) < 0) this.tempItem[listType].push(listName)
+        //     this.newListName = this.newProphecyName = '';
+        // },
+        // handleRemoveItemFromList(listType, listName) {
+        //     this.tempItem[listType] = this.tempItem[listType].filter(list => list != listName)
+        // },
+        // handleRemoveALLFromList(listType, listName) {
+        //     this.timelineEls.events.forEach(e => e[listType].filter(l => l != listName))
+        // },
+        // handleChangeListName(listType, listName, newName) {
+        //     // if (this.getOptionsFor(this.timelineEls.events, listType).lastIndexOf(newName) >= 0) return alert('that list already exists!')
+        //     this.timelineEls.events.forEach(e => e[listType].filter(l => l != listName))
+        // },
 
         codifyString(string) {
             console.log(string)
             if (string) return string.split('').filter(c => !/[^a-zA-Z0-9]/.test(c)).join('')
         },
 
-        handleSubmitForm() {
-            if (this.addingItem) this.addItem(this.tempItem)
-            if (this.editingItem) this.submitEdit(this.tempItem)
-        },
+        // handleSubmitForm() {
+        //     if (this.addingItem) this.addItem(this.tempItem)
+        //     if (this.editingItem) this.submitEdit(this.tempItem)
+        // },
 
-        handleCancelForm() {
-            if (this.addingItem) this.cancelAddForm()
-            if (this.editingItem) this.cancelEditForm()
-        },
+        // handleCancelForm() {
+        //     if (this.addingItem) this.cancelAddForm()
+        //     if (this.editingItem) this.cancelEditForm()
+        // },
 
-        async addItem(item) {
-            let urlBase;
-            if (item.type === 'event') urlBase = this.apiUrl+'/items';
-            if (item.type === 'arc') urlBase = this.apiUrl+'/arcs';
-            try {
-                let res = await axios.post(urlBase, item)
-                console.log(res)
-                item.hasFocus = false;
-                item._id = res.data._id;
-                this.closeAddForm();
-            }
-            catch (error) {
-                console.log(error)
-            }
-        },
+        // async addItem(item) {
+        //     let urlBase;
+        //     if (item.type === 'event') urlBase = this.apiUrl+'/items';
+        //     if (item.type === 'arc') urlBase = this.apiUrl+'/arcs';
+        //     try {
+        //         let res = await axios.post(urlBase, item)
+        //         console.log(res)
+        //         item.hasFocus = false;
+        //         item._id = res.data._id;
+        //         this.closeAddForm();
+        //     }
+        //     catch (error) {
+        //         console.log(error)
+        //     }
+        // },
 
-        cancelAddForm() {
-            this.items = this.items.filter(p => !p.isNewPlaceholder)
-            this.arcs = this.arcs.filter(a => !a.isNewPlaceholder)
+        // cancelAddForm() {
+        //     this.items = this.items.filter(p => !p.isNewPlaceholder)
+        //     this.arcs = this.arcs.filter(a => !a.isNewPlaceholder)
 
-            this.closeAddForm();
-        },
+        //     this.closeAddForm();
+        // },
 
-        closeAddForm() {
-            if (this.addingItem) {
-                this.addingItem = false;
-            }
-            this.newListName = '';
-        },
+        // closeAddForm() {
+        //     if (this.addingItem) {
+        //         this.addingItem = false;
+        //     }
+        //     this.newListName = '';
+        // },
 
-        openEditForm(item) {
-            if (!this.editingItem && !this.addingItem) {
-                this.tempItem = item;
+        // openEditForm(item) {
+        //     if (!this.editingItem && !this.addingItem) {
+        //         this.tempItem = item;
 
-                this.tempItemIdx = this.items.lastIndexOf(item)
-                Object.assign(this.editOriginal, item)
+        //         this.tempItemIdx = this.items.lastIndexOf(item)
+        //         Object.assign(this.editOriginal, item)
 
-                item.hasFocus = true;
+        //         item.hasFocus = true;
 
-                this.editingItem = true;
-                setTimeout(() => this.scrollToEl(document.querySelector('.eventPos.hardFocus')), 5)
-            }
-        },
+        //         this.editingItem = true;
+        //         setTimeout(() => this.scrollToEl(document.querySelector('.eventPos.hardFocus')), 5)
+        //     }
+        // },
 
-        async submitEdit(item) {
-            let url;
-            if (item.type === 'event') url = this.apiUrl+"/items/";
-            if (item.type === 'arc') url = this.apiUrl+"/arcs/";
+        // async submitEdit(item) {
+        //     let url;
+        //     if (item.type === 'event') url = this.apiUrl+"/items/";
+        //     if (item.type === 'arc') url = this.apiUrl+"/arcs/";
 
-            try {
-                let res = await axios.put(url + item._id, item)
-                console.log(res.data)
+        //     try {
+        //         let res = await axios.put(url + item._id, item)
+        //         console.log(res.data)
 
-                item.hasFocus = false;
-                item._id = res.data._id;
+        //         item.hasFocus = false;
+        //         item._id = res.data._id;
 
-                this.closeEditForm();
-            }
-            catch (error) {
-                console.log(error)
-            }
-        },
+        //         this.closeEditForm();
+        //     }
+        //     catch (error) {
+        //         console.log(error)
+        //     }
+        // },
 
-        cancelEditForm() {
-            if (this.editingItem) {
-                Object.assign(this.tempItem, this.editOriginal)
-                this.closeEditForm()
-            }
-        },
+        // cancelEditForm() {
+        //     if (this.editingItem) {
+        //         Object.assign(this.tempItem, this.editOriginal)
+        //         this.closeEditForm()
+        //     }
+        // },
 
-        closeEditForm() {
-            if (this.editingItem) {
-                this.tempItem.hasFocus = false;
-                this.tempItem = false;
+        // closeEditForm() {
+        //     if (this.editingItem) {
+        //         this.tempItem.hasFocus = false;
+        //         this.tempItem = false;
 
-                this.newListName = '';
-                this.editingItem = false;
-            }
-        },
+        //         this.newListName = '';
+        //         this.editingItem = false;
+        //     }
+        // },
 
-        getOptionsFor(list, prop) {
-            let options = [];
-            list.forEach(item => {
+        // getOptionsFor(list, prop) {
+        //     let options = [];
+        //     list.forEach(item => {
 
-                if (options.lastIndexOf(item[prop]) < 0) options.push(item[prop])
-            })
-            options = options.flat(Infinity)
-            options.sort()
-            options = new Set(options)
-            return options;
-        },
+        //         if (options.lastIndexOf(item[prop]) < 0) options.push(item[prop])
+        //     })
+        //     options = options.flat(Infinity)
+        //     options.sort()
+        //     options = new Set(options)
+        //     return options;
+        // },
 
         getArcById(id) {
             return this.arcs.filter(a => a._id === id)[0]

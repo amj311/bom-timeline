@@ -631,6 +631,8 @@ div#timeline-wrapper #controls>div {
     right: 0;
     left: initial !important;
     text-align: right;
+	display: flex;
+	align-items: center;
 }
 
 #zoomBox {
