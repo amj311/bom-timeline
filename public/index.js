@@ -127,7 +127,7 @@ var app = new Vue({
     },
 
     async created() {
-        this.checkAdmin()
+        // this.checkAdmin()
 
         // await this.getEvents()
         // await this.getArcs()
@@ -439,17 +439,17 @@ var app = new Vue({
         //     }
         // },
 
-        // getOptionsFor(list, prop) {
-        //     let options = [];
-        //     list.forEach(item => {
+        getOptionsFor(list, prop) {
+            let options = [];
+            list.forEach(item => {
 
-        //         if (options.lastIndexOf(item[prop]) < 0) options.push(item[prop])
-        //     })
-        //     options = options.flat(Infinity)
-        //     options.sort()
-        //     options = new Set(options)
-        //     return options;
-        // },
+                if (options.lastIndexOf(item[prop]) < 0) options.push(item[prop])
+            })
+            options = options.flat(Infinity)
+            options.sort()
+            options = new Set(options)
+            return options;
+        },
 
         getArcById(id) {
             return this.arcs.filter(a => a._id === id)[0]
@@ -572,6 +572,13 @@ var app = new Vue({
         },
 
         handleTimelineScroll(e) {
+			// Reduce noise on horizontal scroll
+			if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+				return;
+			}
+			e.preventDefault();
+			e.stopPropagation();
+
             var y = -e.deltaY;
             let ival = 100;
 
@@ -585,8 +592,9 @@ var app = new Vue({
                     let mouseX = e.clientX - vp.x;
                     let mouseTimePos = scrollBox.scrollLeft + mouseX;
 
-
-                    let delta = y / 500;
+					let factor = 0.25;
+                    let delta = y > 0 ? factor : -factor;
+					console.log(delta)
                     this.changeYearUnit(delta)
 
                     let newMPos = mouseTimePos * (this.yearUnit / oldUnit);
